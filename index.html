@@ -3,7 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
-  <title>🌟 Узы Света · Дружба звёзд</title>
+  <title>🌟 Узы Света</title>
+  <!-- PWA-манифест -->
+  <link rel="manifest" href="data:application/manifest+json,%7B%22name%22%3A%22%D0%A3%D0%B7%D1%8B%20%D0%A1%D0%B2%D0%B5%D1%82%D0%B0%22%2C%22short_name%22%3A%22%D0%A3%D0%B7%D1%8B%22%2C%22start_url%22%3A%22.%2F%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%231a1025%22%2C%22theme_color%22%3A%22%23ffd966%22%7D">
+  <meta name="theme-color" content="#1a1025">
   <style>
     *{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI','Poppins',system-ui,sans-serif}
     body{background:radial-gradient(ellipse at 30% 20%,#1a1025 0%,#0a0614 100%);min-height:100vh;display:flex;justify-content:center;align-items:center}
@@ -66,10 +69,35 @@
   <div id="achievementsScreen" class="screen"></div>
   <div id="profileScreen" class="screen"></div>
 </div>
+
+<!-- Firebase SDKs -->
+<script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
+
 <script>
-(function(){
-  const STORAGE='uzi_clean_v1';
-  const SESSION='uzi_session_clean';
+  // ==================== КОНФИГУРАЦИЯ FIREBASE ====================
+  const firebaseConfig = {
+    apiKey: "AIzaSyA0mgaZOv6dqVo-pNbRY7kFdP1HX1u9qg8",
+    authDomain: "cdsferw-50ff9.firebaseapp.com",
+    databaseURL: "https://cdsferw-50ff9-default-rtdb.europe-west1.firebasedatabase.app",
+    projectId: "cdsferw-50ff9",
+    storageBucket: "cdsferw-50ff9.firebasestorage.app",
+    messagingSenderId: "489957947610",
+    appId: "1:489957947610:web:833bed6e55fbede597cde3"
+  };
+
+  // Инициализация Firebase
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.database();
+
+  // ==================== PWA: Регистрация Service Worker ====================
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('data:application/javascript,' + encodeURIComponent(
+      'self.addEventListener("fetch",e=>{e.respondWith(fetch(e.request))});'
+    ));
+  }
+
+  // ==================== КОНСТАНТЫ И ПЕРЕВОДЫ ====================
   const MONTHS_RU=['Янв','Фев','Мар','Апр','Май','Июн','Июл','Авг','Сен','Окт','Ноя','Дек'];
   const MONTHS_EN=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
   const MONTHS_ES=['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
@@ -81,6 +109,7 @@
   const MONTHS_JA=['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'];
   const MONTHS_KO=['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'];
   const MONTHS={ru:MONTHS_RU,en:MONTHS_EN,es:MONTHS_ES,fr:MONTHS_FR,de:MONTHS_DE,pt:MONTHS_PT,it:MONTHS_IT,zh:MONTHS_ZH,ja:MONTHS_JA,ko:MONTHS_KO};
+
   const BAD=['мат','бля','хуй','пизд','еба','сука','нах','гандон','пидор','чмо','лох','гавно','жопа','член','хер','мудак','урод','дура','идиот','тупой','дебил','даун','педик','аутист'];
   const AVATARS=['🙂','😎','🤩','🦊','🐼','⭐','💎','👑','🔥','🌈','🌟','💜','🎭','🐉','🍀','🤝','💔','🎃','🎅','👻','🐱','🐶','🦄','🐲','🎉','💖'];
   const CARDS=['default','golden','sheriff','night','diamond','royal','master','ocean','forest','sunset','galaxy','phoenix','unicorn','dragon','crystal','shadow','sparkle','thunder','angel','demon','rainbow'];
@@ -102,265 +131,547 @@
     {id:'col5',name:'🎴 5 карточек',desc:'5 карточек',reward:'avatar:🎴'},
     {id:'all100',name:'🎖️ Все 100+',desc:'У всех 100+',reward:'card:master'}
   ];
+
   const LANGS={
-  ru:{
-    welcome:'🌟 Добро пожаловать',email_ph:'Электронная почта',code_ph:'Код доступа (8 символов)',nick_ph:'Придумайте никнейм',date_label:'📅 Дата рождения:',login_btn:'ВОЙТИ',register_btn:'РЕГИСТРАЦИЯ',no_acc:'Нет аккаунта?',has_acc:'Уже есть аккаунт?',
-    tab_friends:'👥 Друзья',tab_tasks:'📋 Задания',tab_ach:'🏅 Достижения',tab_profile:'👤 Профиль',no_friends:'Пока нет друзей',add_friend:'➕ Добавить друга',confirm:'✅ Подтвердить',cancel:'Отмена',
-    tasks_title:'📋 Задания',quarrel:'💢 Поссориться -18',edit:'✏️ Редактировать',logout:'🚪 Выйти',save:'💾 Сохранить',
-    not_found:'❌ Аккаунт не найден',self_add:'❌ Нельзя добавить себя',already:'❌ Уже в друзьях',
-    email_err:'Введите почту',code_err:'Код 8 символов',nick_err:'Введите ник',bad_nick:'Запрещённые слова',email_used:'Почта занята',email_not_found:'Аккаунт не найден',wrong_code:'Неверный код',
-    claimed:'✅ Получено',get:'🎁 Получить',locked:'🔒 Не выполнено',card_label:'🃏 Карточка:',avatar_label:'🖼️ Аватар:',your_code:'Твой код:',copy:'📋 Копировать',copied:'✅ Скопировано!',add_by_code:'Введите код друга',found_friend:'Это твой друг!',
-    years:'лет'
-  },
-  en:{
-    welcome:'🌟 Welcome',email_ph:'Email',code_ph:'Access code (8 chars)',nick_ph:'Nickname',date_label:'📅 Birth date:',login_btn:'LOG IN',register_btn:'SIGN UP',no_acc:'No account?',has_acc:'Already have account?',
-    tab_friends:'👥 Friends',tab_tasks:'📋 Tasks',tab_ach:'🏅 Achievements',tab_profile:'👤 Profile',no_friends:'No friends yet',add_friend:'➕ Add friend',confirm:'✅ Confirm',cancel:'Cancel',
-    tasks_title:'📋 Tasks',quarrel:'💢 Quarrel -18',edit:'✏️ Edit',logout:'🚪 Log out',save:'💾 Save',
-    not_found:'❌ Not found',self_add:'❌ Cannot add yourself',already:'❌ Already friend',
-    email_err:'Enter email',code_err:'Code 8 chars',nick_err:'Enter nick',bad_nick:'Forbidden words',email_used:'Email taken',email_not_found:'Account not found',wrong_code:'Wrong code',
-    claimed:'✅ Claimed',get:'🎁 Claim',locked:'🔒 Locked',card_label:'🃏 Card:',avatar_label:'🖼️ Avatar:',your_code:'Your code:',copy:'📋 Copy',copied:'✅ Copied!',add_by_code:'Enter friend code',found_friend:'This is your friend!',
-    years:'years'
-  },
-  es:{
-    welcome:'🌟 Bienvenido',email_ph:'Correo',code_ph:'Código (8 caracteres)',nick_ph:'Apodo',date_label:'📅 Nacimiento:',login_btn:'ENTRAR',register_btn:'REGISTRO',no_acc:'¿Sin cuenta?',has_acc:'¿Ya tienes cuenta?',
-    tab_friends:'👥 Amigos',tab_tasks:'📋 Tareas',tab_ach:'🏅 Logros',tab_profile:'👤 Perfil',no_friends:'Sin amigos',add_friend:'➕ Añadir',confirm:'✅ Confirmar',cancel:'Cancelar',
-    tasks_title:'📋 Tareas',quarrel:'💢 Pelear -18',edit:'✏️ Editar',logout:'🚪 Salir',save:'💾 Guardar',
-    not_found:'❌ No encontrado',self_add:'❌ No puedes',already:'❌ Ya amigo',
-    email_err:'Ingresa correo',code_err:'Código 8',nick_err:'Ingresa apodo',bad_nick:'Prohibido',email_used:'Correo ocupado',email_not_found:'No encontrado',wrong_code:'Código incorrecto',
-    claimed:'✅ Reclamado',get:'🎁 Reclamar',locked:'🔒 Bloqueado',card_label:'🃏 Tarjeta:',avatar_label:'🖼️ Avatar:',your_code:'Tu código:',copy:'📋 Copiar',copied:'✅ ¡Copiado!',add_by_code:'Ingresa código',found_friend:'¡Este es tu amigo!',
-    years:'años'
-  },
-  fr:{
-    welcome:'🌟 Bienvenue',email_ph:'Email',code_ph:'Code (8 caractères)',nick_ph:'Pseudo',date_label:'📅 Naissance:',login_btn:'CONNEXION',register_btn:'INSCRIPTION',no_acc:'Pas de compte?',has_acc:'Déjà un compte?',
-    tab_friends:'👥 Amis',tab_tasks:'📋 Tâches',tab_ach:'🏅 Succès',tab_profile:'👤 Profil',no_friends:'Pas encore d\'amis',add_friend:'➕ Ajouter',confirm:'✅ Confirmer',cancel:'Annuler',
-    tasks_title:'📋 Tâches',quarrel:'💢 Dispute -18',edit:'✏️ Modifier',logout:'🚪 Déconnexion',save:'💾 Sauvegarder',
-    not_found:'❌ Non trouvé',self_add:'❌ Impossible',already:'❌ Déjà ami',
-    email_err:'Email valide',code_err:'Code 8',nick_err:'Pseudo',bad_nick:'Mots interdits',email_used:'Email utilisé',email_not_found:'Non trouvé',wrong_code:'Mauvais code',
-    claimed:'✅ Obtenu',get:'🎁 Obtenir',locked:'🔒 Verrouillé',card_label:'🃏 Carte:',avatar_label:'🖼️ Avatar:',your_code:'Votre code:',copy:'📋 Copier',copied:'✅ Copié!',add_by_code:'Code ami',found_friend:'C\'est ton ami!',
-    years:'ans'
-  },
-  de:{
-    welcome:'🌟 Willkommen',email_ph:'Email',code_ph:'Code (8 Zeichen)',nick_ph:'Spitzname',date_label:'📅 Geburtsdatum:',login_btn:'ANMELDEN',register_btn:'REGISTRIEREN',no_acc:'Kein Konto?',has_acc:'Bereits Konto?',
-    tab_friends:'👥 Freunde',tab_tasks:'📋 Aufgaben',tab_ach:'🏅 Erfolge',tab_profile:'👤 Profil',no_friends:'Noch keine Freunde',add_friend:'➕ Hinzufügen',confirm:'✅ Bestätigen',cancel:'Abbrechen',
-    tasks_title:'📋 Aufgaben',quarrel:'💢 Streit -18',edit:'✏️ Bearbeiten',logout:'🚪 Abmelden',save:'💾 Speichern',
-    not_found:'❌ Nicht gefunden',self_add:'❌ Nicht möglich',already:'❌ Bereits Freund',
-    email_err:'Email eingeben',code_err:'Code 8',nick_err:'Spitzname',bad_nick:'Verboten',email_used:'Email vergeben',email_not_found:'Nicht gefunden',wrong_code:'Falscher Code',
-    claimed:'✅ Erhalten',get:'🎁 Erhalten',locked:'🔒 Gesperrt',card_label:'🃏 Karte:',avatar_label:'🖼️ Avatar:',your_code:'Dein Code:',copy:'📋 Kopieren',copied:'✅ Kopiert!',add_by_code:'Freundescode',found_friend:'Das ist dein Freund!',
-    years:'Jahre'
-  },
-  pt:{
-    welcome:'🌟 Bem-vindo',email_ph:'Email',code_ph:'Código (8 caracteres)',nick_ph:'Apelido',date_label:'📅 Nascimento:',login_btn:'ENTRAR',register_btn:'REGISTRAR',no_acc:'Sem conta?',has_acc:'Já tem conta?',
-    tab_friends:'👥 Amigos',tab_tasks:'📋 Tarefas',tab_ach:'🏅 Conquistas',tab_profile:'👤 Perfil',no_friends:'Sem amigos',add_friend:'➕ Adicionar',confirm:'✅ Confirmar',cancel:'Cancelar',
-    tasks_title:'📋 Tarefas',quarrel:'💢 Briga -18',edit:'✏️ Editar',logout:'🚪 Sair',save:'💾 Salvar',
-    not_found:'❌ Não encontrado',self_add:'❌ Impossível',already:'❌ Já amigo',
-    email_err:'Email válido',code_err:'Código 8',nick_err:'Apelido',bad_nick:'Proibido',email_used:'Email usado',email_not_found:'Não encontrado',wrong_code:'Código errado',
-    claimed:'✅ Obtido',get:'🎁 Obter',locked:'🔒 Bloqueado',card_label:'🃏 Cartão:',avatar_label:'🖼️ Avatar:',your_code:'Seu código:',copy:'📋 Copiar',copied:'✅ Copiado!',add_by_code:'Código amigo',found_friend:'Este é o seu amigo!',
-    years:'anos'
-  },
-  it:{
-    welcome:'🌟 Benvenuto',email_ph:'Email',code_ph:'Codice (8 caratteri)',nick_ph:'Nickname',date_label:'📅 Nascita:',login_btn:'ACCEDI',register_btn:'REGISTRATI',no_acc:'Nessun account?',has_acc:'Hai già account?',
-    tab_friends:'👥 Amici',tab_tasks:'📋 Compiti',tab_ach:'🏅 Obiettivi',tab_profile:'👤 Profilo',no_friends:'Nessun amico',add_friend:'➕ Aggiungi',confirm:'✅ Conferma',cancel:'Annulla',
-    tasks_title:'📋 Compiti',quarrel:'💢 Litigio -18',edit:'✏️ Modifica',logout:'🚪 Esci',save:'💾 Salva',
-    not_found:'❌ Non trovato',self_add:'❌ Impossibile',already:'❌ Già amico',
-    email_err:'Email valida',code_err:'Codice 8',nick_err:'Nickname',bad_nick:'Vietato',email_used:'Email usata',email_not_found:'Non trovato',wrong_code:'Codice errato',
-    claimed:'✅ Ottenuto',get:'🎁 Ottieni',locked:'🔒 Bloccato',card_label:'🃏 Carta:',avatar_label:'🖼️ Avatar:',your_code:'Tuo codice:',copy:'📋 Copia',copied:'✅ Copiato!',add_by_code:'Codice amico',found_friend:'Questo è il tuo amico!',
-    years:'anni'
-  },
-  zh:{
-    welcome:'🌟 欢迎',email_ph:'邮箱',code_ph:'访问码(8位)',nick_ph:'昵称',date_label:'📅 生日:',login_btn:'登录',register_btn:'注册',no_acc:'没有账号?',has_acc:'已有账号?',
-    tab_friends:'👥 朋友',tab_tasks:'📋 任务',tab_ach:'🏅 成就',tab_profile:'👤 个人',no_friends:'还没有朋友',add_friend:'➕ 添加',confirm:'✅ 确认',cancel:'取消',
-    tasks_title:'📋 任务',quarrel:'💢 吵架 -18',edit:'✏️ 编辑',logout:'🚪 退出',save:'💾 保存',
-    not_found:'❌ 未找到',self_add:'❌ 不能添加自己',already:'❌ 已是朋友',
-    email_err:'输入邮箱',code_err:'8位码',nick_err:'输入昵称',bad_nick:'禁止',email_used:'邮箱已用',email_not_found:'未找到',wrong_code:'错误码',
-    claimed:'✅ 已领取',get:'🎁 领取',locked:'🔒 锁定',card_label:'🃏 卡片:',avatar_label:'🖼️ 头像:',your_code:'你的好友码:',copy:'📋 复制',copied:'✅ 已复制!',add_by_code:'输入好友码',found_friend:'这是你的朋友！',
-    years:'岁'
-  },
-  ja:{
-    welcome:'🌟 ようこそ',email_ph:'メール',code_ph:'コード(8文字)',nick_ph:'ニックネーム',date_label:'📅 誕生日:',login_btn:'ログイン',register_btn:'登録',no_acc:'アカウントなし?',has_acc:'アカウントあり?',
-    tab_friends:'👥 友達',tab_tasks:'📋 タスク',tab_ach:'🏅 実績',tab_profile:'👤 プロフ',no_friends:'友達なし',add_friend:'➕ 追加',confirm:'✅ 確認',cancel:'キャンセル',
-    tasks_title:'📋 タスク',quarrel:'💢 喧嘩 -18',edit:'✏️ 編集',logout:'🚪 ログアウト',save:'💾 保存',
-    not_found:'❌ 見つかりません',self_add:'❌ 自分は追加不可',already:'❌ 既に友達',
-    email_err:'メール入力',code_err:'8文字',nick_err:'ニック入力',bad_nick:'禁止',email_used:'メール使用済',email_not_found:'見つかりません',wrong_code:'間違ったコード',
-    claimed:'✅ 取得済',get:'🎁 取得',locked:'🔒 ロック',card_label:'🃏 カード:',avatar_label:'🖼️ アバター:',your_code:'友達コード:',copy:'📋 コピー',copied:'✅ コピー!',add_by_code:'友達コード入力',found_friend:'これがあなたの友達です！',
-    years:'歳'
-  },
-  ko:{
-    welcome:'🌟 환영합니다',email_ph:'이메일',code_ph:'코드(8자)',nick_ph:'닉네임',date_label:'📅 생일:',login_btn:'로그인',register_btn:'회원가입',no_acc:'계정 없음?',has_acc:'계정 있음?',
-    tab_friends:'👥 친구',tab_tasks:'📋 과제',tab_ach:'🏅 성과',tab_profile:'👤 프로필',no_friends:'친구 없음',add_friend:'➕ 추가',confirm:'✅ 확인',cancel:'취소',
-    tasks_title:'📋 과제',quarrel:'💢 다툼 -18',edit:'✏️ 편집',logout:'🚪 로그아웃',save:'💾 저장',
-    not_found:'❌ 찾을 수 없음',self_add:'❌ 자신 추가 불가',already:'❌ 이미 친구',
-    email_err:'이메일 입력',code_err:'8자',nick_err:'닉네임 입력',bad_nick:'금지',email_used:'이메일 사용 중',email_not_found:'찾을 수 없음',wrong_code:'잘못된 코드',
-    claimed:'✅ 획득',get:'🎁 획득',locked:'🔒 잠김',card_label:'🃏 카드:',avatar_label:'🖼️ 아바타:',your_code:'친구 코드:',copy:'📋 복사',copied:'✅ 복사됨!',add_by_code:'친구 코드 입력',found_friend:'이것은 당신의 친구입니다!',
-    years:'세'
-  }
+    ru:{welcome:'🌟 Добро пожаловать',email_ph:'Электронная почта',code_ph:'Код доступа (8 символов)',nick_ph:'Придумайте никнейм',date_label:'📅 Дата рождения:',login_btn:'ВОЙТИ',register_btn:'РЕГИСТРАЦИЯ',no_acc:'Нет аккаунта?',has_acc:'Уже есть аккаунт?',tab_friends:'👥 Друзья',tab_tasks:'📋 Задания',tab_ach:'🏅 Достижения',tab_profile:'👤 Профиль',no_friends:'Пока нет друзей',add_friend:'➕ Добавить друга',confirm:'✅ Подтвердить',cancel:'Отмена',tasks_title:'📋 Задания',quarrel:'💢 Поссориться -18',edit:'✏️ Редактировать',logout:'🚪 Выйти',save:'💾 Сохранить',not_found:'❌ Аккаунт не найден',self_add:'❌ Нельзя добавить себя',already:'❌ Уже в друзьях',email_err:'Введите почту',code_err:'Код 8 символов',nick_err:'Введите ник',bad_nick:'Запрещённые слова',email_used:'Почта занята',email_not_found:'Аккаунт не найден',wrong_code:'Неверный код',claimed:'✅ Получено',get:'🎁 Получить',locked:'🔒 Не выполнено',card_label:'🃏 Карточка:',avatar_label:'🖼️ Аватар:',your_code:'Твой код:',copy:'📋 Копировать',copied:'✅ Скопировано!',add_by_code:'Введите код друга',found_friend:'Это твой друг!',years:'лет'},
+    en:{welcome:'🌟 Welcome',email_ph:'Email',code_ph:'Access code (8 chars)',nick_ph:'Nickname',date_label:'📅 Birth date:',login_btn:'LOG IN',register_btn:'SIGN UP',no_acc:'No account?',has_acc:'Already have account?',tab_friends:'👥 Friends',tab_tasks:'📋 Tasks',tab_ach:'🏅 Achievements',tab_profile:'👤 Profile',no_friends:'No friends yet',add_friend:'➕ Add friend',confirm:'✅ Confirm',cancel:'Cancel',tasks_title:'📋 Tasks',quarrel:'💢 Quarrel -18',edit:'✏️ Edit',logout:'🚪 Log out',save:'💾 Save',not_found:'❌ Not found',self_add:'❌ Cannot add yourself',already:'❌ Already friend',email_err:'Enter email',code_err:'Code 8 chars',nick_err:'Enter nick',bad_nick:'Forbidden words',email_used:'Email taken',email_not_found:'Account not found',wrong_code:'Wrong code',claimed:'✅ Claimed',get:'🎁 Claim',locked:'🔒 Locked',card_label:'🃏 Card:',avatar_label:'🖼️ Avatar:',your_code:'Your code:',copy:'📋 Copy',copied:'✅ Copied!',add_by_code:'Enter friend code',found_friend:'This is your friend!',years:'years'},
+    es:{welcome:'🌟 Bienvenido',email_ph:'Correo',code_ph:'Código (8 caracteres)',nick_ph:'Apodo',date_label:'📅 Nacimiento:',login_btn:'ENTRAR',register_btn:'REGISTRO',no_acc:'¿Sin cuenta?',has_acc:'¿Ya tienes cuenta?',tab_friends:'👥 Amigos',tab_tasks:'📋 Tareas',tab_ach:'🏅 Logros',tab_profile:'👤 Perfil',no_friends:'Sin amigos',add_friend:'➕ Añadir',confirm:'✅ Confirmar',cancel:'Cancelar',tasks_title:'📋 Tareas',quarrel:'💢 Pelear -18',edit:'✏️ Editar',logout:'🚪 Salir',save:'💾 Guardar',not_found:'❌ No encontrado',self_add:'❌ No puedes',already:'❌ Ya amigo',email_err:'Ingresa correo',code_err:'Código 8',nick_err:'Ingresa apodo',bad_nick:'Prohibido',email_used:'Correo ocupado',email_not_found:'No encontrado',wrong_code:'Código incorrecto',claimed:'✅ Reclamado',get:'🎁 Reclamar',locked:'🔒 Bloqueado',card_label:'🃏 Tarjeta:',avatar_label:'🖼️ Avatar:',your_code:'Tu código:',copy:'📋 Copiar',copied:'✅ ¡Copiado!',add_by_code:'Ingresa código',found_friend:'¡Este es tu amigo!',years:'años'},
+    fr:{welcome:'🌟 Bienvenue',email_ph:'Email',code_ph:'Code (8 caractères)',nick_ph:'Pseudo',date_label:'📅 Naissance:',login_btn:'CONNEXION',register_btn:'INSCRIPTION',no_acc:'Pas de compte?',has_acc:'Déjà un compte?',tab_friends:'👥 Amis',tab_tasks:'📋 Tâches',tab_ach:'🏅 Succès',tab_profile:'👤 Profil',no_friends:'Pas encore d\'amis',add_friend:'➕ Ajouter',confirm:'✅ Confirmer',cancel:'Annuler',tasks_title:'📋 Tâches',quarrel:'💢 Dispute -18',edit:'✏️ Modifier',logout:'🚪 Déconnexion',save:'💾 Sauvegarder',not_found:'❌ Non trouvé',self_add:'❌ Impossible',already:'❌ Déjà ami',email_err:'Email valide',code_err:'Code 8',nick_err:'Pseudo',bad_nick:'Mots interdits',email_used:'Email utilisé',email_not_found:'Non trouvé',wrong_code:'Mauvais code',claimed:'✅ Obtenu',get:'🎁 Obtenir',locked:'🔒 Verrouillé',card_label:'🃏 Carte:',avatar_label:'🖼️ Avatar:',your_code:'Votre code:',copy:'📋 Copier',copied:'✅ Copié!',add_by_code:'Code ami',found_friend:'C\'est ton ami!',years:'ans'},
+    de:{welcome:'🌟 Willkommen',email_ph:'Email',code_ph:'Code (8 Zeichen)',nick_ph:'Spitzname',date_label:'📅 Geburtsdatum:',login_btn:'ANMELDEN',register_btn:'REGISTRIEREN',no_acc:'Kein Konto?',has_acc:'Bereits Konto?',tab_friends:'👥 Freunde',tab_tasks:'📋 Aufgaben',tab_ach:'🏅 Erfolge',tab_profile:'👤 Profil',no_friends:'Noch keine Freunde',add_friend:'➕ Hinzufügen',confirm:'✅ Bestätigen',cancel:'Abbrechen',tasks_title:'📋 Aufgaben',quarrel:'💢 Streit -18',edit:'✏️ Bearbeiten',logout:'🚪 Abmelden',save:'💾 Speichern',not_found:'❌ Nicht gefunden',self_add:'❌ Nicht möglich',already:'❌ Bereits Freund',email_err:'Email eingeben',code_err:'Code 8',nick_err:'Spitzname',bad_nick:'Verboten',email_used:'Email vergeben',email_not_found:'Nicht gefunden',wrong_code:'Falscher Code',claimed:'✅ Erhalten',get:'🎁 Erhalten',locked:'🔒 Gesperrt',card_label:'🃏 Karte:',avatar_label:'🖼️ Avatar:',your_code:'Dein Code:',copy:'📋 Kopieren',copied:'✅ Kopiert!',add_by_code:'Freundescode',found_friend:'Das ist dein Freund!',years:'Jahre'},
+    pt:{welcome:'🌟 Bem-vindo',email_ph:'Email',code_ph:'Código (8 caracteres)',nick_ph:'Apelido',date_label:'📅 Nascimento:',login_btn:'ENTRAR',register_btn:'REGISTRAR',no_acc:'Sem conta?',has_acc:'Já tem conta?',tab_friends:'👥 Amigos',tab_tasks:'📋 Tarefas',tab_ach:'🏅 Conquistas',tab_profile:'👤 Perfil',no_friends:'Sem amigos',add_friend:'➕ Adicionar',confirm:'✅ Confirmar',cancel:'Cancelar',tasks_title:'📋 Tarefas',quarrel:'💢 Briga -18',edit:'✏️ Editar',logout:'🚪 Sair',save:'💾 Salvar',not_found:'❌ Não encontrado',self_add:'❌ Impossível',already:'❌ Já amigo',email_err:'Email válido',code_err:'Código 8',nick_err:'Apelido',bad_nick:'Proibido',email_used:'Email usado',email_not_found:'Não encontrado',wrong_code:'Código errado',claimed:'✅ Obtido',get:'🎁 Obter',locked:'🔒 Bloqueado',card_label:'🃏 Cartão:',avatar_label:'🖼️ Avatar:',your_code:'Seu código:',copy:'📋 Copiar',copied:'✅ Copiado!',add_by_code:'Código amigo',found_friend:'Este é o seu amigo!',years:'anos'},
+    it:{welcome:'🌟 Benvenuto',email_ph:'Email',code_ph:'Codice (8 caratteri)',nick_ph:'Nickname',date_label:'📅 Nascita:',login_btn:'ACCEDI',register_btn:'REGISTRATI',no_acc:'Nessun account?',has_acc:'Hai già account?',tab_friends:'👥 Amici',tab_tasks:'📋 Compiti',tab_ach:'🏅 Obiettivi',tab_profile:'👤 Profilo',no_friends:'Nessun amico',add_friend:'➕ Aggiungi',confirm:'✅ Conferma',cancel:'Annulla',tasks_title:'📋 Compiti',quarrel:'💢 Litigio -18',edit:'✏️ Modifica',logout:'🚪 Esci',save:'💾 Salva',not_found:'❌ Non trovato',self_add:'❌ Impossibile',already:'❌ Già amico',email_err:'Email valida',code_err:'Codice 8',nick_err:'Nickname',bad_nick:'Vietato',email_used:'Email usata',email_not_found:'Non trovato',wrong_code:'Codice errato',claimed:'✅ Ottenuto',get:'🎁 Ottieni',locked:'🔒 Bloccato',card_label:'🃏 Carta:',avatar_label:'🖼️ Avatar:',your_code:'Tuo codice:',copy:'📋 Copia',copied:'✅ Copiato!',add_by_code:'Codice amico',found_friend:'Questo è il tuo amico!',years:'anni'},
+    zh:{welcome:'🌟 欢迎',email_ph:'邮箱',code_ph:'访问码(8位)',nick_ph:'昵称',date_label:'📅 生日:',login_btn:'登录',register_btn:'注册',no_acc:'没有账号?',has_acc:'已有账号?',tab_friends:'👥 朋友',tab_tasks:'📋 任务',tab_ach:'🏅 成就',tab_profile:'👤 个人',no_friends:'还没有朋友',add_friend:'➕ 添加',confirm:'✅ 确认',cancel:'取消',tasks_title:'📋 任务',quarrel:'💢 吵架 -18',edit:'✏️ 编辑',logout:'🚪 退出',save:'💾 保存',not_found:'❌ 未找到',self_add:'❌ 不能添加自己',already:'❌ 已是朋友',email_err:'输入邮箱',code_err:'8位码',nick_err:'输入昵称',bad_nick:'禁止',email_used:'邮箱已用',email_not_found:'未找到',wrong_code:'错误码',claimed:'✅ 已领取',get:'🎁 领取',locked:'🔒 锁定',card_label:'🃏 卡片:',avatar_label:'🖼️ 头像:',your_code:'你的好友码:',copy:'📋 复制',copied:'✅ 已复制!',add_by_code:'输入好友码',found_friend:'这是你的朋友！',years:'岁'},
+    ja:{welcome:'🌟 ようこそ',email_ph:'メール',code_ph:'コード(8文字)',nick_ph:'ニックネーム',date_label:'📅 誕生日:',login_btn:'ログイン',register_btn:'登録',no_acc:'アカウントなし?',has_acc:'アカウントあり?',tab_friends:'👥 友達',tab_tasks:'📋 タスク',tab_ach:'🏅 実績',tab_profile:'👤 プロフ',no_friends:'友達なし',add_friend:'➕ 追加',confirm:'✅ 確認',cancel:'キャンセル',tasks_title:'📋 タスク',quarrel:'💢 喧嘩 -18',edit:'✏️ 編集',logout:'🚪 ログアウト',save:'💾 保存',not_found:'❌ 見つかりません',self_add:'❌ 自分は追加不可',already:'❌ 既に友達',email_err:'メール入力',code_err:'8文字',nick_err:'ニック入力',bad_nick:'禁止',email_used:'メール使用済',email_not_found:'見つかりません',wrong_code:'間違ったコード',claimed:'✅ 取得済',get:'🎁 取得',locked:'🔒 ロック',card_label:'🃏 カード:',avatar_label:'🖼️ アバター:',your_code:'友達コード:',copy:'📋 コピー',copied:'✅ コピー!',add_by_code:'友達コード入力',found_friend:'これがあなたの友達です！',years:'歳'},
+    ko:{welcome:'🌟 환영합니다',email_ph:'이메일',code_ph:'코드(8자)',nick_ph:'닉네임',date_label:'📅 생일:',login_btn:'로그인',register_btn:'회원가입',no_acc:'계정 없음?',has_acc:'계정 있음?',tab_friends:'👥 친구',tab_tasks:'📋 과제',tab_ach:'🏅 성과',tab_profile:'👤 프로필',no_friends:'친구 없음',add_friend:'➕ 추가',confirm:'✅ 확인',cancel:'취소',tasks_title:'📋 과제',quarrel:'💢 다툼 -18',edit:'✏️ 편집',logout:'🚪 로그아웃',save:'💾 저장',not_found:'❌ 찾을 수 없음',self_add:'❌ 자신 추가 불가',already:'❌ 이미 친구',email_err:'이메일 입력',code_err:'8자',nick_err:'닉네임 입력',bad_nick:'금지',email_used:'이메일 사용 중',email_not_found:'찾을 수 없음',wrong_code:'잘못된 코드',claimed:'✅ 획득',get:'🎁 획득',locked:'🔒 잠김',card_label:'🃏 카드:',avatar_label:'🖼️ 아바타:',your_code:'친구 코드:',copy:'📋 복사',copied:'✅ 복사됨!',add_by_code:'친구 코드 입력',found_friend:'이것은 당신의 친구입니다!',years:'세'}
   };
-  let lang='ru';function t(k){return LANGS[lang]?.[k]||LANGS['ru'][k]||k}
-  function getMonths(){return LANGS[lang]?.months||MONTHS_RU}
-  let users={},cur=null;
-  function load(){try{users=JSON.parse(localStorage.getItem(STORAGE))||{}}catch(e){users={}}}
-  function save(){localStorage.setItem(STORAGE,JSON.stringify(users))}
-  function refresh(){load()}
-  function sess(e){localStorage.setItem(SESSION,e)}
-  function getSess(){return localStorage.getItem(SESSION)}
-  function clearSess(){localStorage.removeItem(SESSION)}
-  function bad(txt){return BAD.some(w=>txt.toLowerCase().replace(/[^а-яёa-z]/g,'').includes(w))}
-  function genCode(){let c;do{c=Math.random().toString(36).substring(2,10).toUpperCase()}while(Object.values(users).some(u=>u.friendCode===c));return c}
-  function byEmail(e){refresh();return users[e.trim().toLowerCase()]}
-  function byCode(code){refresh();return Object.values(users).find(u=>u.friendCode===code.toUpperCase())}
-  function title(c){return TITLES.reduce((a,b)=>c>=b.min?b:a)}
-  function cardCls(c,card){if(card==='rainbow')return'border-purple';if(['dragon','royal','nebula'].includes(card))return'border-purple';if(['sheriff','golden','phoenix','unicorn'].includes(card))return'border-gold';if(['ocean','diamond'].includes(card))return'border-blue';if(['master','forest'].includes(card))return'border-green';if(c>=3500)return'border-purple';if(c>=2000)return'border-purple';if(c>=1000)return'border-blue';if(c>=500)return'border-green';if(c>=200)return'border-gold';return''}
-  function applyLang(){
-    document.querySelectorAll('[data-key]').forEach(el=>{const k=el.dataset.key;if(t(k))el.textContent=t(k)});
-    document.querySelectorAll('[data-placeholder]').forEach(el=>{const k=el.dataset.placeholder;if(t(k))el.placeholder=t(k)});
-  }
-  function buildLangDropdown(){
-    const dd=document.getElementById('langDropdown');
-    const names={ru:'🇷🇺 Русский',en:'🇬🇧 English',es:'🇪🇸 Español',fr:'🇫🇷 Français',de:'🇩🇪 Deutsch',pt:'🇵🇹 Português',it:'🇮🇹 Italiano',zh:'🇨🇳 中文',ja:'🇯🇵 日本語',ko:'🇰🇷 한국어'};
-    dd.innerHTML=Object.entries(names).map(([c,n])=>`<button class="lang-option" data-lang="${c}">${n}</button>`).join('');
-    dd.querySelectorAll('.lang-option').forEach(o=>o.onclick=function(e){e.stopPropagation();lang=this.dataset.lang;dd.classList.remove('show');applyLang();if(cur&&users[cur]){renderFriends();renderTasks();renderAchievements();renderProfile()}else renderAuth()});
-  }
-  document.getElementById('langToggle').onclick=(e)=>{e.stopPropagation();document.getElementById('langDropdown').classList.toggle('show')};
-  document.addEventListener('click',(e)=>{const dd=document.getElementById('langDropdown');const btn=document.getElementById('langToggle');if(!btn.contains(e.target)&&!dd.contains(e.target))dd.classList.remove('show')});
 
-  function logout(){cur=null;clearSess();document.getElementById('mainTabs').style.display='none';['friendsScreen','tasksScreen','achievementsScreen','profileScreen'].forEach(id=>{const s=document.getElementById(id);s.innerHTML='';s.classList.remove('active')});renderAuth()}
-
-  function renderAuth(){
-    const a=document.getElementById('authScreen');a.innerHTML='';a.classList.add('active');
-    const c=document.createElement('div');c.className='card';c.style.marginTop='30px';
-    c.innerHTML=`<h2 style="color:#ffd966;text-align:center">${t('welcome')}</h2>
-    <input id="authEmail" class="input-field" data-placeholder="email_ph"><span class="error-text" id="emailErr"></span>
-    <input id="authCode" class="input-field" data-placeholder="code_ph" maxlength="8"><span class="error-text" id="codeErr"></span>
-    <div id="regExtra" style="display:none"><input id="authNick" class="input-field" data-placeholder="nick_ph"><span class="error-text" id="nickErr"></span>
-    <label>${t('date_label')}</label><div class="wheel-container"><div class="wheel-col"><button class="wheel-btn" id="rDu">▲</button><span class="wheel-value" id="rDv">15</span><button class="wheel-btn" id="rDd">▼</button></div><div class="wheel-col"><button class="wheel-btn" id="rMu">▲</button><span class="wheel-value" id="rMv">${getMonths()[5]}</span><button class="wheel-btn" id="rMd">▼</button></div><div class="wheel-col"><button class="wheel-btn" id="rYu">▲</button><span class="wheel-value" id="rYv">2005</span><button class="wheel-btn" id="rYd">▼</button></div></div></div>
-    <button class="btn" id="authBtn">${t('login_btn')}</button>
-    <p style="text-align:center;margin-top:10px"><a id="toggleMode" style="color:#ffd966;cursor:pointer">${t('no_acc')}</a></p>`;
-    a.appendChild(c);applyLang();
-    let mode='login',rD=15,rM=6,rY=2005;
-    function updMonths(){document.getElementById('rMv').textContent=getMonths()[rM-1]}
-    function upd(){document.getElementById('rDv').textContent=rD;updMonths();document.getElementById('rYv').textContent=rY}
-    document.getElementById('toggleMode').onclick=()=>{mode=mode==='login'?'register':'login';document.getElementById('regExtra').style.display=mode==='register'?'block':'none';document.getElementById('authBtn').textContent=mode==='login'?t('login_btn'):t('register_btn');document.getElementById('toggleMode').textContent=mode==='login'?t('no_acc'):t('has_acc')};
-    document.getElementById('rDu').onclick=()=>{rD=rD%31+1;upd()};document.getElementById('rDd').onclick=()=>{rD=rD-1||31;upd()};
-    document.getElementById('rMu').onclick=()=>{rM=rM%12+1;upd()};document.getElementById('rMd').onclick=()=>{rM=rM-1||12;upd()};
-    document.getElementById('rYu').onclick=()=>{if(rY<2026)rY++;upd()};document.getElementById('rYd').onclick=()=>{if(rY>1920)rY--;upd()};
-    document.getElementById('authBtn').onclick=()=>{
-      refresh();const email=document.getElementById('authEmail').value.trim().toLowerCase();
-      const code=document.getElementById('authCode').value.trim();
-      const emailErr=document.getElementById('emailErr'),codeErr=document.getElementById('codeErr'),nickErr=document.getElementById('nickErr');
-      emailErr.style.display='none';codeErr.style.display='none';if(nickErr)nickErr.style.display='none';
-      if(!email.includes('@')){emailErr.textContent=t('email_err');emailErr.style.display='block';return}
-      if(code.length!==8){codeErr.textContent=t('code_err');codeErr.style.display='block';return}
-      if(mode==='register'){
-        const nick=document.getElementById('authNick').value.trim();
-        if(!nick){nickErr.textContent=t('nick_err');nickErr.style.display='block';return}
-        if(bad(nick)){nickErr.textContent=t('bad_nick');nickErr.style.display='block';return}
-        if(users[email]){emailErr.textContent=t('email_used');emailErr.style.display='block';return}
-        const fc=genCode();
-        users[email]={email,nick,code,friendCode:fc,profile:{avatar:'🙂',day:rD,month:rM,year:rY},friends:[],unlockedAvatars:['🙂'],unlockedCards:['default'],selectedCard:'default',claimed:[],totalTasks:0,quarrelCount:0};
-        save();cur=email;sess(email);enterApp();
-      }else{
-        const u=users[email];
-        if(!u){emailErr.textContent=t('email_not_found');emailErr.style.display='block';return}
-        if(u.code!==code){codeErr.textContent=t('wrong_code');codeErr.style.display='block';return}
-        if(!u.friendCode){u.friendCode=genCode();save()}
-        cur=email;sess(email);enterApp();
-      }
-    };
+  let currentLang = 'ru';
+  function t(key) { return LANGS[currentLang]?.[key] || LANGS['ru'][key] || key; }
+  function getMonths() { return LANGS[currentLang]?.months || MONTHS_RU; }
+  function applyLang() {
+    document.querySelectorAll('[data-key]').forEach(el => { const k = el.dataset.key; if (t(k)) el.textContent = t(k); });
+    document.querySelectorAll('[data-placeholder]').forEach(el => { const k = el.dataset.placeholder; if (t(k)) el.placeholder = t(k); });
   }
 
-  function enterApp(){document.getElementById('authScreen').classList.remove('active');document.getElementById('mainTabs').style.display='flex';switchTab('friends')}
-  const tabs=document.querySelectorAll('#mainTabs .tab');
-  const sc={friends:document.getElementById('friendsScreen'),tasks:document.getElementById('tasksScreen'),achievements:document.getElementById('achievementsScreen'),profile:document.getElementById('profileScreen')};
-  function switchTab(tn){tabs.forEach(b=>b.classList.remove('active'));document.querySelector(`#mainTabs .tab[data-tab="${tn}"]`).classList.add('active');Object.values(sc).forEach(s=>s.classList.remove('active'));sc[tn].classList.add('active');if(tn==='friends')renderFriends();if(tn==='tasks')renderTasks();if(tn==='achievements')renderAchievements();if(tn==='profile')renderProfile()}
-  tabs.forEach(t=>t.addEventListener('click',()=>switchTab(t.dataset.tab)));
+  // ==================== ГЛОБАЛЬНОЕ СОСТОЯНИЕ ====================
+  let currentUserEmail = null;
+  let allUsersCache = {};
 
-  function renderFriends(){
-    refresh();const c=sc.friends;c.innerHTML='';const u=users[cur];if(!u)return;
-    if(!u.friends.length)c.innerHTML=`<p style="text-align:center;color:#aaa;margin-top:40px">${t('no_friends')}</p>`;
-    else u.friends.forEach(f=>{
-      const fu=Object.values(users).find(x=>x.friendCode===f.code);
-      const ti=title(f.cups);const cls=cardCls(f.cups,fu?.selectedCard);
-      const d=document.createElement('div');d.className=`card ${cls}`;
-      d.innerHTML=`<div style="display:flex;align-items:center;gap:10px"><span class="friend-avatar">${fu?.profile?.avatar||'🙂'}</span><div style="flex:1"><strong>${fu?.nick||f.code}</strong><br><span style="color:#f9c74f">${ti.n}</span></div><div style="text-align:right">🏆${f.cups} <span class="streak-badge">🔥${f.streak||0}д</span></div></div>`;
-      c.appendChild(d);
-    });
-    const add=document.createElement('button');add.className='btn';add.textContent=t('add_friend');add.onclick=()=>showAddFriend();c.appendChild(add);
+  // ==================== ФУНКЦИИ ДЛЯ РАБОТЫ С FIREBASE ====================
+  async function loadAllUsers() {
+    const snapshot = await db.ref('users').once('value');
+    allUsersCache = snapshot.val() || {};
   }
 
-  function showAddFriend(){
-    refresh();const m=document.createElement('div');m.className='modal active';
-    m.innerHTML=`<div class="modal-content"><h3 style="color:#ffd966">${t('add_friend')}</h3><p style="color:#aaa;font-size:0.8rem">${t('add_by_code')}</p><input id="addCode" class="input-field" placeholder="ABC12345"><span class="error-text" id="addErr"></span><div id="addP" style="margin:10px 0;min-height:50px"></div><button class="btn" id="confB" disabled>${t('confirm')}</button><button class="btn" id="cancB" style="background:#555">${t('cancel')}</button></div>`;
-    document.body.appendChild(m);
-    const inp=m.querySelector('#addCode'),err=m.querySelector('#addErr'),prev=m.querySelector('#addP'),conf=m.querySelector('#confB');let found=null;
-    function update(){
-      refresh();const code=inp.value.trim();err.style.display='none';prev.innerHTML='';conf.disabled=true;found=null;
-      if(!code)return;
-      found=byCode(code);const u=users[cur];
-      if(!found)err.textContent=t('not_found');
-      else if(found.email===cur)err.textContent=t('self_add');
-      else if(u.friends.some(f=>f.code===found.friendCode))err.textContent=t('already');
-      else{prev.innerHTML=`<div class="card"><span style="font-size:2rem">${found.profile.avatar}</span> <strong>${found.nick}</strong><br><small>${found.friendCode}</small><br><span style="color:#6fcf97">${t('found_friend')}</span></div>`;conf.disabled=false;return}
-      err.style.display='block';
+  async function saveUser(email, userData) {
+    await db.ref('users/' + email.replace('.', '_')).set(userData);
+    allUsersCache[email] = userData;
+  }
+
+  async function getUser(email) {
+    await loadAllUsers();
+    return allUsersCache[email] || null;
+  }
+
+  async function updateUser(email, updates) {
+    await db.ref('users/' + email.replace('.', '_')).update(updates);
+    if (allUsersCache[email]) Object.assign(allUsersCache[email], updates);
+  }
+
+  async function generateFriendCode() {
+    await loadAllUsers();
+    let code;
+    do {
+      code = Math.random().toString(36).substring(2, 10).toUpperCase();
+    } while (Object.values(allUsersCache).some(u => u.friendCode === code));
+    return code;
+  }
+
+  async function findUserByCode(code) {
+    await loadAllUsers();
+    return Object.values(allUsersCache).find(u => u.friendCode === code.toUpperCase());
+  }
+
+  // ==================== ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ====================
+  function bad(txt) { return BAD.some(w => txt.toLowerCase().replace(/[^а-яёa-z]/g,'').includes(w)); }
+  function title(c) { return TITLES.reduce((a,b) => c >= b.min ? b : a); }
+  function cardCls(cups, card) {
+    if (card === 'rainbow') return 'border-purple';
+    if (['dragon','royal','nebula'].includes(card)) return 'border-purple';
+    if (['sheriff','golden','phoenix','unicorn'].includes(card)) return 'border-gold';
+    if (['ocean','diamond'].includes(card)) return 'border-blue';
+    if (['master','forest'].includes(card)) return 'border-green';
+    if (cups >= 3500) return 'border-purple';
+    if (cups >= 2000) return 'border-purple';
+    if (cups >= 1000) return 'border-blue';
+    if (cups >= 500) return 'border-green';
+    if (cups >= 200) return 'border-gold';
+    return '';
+  }
+
+  function checkAchievementCondition(user, achId) {
+    const f = user.friends || [];
+    switch(achId) {
+      case 'f1': return f.length >= 1;
+      case 'f3': return f.length >= 3;
+      case 'f5': return f.length >= 5;
+      case 'c100': return f.some(x => x.cups >= 100);
+      case 'c500': return f.some(x => x.cups >= 500);
+      case 'c1000': return f.some(x => x.cups >= 1000);
+      case 'c2000': return f.some(x => x.cups >= 2000);
+      case 'c3500': return f.some(x => x.cups >= 3500);
+      case 'q1': return (user.quarrelCount || 0) >= 1;
+      case 's7': return f.some(x => (x.streak || 0) >= 7);
+      case 's30': return f.some(x => (x.streak || 0) >= 30);
+      case 't10': return (user.totalTasks || 0) >= 10;
+      case 't50': return (user.totalTasks || 0) >= 50;
+      case 'col5': return (user.unlockedCards || []).length >= 5;
+      case 'all100': return f.length > 0 && f.every(x => x.cups >= 100);
+      default: return false;
     }
-    inp.oninput=update;
-    conf.onclick=()=>{if(!found)return;const u=users[cur];u.friends.push({code:found.friendCode,cups:0,streak:0});if(!found.friends.some(f=>f.code===u.friendCode))found.friends.push({code:u.friendCode,cups:0,streak:0});save();renderFriends();m.remove()};
-    m.querySelector('#cancB').onclick=()=>m.remove();
   }
 
-  function renderTasks(){
-    refresh();const c=sc.tasks;c.innerHTML=`<h3 style="color:#ffd966">${t('tasks_title')}</h3>`;const u=users[cur];
-    u.friends.forEach(f=>{
-      const fu=Object.values(users).find(x=>x.friendCode===f.code);
-      const d=document.createElement('div');d.className='card';d.innerHTML=`<strong>${fu?.nick||f.code}</strong>`;
-      [{l:'🚶 +20',v:20},{l:'🏠 +25',v:25},{l:'🎮 +22',v:22},{l:'🆘 +15',v:15},{l:'🎁 +30',v:30}].forEach(tk=>{
-        const b=document.createElement('button');b.className='btn';b.textContent=tk.l;
-        b.onclick=()=>{f.cups+=tk.v;f.streak=(f.streak||0)+1;u.totalTasks=(u.totalTasks||0)+1;if(fu){const rf=fu.friends.find(x=>x.code===u.friendCode);if(rf)rf.cups+=tk.v}save();renderTasks();renderFriends()};
-        d.appendChild(b);
+  // ==================== ИНТЕРФЕЙС ====================
+  function showScreen(screenId) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById(screenId).classList.add('active');
+  }
+
+  function buildLangDropdown() {
+    const dd = document.getElementById('langDropdown');
+    const names = {ru:'🇷🇺 Русский',en:'🇬🇧 English',es:'🇪🇸 Español',fr:'🇫🇷 Français',de:'🇩🇪 Deutsch',pt:'🇵🇹 Português',it:'🇮🇹 Italiano',zh:'🇨🇳 中文',ja:'🇯🇵 日本語',ko:'🇰🇷 한국어'};
+    dd.innerHTML = Object.entries(names).map(([c,n]) => `<button class="lang-option" data-lang="${c}">${n}</button>`).join('');
+    dd.querySelectorAll('.lang-option').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        currentLang = btn.dataset.lang;
+        dd.classList.remove('show');
+        applyLang();
+        if (currentUserEmail) {
+          const activeTab = document.querySelector('.tab.active');
+          if (activeTab) switchTab(activeTab.dataset.tab);
+        } else {
+          renderAuthScreen();
+        }
       });
-      const q=document.createElement('button');q.className='btn danger';q.textContent=t('quarrel');
-      q.onclick=()=>{f.cups=Math.max(0,f.cups-18);f.streak=0;u.quarrelCount=(u.quarrelCount||0)+1;save();renderTasks()};
-      d.appendChild(q);c.appendChild(d);
     });
   }
 
-  function renderAchievements(){
-    const c=sc.achievements;c.innerHTML=`<h3 style="color:#ffd966">${t('tab_ach')}</h3>`;const u=users[cur];
-    ACH.forEach(a=>{
-      const done=u.claimed?.includes(a.id);
-      const check=()=>{const f=u.friends;switch(a.id){case'f1':return f.length>=1;case'f3':return f.length>=3;case'f5':return f.length>=5;case'c100':return f.some(x=>x.cups>=100);case'c500':return f.some(x=>x.cups>=500);case'c1000':return f.some(x=>x.cups>=1000);case'c2000':return f.some(x=>x.cups>=2000);case'c3500':return f.some(x=>x.cups>=3500);case'q1':return(u.quarrelCount||0)>=1;case's7':return f.some(x=>(x.streak||0)>=7);case's30':return f.some(x=>(x.streak||0)>=30);case't10':return(u.totalTasks||0)>=10;case't50':return(u.totalTasks||0)>=50;case'col5':return(u.unlockedCards||[]).length>=5;case'all100':return f.length>0&&f.every(x=>x.cups>=100);default:return false}};
-      const can=check()&&!done;const d=document.createElement('div');d.className='achievement-card';if(can)d.classList.add('glow-ach');
-      d.innerHTML=`<strong>${a.name}</strong><br><small>${a.desc}</small><br><small style="color:#f9c74f">${a.reward}</small>`;
-      if(done)d.innerHTML+=`<p style="color:#6fcf97">${t('claimed')}</p>`;
-      else if(can){const b=document.createElement('button');b.className='btn';b.textContent=t('get');b.onclick=()=>{if(!u.claimed)u.claimed=[];u.claimed.push(a.id);const[tp,v]=a.reward.split(':');if(tp==='avatar'&&!u.unlockedAvatars.includes(v))u.unlockedAvatars.push(v);if(tp==='card'&&!u.unlockedCards.includes(v))u.unlockedCards.push(v);save();renderAchievements();renderProfile()};d.appendChild(b)}
-      else d.innerHTML+=`<p style="color:#ff6b6b">${t('locked')}</p>`;
-      c.appendChild(d);
-    });
+  document.getElementById('langToggle').addEventListener('click', (e) => {
+    e.stopPropagation();
+    document.getElementById('langDropdown').classList.toggle('show');
+  });
+  document.addEventListener('click', (e) => {
+    const dd = document.getElementById('langDropdown');
+    const btn = document.getElementById('langToggle');
+    if (!btn.contains(e.target) && !dd.contains(e.target)) dd.classList.remove('show');
+  });
+
+  function logout() {
+    currentUserEmail = null;
+    localStorage.removeItem('uzi_session');
+    document.getElementById('mainTabs').style.display = 'none';
+    showScreen('authScreen');
+    renderAuthScreen();
   }
 
-  function renderProfile(){
-    const c=sc.profile;c.innerHTML='';const u=users[cur];if(!u)return;
-    const age=new Date().getFullYear()-u.profile.year;const cls=cardCls(0,u.selectedCard);
-    c.innerHTML=`<div class="card ${cls}"><div style="text-align:center"><span style="font-size:3.5rem">${u.profile.avatar}</span><h2>${u.nick}</h2><p>📧 ${u.email}</p><p>${age} ${t('years')} · ${u.profile.day} ${getMonths()[u.profile.month-1]} ${u.profile.year}</p><p>${t('card_label')} ${u.selectedCard}</p><div class="code-display"><span>${t('your_code')} <strong>${u.friendCode}</strong></span><button class="btn copy" id="copyCode">${t('copy')}</button></div></div><button class="btn" id="editB">${t('edit')}</button><button class="btn logout" id="logoutB">${t('logout')}</button></div>`;
-    document.getElementById('copyCode').onclick=()=>{navigator.clipboard.writeText(u.friendCode).then(()=>{const b=document.getElementById('copyCode');b.textContent=t('copied');setTimeout(()=>b.textContent=t('copy'),2000)})};
-    document.getElementById('editB').onclick=()=>{
-      const m=document.createElement('div');m.className='modal active';let eD=u.profile.day,eM=u.profile.month,eY=u.profile.year;
-      m.innerHTML=`<div class="modal-content"><h3 style="color:#ffd966">${t('edit')}</h3><div class="wheel-container"><div class="wheel-col"><button class="wheel-btn" id="eDu">▲</button><span class="wheel-value" id="eDv">${eD}</span><button class="wheel-btn" id="eDd">▼</button></div><div class="wheel-col"><button class="wheel-btn" id="eMu">▲</button><span class="wheel-value" id="eMv">${getMonths()[eM-1]}</span><button class="wheel-btn" id="eMd">▼</button></div><div class="wheel-col"><button class="wheel-btn" id="eYu">▲</button><span class="wheel-value" id="eYv">${eY}</span><button class="wheel-btn" id="eYd">▼</button></div></div><label>${t('avatar_label')}</label><div id="avG" style="display:flex;flex-wrap:wrap;gap:5px">${u.unlockedAvatars.map(a=>`<span style="font-size:1.8rem;cursor:pointer" data-a="${a}">${a}</span>`).join('')}</div><label>${t('card_label')}</label><select id="cardS" style="width:100%;padding:10px;border-radius:18px;background:#2a2340;color:white">${u.unlockedCards.map(c=>`<option ${u.selectedCard===c?'selected':''}>${c}</option>`).join('')}</select><button class="btn" id="saveE">${t('save')}</button></div>`;
-      document.body.appendChild(m);
-      function upd(){m.querySelector('#eDv').textContent=eD;m.querySelector('#eMv').textContent=getMonths()[eM-1];m.querySelector('#eYv').textContent=eY}
-      m.querySelector('#eDu').onclick=()=>{eD=eD%31+1;upd()};m.querySelector('#eDd').onclick=()=>{eD=eD-1||31;upd()};
-      m.querySelector('#eMu').onclick=()=>{eM=eM%12+1;upd()};m.querySelector('#eMd').onclick=()=>{eM=eM-1||12;upd()};
-      m.querySelector('#eYu').onclick=()=>{if(eY<2026)eY++;upd()};m.querySelector('#eYd').onclick=()=>{if(eY>1920)eY--;upd()};
-      m.querySelectorAll('#avG span').forEach(s=>s.onclick=function(){u.profile.avatar=this.dataset.a;save();renderProfile();m.remove()});
-      m.querySelector('#saveE').onclick=()=>{u.profile.day=eD;u.profile.month=eM;u.profile.year=eY;u.selectedCard=m.querySelector('#cardS').value;save();renderProfile();m.remove()};
+  // ==================== ЭКРАН АВТОРИЗАЦИИ ====================
+  function renderAuthScreen() {
+    const authScreen = document.getElementById('authScreen');
+    authScreen.innerHTML = '';
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.style.marginTop = '30px';
+    card.innerHTML = `
+      <h2 style="color:#ffd966;text-align:center">${t('welcome')}</h2>
+      <input id="authEmail" class="input-field" data-placeholder="email_ph" type="email">
+      <span class="error-text" id="emailErr"></span>
+      <input id="authCode" class="input-field" data-placeholder="code_ph" maxlength="8">
+      <span class="error-text" id="codeErr"></span>
+      <div id="regExtra" style="display:none">
+        <input id="authNick" class="input-field" data-placeholder="nick_ph">
+        <span class="error-text" id="nickErr"></span>
+        <label>${t('date_label')}</label>
+        <div class="wheel-container">
+          <div class="wheel-col"><button class="wheel-btn" id="rDu">▲</button><span class="wheel-value" id="rDv">15</span><button class="wheel-btn" id="rDd">▼</button></div>
+          <div class="wheel-col"><button class="wheel-btn" id="rMu">▲</button><span class="wheel-value" id="rMv">${getMonths()[5]}</span><button class="wheel-btn" id="rMd">▼</button></div>
+          <div class="wheel-col"><button class="wheel-btn" id="rYu">▲</button><span class="wheel-value" id="rYv">2005</span><button class="wheel-btn" id="rYd">▼</button></div>
+        </div>
+      </div>
+      <button class="btn" id="authBtn">${t('login_btn')}</button>
+      <p style="text-align:center;margin-top:10px"><a id="toggleMode" style="color:#ffd966;cursor:pointer">${t('no_acc')}</a></p>
+    `;
+    authScreen.appendChild(card);
+    applyLang();
+
+    let mode = 'login', rD = 15, rM = 6, rY = 2005;
+    function updMonths() { document.getElementById('rMv').textContent = getMonths()[rM-1]; }
+    function upd() { document.getElementById('rDv').textContent = rD; updMonths(); document.getElementById('rYv').textContent = rY; }
+    document.getElementById('toggleMode').onclick = () => {
+      mode = mode === 'login' ? 'register' : 'login';
+      document.getElementById('regExtra').style.display = mode === 'register' ? 'block' : 'none';
+      document.getElementById('authBtn').textContent = mode === 'login' ? t('login_btn') : t('register_btn');
+      document.getElementById('toggleMode').textContent = mode === 'login' ? t('no_acc') : t('has_acc');
     };
-    document.getElementById('logoutB').onclick=()=>logout();
+    document.getElementById('rDu').onclick = () => { rD = rD % 31 + 1; upd(); };
+    document.getElementById('rDd').onclick = () => { rD = rD - 1 || 31; upd(); };
+    document.getElementById('rMu').onclick = () => { rM = rM % 12 + 1; upd(); };
+    document.getElementById('rMd').onclick = () => { rM = rM - 1 || 12; upd(); };
+    document.getElementById('rYu').onclick = () => { if (rY < 2026) rY++; upd(); };
+    document.getElementById('rYd').onclick = () => { if (rY > 1920) rY--; upd(); };
+
+    document.getElementById('authBtn').addEventListener('click', async () => {
+      const email = document.getElementById('authEmail').value.trim().toLowerCase();
+      const code = document.getElementById('authCode').value.trim();
+      const emailErr = document.getElementById('emailErr');
+      const codeErr = document.getElementById('codeErr');
+      const nickErr = document.getElementById('nickErr');
+      emailErr.style.display = 'none'; codeErr.style.display = 'none'; if (nickErr) nickErr.style.display = 'none';
+
+      if (!email.includes('@')) { emailErr.textContent = t('email_err'); emailErr.style.display = 'block'; return; }
+      if (code.length !== 8) { codeErr.textContent = t('code_err'); codeErr.style.display = 'block'; return; }
+
+      if (mode === 'register') {
+        const nick = document.getElementById('authNick').value.trim();
+        if (!nick) { nickErr.textContent = t('nick_err'); nickErr.style.display = 'block'; return; }
+        if (bad(nick)) { nickErr.textContent = t('bad_nick'); nickErr.style.display = 'block'; return; }
+
+        await loadAllUsers();
+        if (allUsersCache[email]) { emailErr.textContent = t('email_used'); emailErr.style.display = 'block'; return; }
+
+        const friendCode = await generateFriendCode();
+        const userData = {
+          email,
+          nick,
+          code,
+          friendCode,
+          profile: { avatar: '🙂', day: rD, month: rM, year: rY },
+          friends: [],
+          unlockedAvatars: ['🙂'],
+          unlockedCards: ['default'],
+          selectedCard: 'default',
+          claimedAchievements: [],
+          totalTasks: 0,
+          quarrelCount: 0
+        };
+        await saveUser(email, userData);
+        currentUserEmail = email;
+        localStorage.setItem('uzi_session', email);
+        enterApp();
+      } else {
+        const user = await getUser(email);
+        if (!user) { emailErr.textContent = t('email_not_found'); emailErr.style.display = 'block'; return; }
+        if (user.code !== code) { codeErr.textContent = t('wrong_code'); codeErr.style.display = 'block'; return; }
+        currentUserEmail = email;
+        localStorage.setItem('uzi_session', email);
+        enterApp();
+      }
+    });
   }
 
-  buildLangDropdown();
-  load();
-  const s=getSess();
-  if(s&&users[s]){cur=s;enterApp()}
-  else{cur=null;clearSess();renderAuth()}
-})();
+  function enterApp() {
+    showScreen('friendsScreen');
+    document.getElementById('mainTabs').style.display = 'flex';
+    switchTab('friends');
+  }
+
+  // ==================== ВКЛАДКИ ====================
+  const tabs = document.querySelectorAll('#mainTabs .tab');
+  const screens = {
+    friends: document.getElementById('friendsScreen'),
+    tasks: document.getElementById('tasksScreen'),
+    achievements: document.getElementById('achievementsScreen'),
+    profile: document.getElementById('profileScreen')
+  };
+  function switchTab(tabName) {
+    tabs.forEach(b => b.classList.remove('active'));
+    document.querySelector(`#mainTabs .tab[data-tab="${tabName}"]`).classList.add('active');
+    Object.values(screens).forEach(s => s.classList.remove('active'));
+    screens[tabName].classList.add('active');
+    if (tabName === 'friends') renderFriendsScreen();
+    if (tabName === 'tasks') renderTasksScreen();
+    if (tabName === 'achievements') renderAchievementsScreen();
+    if (tabName === 'profile') renderProfileScreen();
+  }
+  tabs.forEach(t => t.addEventListener('click', () => switchTab(t.dataset.tab)));
+
+  // ==================== ЭКРАН ДРУЗЕЙ ====================
+  async function renderFriendsScreen() {
+    const container = screens.friends;
+    container.innerHTML = '';
+    if (!currentUserEmail) return;
+    const user = await getUser(currentUserEmail);
+    if (!user) return;
+
+    if (!user.friends || user.friends.length === 0) {
+      container.innerHTML = `<p style="text-align:center;color:#aaa;margin-top:40px">${t('no_friends')}</p>`;
+    } else {
+      for (const friend of user.friends) {
+        const friendUser = await getUser(friend.email);
+        const ti = title(friend.cups);
+        const cls = cardCls(friend.cups, friendUser?.selectedCard);
+        const card = document.createElement('div');
+        card.className = `card ${cls}`;
+        card.innerHTML = `
+          <div style="display:flex;align-items:center;gap:10px">
+            <span class="friend-avatar">${friendUser?.profile?.avatar || '🙂'}</span>
+            <div style="flex:1">
+              <strong>${friendUser?.nick || friend.email}</strong>
+              <div style="color:#f9c74f">${ti.n}</div>
+            </div>
+            <div style="text-align:right">🏆${friend.cups} <span class="streak-badge">🔥${friend.streak||0}д</span></div>
+          </div>`;
+        container.appendChild(card);
+      }
+    }
+    const addBtn = document.createElement('button');
+    addBtn.className = 'btn';
+    addBtn.textContent = t('add_friend');
+    addBtn.onclick = () => showAddFriendModal();
+    container.appendChild(addBtn);
+  }
+
+  // ==================== МОДАЛКА ДОБАВЛЕНИЯ ДРУГА ====================
+  function showAddFriendModal() {
+    const modal = document.createElement('div');
+    modal.className = 'modal active';
+    modal.innerHTML = `
+      <div class="modal-content">
+        <h3 style="color:#ffd966">${t('add_friend')}</h3>
+        <p style="color:#aaa;font-size:0.8rem">${t('add_by_code')}</p>
+        <input id="addCode" class="input-field" placeholder="ABC12345">
+        <span class="error-text" id="addErr"></span>
+        <div id="addPreview" style="margin:10px 0;min-height:50px"></div>
+        <button class="btn" id="confBtn" disabled>${t('confirm')}</button>
+        <button class="btn" id="cancBtn" style="background:#555">${t('cancel')}</button>
+      </div>`;
+    document.body.appendChild(modal);
+
+    const inp = modal.querySelector('#addCode');
+    const err = modal.querySelector('#addErr');
+    const prev = modal.querySelector('#addPreview');
+    const conf = modal.querySelector('#confBtn');
+    let foundUser = null;
+
+    async function update() {
+      const code = inp.value.trim();
+      err.style.display = 'none'; prev.innerHTML = ''; conf.disabled = true; foundUser = null;
+      if (!code) return;
+      foundUser = await findUserByCode(code);
+      const me = await getUser(currentUserEmail);
+      if (!foundUser) { err.textContent = t('not_found'); err.style.display = 'block'; return; }
+      if (foundUser.email === currentUserEmail) { err.textContent = t('self_add'); err.style.display = 'block'; return; }
+      if (me.friends && me.friends.some(f => f.email === foundUser.email)) { err.textContent = t('already'); err.style.display = 'block'; return; }
+      prev.innerHTML = `<div class="card"><span style="font-size:2rem">${foundUser.profile.avatar}</span> <strong>${foundUser.nick}</strong><br><small>${foundUser.friendCode}</small><br><span style="color:#6fcf97">${t('found_friend')}</span></div>`;
+      conf.disabled = false;
+    }
+
+    inp.addEventListener('input', update);
+    conf.addEventListener('click', async () => {
+      if (!foundUser) return;
+      const me = await getUser(currentUserEmail);
+      me.friends = me.friends || [];
+      me.friends.push({ email: foundUser.email, cups: 0, streak: 0 });
+      await updateUser(currentUserEmail, { friends: me.friends });
+
+      const they = await getUser(foundUser.email);
+      they.friends = they.friends || [];
+      if (!they.friends.some(f => f.email === currentUserEmail)) {
+        they.friends.push({ email: currentUserEmail, cups: 0, streak: 0 });
+        await updateUser(foundUser.email, { friends: they.friends });
+      }
+      modal.remove();
+      renderFriendsScreen();
+    });
+    modal.querySelector('#cancBtn').onclick = () => modal.remove();
+  }
+
+  // ==================== ЭКРАН ЗАДАНИЙ ====================
+  async function renderTasksScreen() {
+    const container = screens.tasks;
+    container.innerHTML = `<h3 style="color:#ffd966">${t('tasks_title')}</h3>`;
+    const user = await getUser(currentUserEmail);
+    if (!user || !user.friends.length) { container.innerHTML += '<p style="color:#aaa">Добавьте друга</p>'; return; }
+
+    for (const friend of user.friends) {
+      const friendUser = await getUser(friend.email);
+      const card = document.createElement('div');
+      card.className = 'card';
+      card.innerHTML = `<strong>${friendUser?.nick || friend.email}</strong>`;
+      const tasks = [
+        { l: '🚶 Прогулка +20', v: 20 }, { l: '🏠 В гости +25', v: 25 },
+        { l: '🎮 Игра +22', v: 22 }, { l: '🆘 Помощь +15', v: 15 }, { l: '🎁 Сюрприз +30', v: 30 }
+      ];
+      tasks.forEach(task => {
+        const btn = document.createElement('button');
+        btn.className = 'btn';
+        btn.textContent = task.l;
+        btn.addEventListener('click', async () => {
+          friend.cups += task.v;
+          friend.streak = (friend.streak || 0) + 1;
+          user.totalTasks = (user.totalTasks || 0) + 1;
+          if (friendUser) {
+            const reverse = friendUser.friends?.find(f => f.email === currentUserEmail);
+            if (reverse) { reverse.cups += task.v; await updateUser(friend.email, { friends: friendUser.friends }); }
+          }
+          await updateUser(currentUserEmail, { friends: user.friends, totalTasks: user.totalTasks });
+          renderTasksScreen();
+          renderFriendsScreen();
+        });
+        card.appendChild(btn);
+      });
+      const qBtn = document.createElement('button');
+      qBtn.className = 'btn danger';
+      qBtn.textContent = t('quarrel');
+      qBtn.addEventListener('click', async () => {
+        friend.cups = Math.max(0, friend.cups - 18);
+        friend.streak = 0;
+        user.quarrelCount = (user.quarrelCount || 0) + 1;
+        await updateUser(currentUserEmail, { friends: user.friends, quarrelCount: user.quarrelCount });
+        renderTasksScreen();
+        renderFriendsScreen();
+      });
+      card.appendChild(qBtn);
+      container.appendChild(card);
+    }
+  }
+
+  // ==================== ЭКРАН ДОСТИЖЕНИЙ ====================
+  async function renderAchievementsScreen() {
+    const container = screens.achievements;
+    container.innerHTML = `<h3 style="color:#ffd966">${t('tab_ach')}</h3>`;
+    const user = await getUser(currentUserEmail);
+    if (!user) return;
+    ACH.forEach(ach => {
+      const done = (user.claimedAchievements || []).includes(ach.id);
+      const can = checkAchievementCondition(user, ach.id) && !done;
+      const card = document.createElement('div');
+      card.className = 'achievement-card' + (can ? ' glow-ach' : '');
+      card.innerHTML = `<strong>${ach.name}</strong><br><small>${ach.desc}</small><br><small style="color:#f9c74f">${ach.reward}</small>`;
+      if (done) {
+        card.innerHTML += `<p style="color:#6fcf97">${t('claimed')}</p>`;
+      } else if (can) {
+        const btn = document.createElement('button');
+        btn.className = 'btn';
+        btn.textContent = t('get');
+        btn.addEventListener('click', async () => {
+          user.claimedAchievements.push(ach.id);
+          const [type, val] = ach.reward.split(':');
+          if (type === 'avatar' && !user.unlockedAvatars.includes(val)) user.unlockedAvatars.push(val);
+          if (type === 'card' && !user.unlockedCards.includes(val)) user.unlockedCards.push(val);
+          await updateUser(currentUserEmail, {
+            claimedAchievements: user.claimedAchievements,
+            unlockedAvatars: user.unlockedAvatars,
+            unlockedCards: user.unlockedCards
+          });
+          renderAchievementsScreen();
+          renderProfileScreen();
+        });
+        card.appendChild(btn);
+      } else {
+        card.innerHTML += `<p style="color:#ff6b6b">${t('locked')}</p>`;
+      }
+      container.appendChild(card);
+    });
+  }
+
+  // ==================== ЭКРАН ПРОФИЛЯ ====================
+  async function renderProfileScreen() {
+    const container = screens.profile;
+    container.innerHTML = '';
+    const user = await getUser(currentUserEmail);
+    if (!user) return;
+    const age = new Date().getFullYear() - user.profile.year;
+    const cls = cardCls(0, user.selectedCard);
+    container.innerHTML = `
+      <div class="card ${cls}">
+        <div style="text-align:center">
+          <span style="font-size:3.5rem">${user.profile.avatar}</span>
+          <h2>${user.nick}</h2>
+          <p>📧 ${user.email}</p>
+          <p>${age} ${t('years')} · ${user.profile.day} ${getMonths()[user.profile.month-1]} ${user.profile.year}</p>
+          <p>${t('card_label')} ${user.selectedCard}</p>
+          <div class="code-display">
+            <span>${t('your_code')} <strong>${user.friendCode}</strong></span>
+            <button class="btn copy" id="copyCode">${t('copy')}</button>
+          </div>
+        </div>
+        <button class="btn" id="editBtn">${t('edit')}</button>
+        <button class="btn logout" id="logoutBtn">${t('logout')}</button>
+      </div>`;
+    document.getElementById('copyCode').onclick = () => {
+      navigator.clipboard.writeText(user.friendCode).then(() => {
+        const b = document.getElementById('copyCode');
+        b.textContent = t('copied');
+        setTimeout(() => b.textContent = t('copy'), 2000);
+      });
+    };
+    document.getElementById('editBtn').onclick = () => showEditProfileModal(user);
+    document.getElementById('logoutBtn').onclick = () => logout();
+  }
+
+  function showEditProfileModal(user) {
+    const modal = document.createElement('div');
+    modal.className = 'modal active';
+    let eD = user.profile.day, eM = user.profile.month, eY = user.profile.year;
+    modal.innerHTML = `
+      <div class="modal-content">
+        <h3 style="color:#ffd966">${t('edit')}</h3>
+        <div class="wheel-container">
+          <div class="wheel-col"><button class="wheel-btn" id="eDu">▲</button><span class="wheel-value" id="eDv">${eD}</span><button class="wheel-btn" id="eDd">▼</button></div>
+          <div class="wheel-col"><button class="wheel-btn" id="eMu">▲</button><span class="wheel-value" id="eMv">${getMonths()[eM-1]}</span><button class="wheel-btn" id="eMd">▼</button></div>
+          <div class="wheel-col"><button class="wheel-btn" id="eYu">▲</button><span class="wheel-value" id="eYv">${eY}</span><button class="wheel-btn" id="eYd">▼</button></div>
+        </div>
+        <label>${t('avatar_label')}</label>
+        <div id="avGrid" style="display:flex;flex-wrap:wrap;gap:5px">${user.unlockedAvatars.map(a => `<span style="font-size:1.8rem;cursor:pointer" data-a="${a}">${a}</span>`).join('')}</div>
+        <label>${t('card_label')}</label>
+        <select id="cardSel" style="width:100%;padding:10px;border-radius:18px;background:#2a2340;color:white">${user.unlockedCards.map(c => `<option ${user.selectedCard===c?'selected':''}>${c}</option>`).join('')}</select>
+        <button class="btn" id="saveEdit">${t('save')}</button>
+      </div>`;
+    document.body.appendChild(modal);
+    function upd() {
+      modal.querySelector('#eDv').textContent = eD;
+      modal.querySelector('#eMv').textContent = getMonths()[eM-1];
+      modal.querySelector('#eYv').textContent = eY;
+    }
+    modal.querySelector('#eDu').onclick = () => { eD = eD % 31 + 1; upd(); };
+    modal.querySelector('#eDd').onclick = () => { eD = eD - 1 || 31; upd(); };
+    modal.querySelector('#eMu').onclick = () => { eM = eM % 12 + 1; upd(); };
+    modal.querySelector('#eMd').onclick = () => { eM = eM - 1 || 12; upd(); };
+    modal.querySelector('#eYu').onclick = () => { if (eY < 2026) eY++; upd(); };
+    modal.querySelector('#eYd').onclick = () => { if (eY > 1920) eY--; upd(); };
+    modal.querySelectorAll('#avGrid span').forEach(s => s.addEventListener('click', async function() {
+      user.profile.avatar = this.dataset.a;
+      await updateUser(currentUserEmail, { profile: user.profile });
+      modal.remove();
+      renderProfileScreen();
+    }));
+    modal.querySelector('#saveEdit').addEventListener('click', async () => {
+      user.profile.day = eD; user.profile.month = eM; user.profile.year = eY;
+      user.selectedCard = modal.querySelector('#cardSel').value;
+      await updateUser(currentUserEmail, { profile: user.profile, selectedCard: user.selectedCard });
+      modal.remove();
+      renderProfileScreen();
+    });
+  }
+
+  // ==================== ЗАПУСК ====================
+  async function init() {
+    buildLangDropdown();
+    const savedEmail = localStorage.getItem('uzi_session');
+    if (savedEmail) {
+      const user = await getUser(savedEmail);
+      if (user) {
+        currentUserEmail = savedEmail;
+        enterApp();
+        return;
+      }
+    }
+    showScreen('authScreen');
+    renderAuthScreen();
+  }
+
+  init();
 </script>
 </body>
 </html>
