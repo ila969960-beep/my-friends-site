@@ -68,13 +68,6 @@
 </div>
 <script>
 (function(){
-  // Однократный сброс старых данных (удали после исправления ошибок)
-  if (!localStorage.getItem('reset_done')) {
-    localStorage.removeItem('uzi_final_fixed2'); // старый ключ
-    localStorage.removeItem('uzi_session_fixed2');
-    localStorage.setItem('reset_done', '1');
-  }
-
   const STORAGE='uzi_clean_v1';
   const SESSION='uzi_session_clean';
   const MONTHS_RU=['Янв','Фев','Мар','Апр','Май','Июн','Июл','Авг','Сен','Окт','Ноя','Дек'];
