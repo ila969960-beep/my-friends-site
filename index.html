@@ -26,7 +26,7 @@
     .wheel-col { display: flex; flex-direction: column; align-items: center; }
     .wheel-btn { background: none; border: none; font-size: 1.5rem; color: #ffd966; cursor: pointer; }
     .wheel-value { font-size: 1.2rem; font-weight: 700; background: #1e1836; padding: 4px 12px; border-radius: 20px; min-width: 60px; text-align: center; }
-    .error-text { color: #ff6b6b; font-size: 0.8rem; margin-top: -4px; display: none; }
+    .error-text { color: #ff6b6b; font-size: 0.8rem; margin-top: -2px; display: none; }
     .border-gold { border: 2px solid #f9c74f !important; box-shadow: 0 0 30px #f9c74faa; }
     .border-purple { border: 2px solid #c77dff !important; box-shadow: 0 0 50px #c77dff; animation: purplePulse 1.8s infinite; }
     @keyframes purplePulse { 0%{box-shadow:0 0 40px #c77dff;} 100%{box-shadow:0 0 70px #e0aaff;} }
@@ -50,49 +50,39 @@
 
 <script>
 (function() {
-  const STORAGE = 'uzi_full_fixed_v2';
+  const STORAGE = 'uzi_working_v3';
   const MONTHS = ['Янв','Фев','Мар','Апр','Май','Июн','Июл','Авг','Сен','Окт','Ноя','Дек'];
   const BAD_WORDS = ['мат','бля','хуй','пизд','еба','сука','нах','гандон','пидор','чмо','лох','гавно','жопа','член','хер','мудак','урод','дура','идиот','тупой','дебил','даун','педик','аутист'];
   const ALL_AVATARS = ['🙂','😎','🤩','🦊','🐼','⭐','💎','👑','🔥','🌈','🌟','💜','🎭','🐉','🍀','🤝','💔','🎃','🎅','👻','🐱','🐶','🦄','🐲','🎉','💖','🦋','🐳','🌺','🍕','🎸','🚀'];
   const ALL_CARDS = ['default','golden','sheriff','night','diamond','royal','master','ocean','forest','sunset','galaxy','phoenix','unicorn','dragon','crystal','shadow','sparkle','thunder','angel','demon','rainbow','meteor','comet','nebula','aurora'];
-  const ACHIEVEMENTS = [
-    {id:'f1',name:'🤝 Первый друг',desc:'Добавь 1 друга',reward:'avatar:🤝'},
-    {id:'f3',name:'👥 Три друга',desc:'3 друга',reward:'card:golden'},
-    {id:'f5',name:'🌟 Пять друзей',desc:'5 друзей',reward:'card:diamond'},
-    {id:'c100',name:'💯 100 кубков',desc:'100 кубков у друга',reward:'avatar:💯'},
-    {id:'c500',name:'🏆 500 кубков',desc:'500 кубков у друга',reward:'avatar:🏆'},
-    {id:'c1000',name:'👑 Родной',desc:'1000 кубков у друга',reward:'card:sheriff'},
-    {id:'c2000',name:'💎 Душа',desc:'2000 кубков у друга',reward:'card:royal'},
-    {id:'q1',name:'💔 Первая ссора',desc:'Поссориться 1 раз',reward:'avatar:💔'},
-    {id:'s7',name:'🌈 7 дней мира',desc:'7 дней без ссор',reward:'avatar:🌈'},
-    {id:'s30',name:'⭐ 30 дней',desc:'30 дней без ссор',reward:'card:galaxy'},
-    {id:'t10',name:'📅 10 заданий',desc:'Выполни 10 заданий',reward:'avatar:📅'},
-    {id:'t50',name:'🎯 50 заданий',desc:'Выполни 50 заданий',reward:'card:phoenix'},
-    {id:'col5',name:'🃏 Коллекционер',desc:'Открой 5 карточек',reward:'avatar:🎭'}
-  ];
 
   let users = {}, currentUser = null;
 
+  // ========== БАЗА ДАННЫХ ==========
   function load() { 
     const s = localStorage.getItem(STORAGE); 
     if (s) { try { users = JSON.parse(s); } catch(e) { users = {}; } }
   }
   function save() { localStorage.setItem(STORAGE, JSON.stringify(users)); }
   function bad(t) { return BAD_WORDS.some(w => t.toLowerCase().replace(/[^а-яёa-z]/g,'').includes(w)); }
+  
+  // Точный поиск по нику (без учёта регистра, но с учётом пробелов)
   function findByNick(nick) { 
-    const cleanNick = nick.trim().toLowerCase();
-    return Object.values(users).find(u => u.nick.toLowerCase() === cleanNick); 
+    return Object.values(users).find(u => u.nick.toLowerCase() === nick.trim().toLowerCase()); 
   }
-  function findByEmail(email) { return users[email.trim().toLowerCase()]; }
+  // Точный поиск по почте
+  function findByEmail(email) { 
+    return users[email.trim().toLowerCase()]; 
+  }
 
-  // ========== АВТОРИЗАЦИЯ С ПРОВЕРКАМИ ==========
+  // ========== АВТОРИЗАЦИЯ ==========
   function renderAuth() {
     const c = document.getElementById('authScreen');
     c.innerHTML = `
       <div class="card" style="margin-top:40px;">
         <h2>🌟 Вход / Регистрация</h2>
-        <input id="authEmail" class="input-field" placeholder="Почта"><span class="error-text" id="emailErr"></span>
-        <input id="authCode" class="input-field" placeholder="Код (8 символов)" maxlength="8">
+        <input id="authEmail" class="input-field" placeholder="Почта (example@mail.com)"><span class="error-text" id="emailErr"></span>
+        <input id="authCode" class="input-field" placeholder="Код (ровно 8 символов)" maxlength="8"><span class="error-text" id="codeErr"></span>
         <div id="regExtra" style="display:none;">
           <input id="authNick" class="input-field" placeholder="Придумай ник"><span class="error-text" id="nickErr"></span>
           <label style="color:#ddd;">📅 Дата рождения:</label>
@@ -108,7 +98,9 @@
     
     let mode = 'login', rD=15, rM=6, rY=2005;
     const emailInput = document.getElementById('authEmail');
+    const codeInput = document.getElementById('authCode');
     const emailErr = document.getElementById('emailErr');
+    const codeErr = document.getElementById('codeErr');
     const nickInput = document.getElementById('authNick');
     const nickErr = document.getElementById('nickErr');
     
@@ -123,7 +115,7 @@
       document.getElementById('regExtra').style.display = mode === 'register' ? 'block' : 'none';
       document.getElementById('authBtn').textContent = mode === 'login' ? 'ВОЙТИ' : 'ЗАРЕГИСТРИРОВАТЬСЯ';
       document.getElementById('toggleMode').textContent = mode === 'login' ? 'Нет аккаунта? Регистрация' : 'Уже есть аккаунт? Войти';
-      emailErr.style.display = 'none'; nickErr.style.display = 'none';
+      emailErr.style.display = 'none'; nickErr.style.display = 'none'; codeErr.style.display = 'none';
     };
     
     document.getElementById('rDu').onclick = () => { rD = rD % 31 + 1; upd(); };
@@ -133,50 +125,26 @@
     document.getElementById('rYu').onclick = () => { if (rY < 2026) rY++; upd(); };
     document.getElementById('rYd').onclick = () => { if (rY > 1920) rY--; upd(); };
     
-    // Проверка почты при регистрации (на лету)
-    emailInput.addEventListener('input', () => {
-      if (mode !== 'register') return;
-      const email = emailInput.value.trim();
-      if (email && email.includes('@') && findByEmail(email)) {
-        emailErr.textContent = 'Эта почта уже занята';
-        emailErr.style.display = 'block';
-      } else {
-        emailErr.style.display = 'none';
-      }
-    });
-    
-    // Проверка ника при регистрации (на лету)
-    nickInput.addEventListener('input', () => {
-      if (mode !== 'register') return;
-      const nick = nickInput.value.trim();
-      if (nick && findByNick(nick)) {
-        nickErr.textContent = 'Этот ник уже занят';
-        nickErr.style.display = 'block';
-      } else if (nick && bad(nick)) {
-        nickErr.textContent = 'Ник содержит недопустимые слова';
-        nickErr.style.display = 'block';
-      } else {
-        nickErr.style.display = 'none';
-      }
-    });
-    
     document.getElementById('authBtn').onclick = () => {
-      const email = emailInput.value.trim();
-      const code = document.getElementById('authCode').value.trim();
+      const email = emailInput.value.trim().toLowerCase();
+      const code = codeInput.value.trim();
+      emailErr.style.display = 'none'; codeErr.style.display = 'none'; nickErr.style.display = 'none';
       
       if (!email || !email.includes('@')) {
         emailErr.textContent = 'Введи корректную почту';
-        emailErr.style.display = 'block';
-        return;
+        emailErr.style.display = 'block'; return;
       }
-      if (code.length !== 8) return alert('Код должен быть ровно 8 символов');
+      if (code.length !== 8) {
+        codeErr.textContent = 'Код должен быть ровно 8 символов';
+        codeErr.style.display = 'block'; return;
+      }
       
       if (mode === 'register') {
         const nick = nickInput.value.trim();
         if (!nick) { nickErr.textContent = 'Введи ник'; nickErr.style.display = 'block'; return; }
-        if (bad(nick)) { nickErr.textContent = 'Ник содержит недопустимые слова'; nickErr.style.display = 'block'; return; }
+        if (bad(nick)) { nickErr.textContent = 'Ник содержит запрещённые слова'; nickErr.style.display = 'block'; return; }
         if (findByNick(nick)) { nickErr.textContent = 'Этот ник уже занят'; nickErr.style.display = 'block'; return; }
-        if (findByEmail(email)) { emailErr.textContent = 'Эта почта уже занята'; emailErr.style.display = 'block'; return; }
+        if (findByEmail(email)) { emailErr.textContent = 'Эта почта уже используется'; emailErr.style.display = 'block'; return; }
         
         users[email] = {
           email, nick, code,
@@ -195,10 +163,12 @@
         const user = findByEmail(email);
         if (!user) {
           emailErr.textContent = 'Аккаунт с такой почтой не найден';
-          emailErr.style.display = 'block';
-          return;
+          emailErr.style.display = 'block'; return;
         }
-        if (user.code !== code) return alert('Неверный код');
+        if (user.code !== code) {
+          codeErr.textContent = 'Неверный код';
+          codeErr.style.display = 'block'; return;
+        }
         currentUser = email;
         enterApp();
       }
@@ -222,10 +192,9 @@
   
   function switchTab(t) {
     tabs.forEach(b => b.classList.remove('active'));
-    const targetTab = document.querySelector(`#mainTabs .tab[data-tab="${t}"]`);
-    if (targetTab) targetTab.classList.add('active');
+    document.querySelector(`#mainTabs .tab[data-tab="${t}"]`).classList.add('active');
     Object.values(screens).forEach(s => s.classList.remove('active'));
-    if (screens[t]) screens[t].classList.add('active');
+    screens[t].classList.add('active');
     if (t === 'friends') renderFriends();
     if (t === 'tasks') renderTasks();
     if (t === 'achievements') renderAchievements();
@@ -233,178 +202,105 @@
   }
   tabs.forEach(t => t.addEventListener('click', () => switchTab(t.dataset.tab)));
 
-  // ========== ДРУЗЬЯ (ДОБАВЛЕНИЕ ЧЕРЕЗ КНОПКУ "НАЙТИ") ==========
+  // ========== ДРУЗЬЯ ==========
   function renderFriends() {
-    const c = screens.friends;
-    c.innerHTML = '';
-    const u = users[currentUser];
-    if (!u) return;
-    
-    if (!u.friends.length) {
-      c.innerHTML = '<p style="text-align:center;color:#aaa;margin-top:40px;">Пока нет друзей</p>';
-    } else {
-      u.friends.forEach(f => {
-        const fu = findByNick(f.nick);
-        const cardClass = fu && fu.selectedCard === 'sheriff' ? 'border-gold' : (fu && fu.selectedCard === 'royal' ? 'border-purple' : '');
-        const div = document.createElement('div');
-        div.className = `card ${cardClass}`;
-        div.innerHTML = `
-          <div style="display:flex;align-items:center;gap:12px;">
-            <span style="font-size:2.5rem;">${fu ? fu.profile.avatar : '🙂'}</span>
-            <div style="flex:1;">
-              <strong>${f.nick}</strong>
-              <div style="color:#f9c74f;">🏆 ${f.cups} кубков</div>
-              <div style="color:#ff6b6b;">🔥 ${f.streak || 0} дней без ссор</div>
-            </div>
-          </div>`;
-        c.appendChild(div);
-      });
-    }
-    
-    const addBtn = document.createElement('button');
-    addBtn.className = 'btn';
-    addBtn.textContent = '➕ Добавить друга';
-    addBtn.onclick = () => showAddFriendModal();
-    c.appendChild(addBtn);
+    const c = screens.friends; c.innerHTML = '';
+    const u = users[currentUser]; if (!u) return;
+    if (!u.friends.length) c.innerHTML = '<p style="text-align:center;color:#aaa;">Пока нет друзей</p>';
+    else u.friends.forEach(f => {
+      const fu = findByNick(f.nick);
+      const div = document.createElement('div'); div.className = 'card';
+      div.innerHTML = `<div style="display:flex;align-items:center;gap:12px;"><span style="font-size:2.5rem;">${fu?fu.profile.avatar:'🙂'}</span><div><strong>${f.nick}</strong><br>🏆${f.cups} 🔥${f.streak||0}д</div></div>`;
+      c.appendChild(div);
+    });
+    const add = document.createElement('button'); add.className='btn'; add.textContent='➕ Добавить друга';
+    add.onclick = ()=> showAddFriendModal(); c.appendChild(add);
   }
 
   function showAddFriendModal() {
-    const modal = document.createElement('div');
-    modal.className = 'modal active';
-    modal.innerHTML = `
-      <div class="modal-content">
-        <h3 style="color:#ffd966;">➕ Добавить друга</h3>
-        <input id="friendNickInput" class="input-field" placeholder="Введи ник друга">
-        <span class="error-text" id="addFriendErr"></span>
-        <div id="friendPreview" style="margin:12px 0;min-height:60px;"></div>
-        <button class="btn" id="searchFriendBtn">🔍 НАЙТИ</button>
-        <button class="btn" id="confirmAddBtn" disabled>ПОДТВЕРДИТЬ</button>
-        <button class="btn" id="cancelAddBtn" style="background:#555;margin-top:4px;">ОТМЕНА</button>
-      </div>`;
+    const modal = document.createElement('div'); modal.className = 'modal active';
+    modal.innerHTML = `<div class="modal-content"><h3>➕ Добавить друга</h3>
+      <input id="addNickInput" class="input-field" placeholder="Введи ник друга"><span class="error-text" id="addErr"></span>
+      <div id="addPreview" style="margin:12px 0;min-height:60px;"></div>
+      <button class="btn" id="searchBtn">🔍 НАЙТИ</button>
+      <button class="btn" id="confirmAddBtn" disabled>ПОДТВЕРДИТЬ</button>
+      <button class="btn" id="cancelAdd" style="background:#555;">ОТМЕНА</button></div>`;
     document.body.appendChild(modal);
-    
-    const inp = modal.querySelector('#friendNickInput');
-    const errSpan = modal.querySelector('#addFriendErr');
-    const preview = modal.querySelector('#friendPreview');
-    const searchBtn = modal.querySelector('#searchFriendBtn');
-    const confirmBtn = modal.querySelector('#confirmAddBtn');
-    let foundUser = null;
-    
-    searchBtn.onclick = () => {
-      const searchNick = inp.value.trim();
-      errSpan.style.display = 'none';
-      preview.innerHTML = '';
-      confirmBtn.disabled = true;
-      foundUser = null;
-      
-      if (!searchNick) {
-        errSpan.textContent = 'Введи ник';
-        errSpan.style.display = 'block';
-        return;
-      }
-      
-      foundUser = findByNick(searchNick);
+    const inp = modal.querySelector('#addNickInput');
+    const err = modal.querySelector('#addErr');
+    const preview = modal.querySelector('#addPreview');
+    const search = modal.querySelector('#searchBtn');
+    const confirm = modal.querySelector('#confirmAddBtn');
+    let found = null;
+
+    search.onclick = ()=>{
+      const nick = inp.value.trim(); err.style.display='none'; preview.innerHTML=''; confirm.disabled=true; found=null;
+      if (!nick) { err.textContent='Введи ник'; err.style.display='block'; return; }
+      found = findByNick(nick);
       const u = users[currentUser];
-      
-      if (!foundUser) {
-        errSpan.textContent = '❌ Аккаунт не найден';
-        errSpan.style.display = 'block';
-      } else if (foundUser.email === currentUser) {
-        errSpan.textContent = '❌ Нельзя добавить самого себя';
-        errSpan.style.display = 'block';
-      } else if (u.friends.some(f => f.nick.toLowerCase() === foundUser.nick.toLowerCase())) {
-        errSpan.textContent = '❌ Этот друг уже добавлен';
-        errSpan.style.display = 'block';
-      } else {
-        preview.innerHTML = `
-          <div class="card" style="display:flex;align-items:center;gap:12px;">
-            <span style="font-size:2rem;">${foundUser.profile.avatar}</span>
-            <div><strong>${foundUser.nick}</strong></div>
-          </div>`;
-        confirmBtn.disabled = false;
+      if (!found) { err.textContent='❌ Аккаунт не найден'; err.style.display='block'; }
+      else if (found.email === currentUser) { err.textContent='❌ Нельзя добавить себя'; err.style.display='block'; }
+      else if (u.friends.some(f=>f.nick.toLowerCase()===found.nick.toLowerCase())) { err.textContent='❌ Уже в друзьях'; err.style.display='block'; }
+      else {
+        preview.innerHTML = `<div class="card"><span style="font-size:2rem;">${found.profile.avatar}</span> <strong>${found.nick}</strong></div>`;
+        confirm.disabled = false;
       }
     };
-    
-    confirmBtn.onclick = () => {
-      if (!foundUser) return;
+    confirm.onclick = ()=>{
+      if (!found) return;
       const u = users[currentUser];
-      u.friends.push({ nick: foundUser.nick, cups: 0, streak: 0 });
-      if (!foundUser.friends.some(f => f.nick.toLowerCase() === u.nick.toLowerCase())) {
-        foundUser.friends.push({ nick: u.nick, cups: 0, streak: 0 });
-      }
-      save();
-      renderFriends();
-      modal.remove();
+      u.friends.push({nick:found.nick, cups:0, streak:0});
+      if (!found.friends.some(f=>f.nick.toLowerCase()===u.nick.toLowerCase())) found.friends.push({nick:u.nick, cups:0, streak:0});
+      save(); renderFriends(); modal.remove();
     };
-    
-    modal.querySelector('#cancelAddBtn').onclick = () => modal.remove();
-    modal.addEventListener('click', (e) => { if (e.target === modal) modal.remove(); });
+    modal.querySelector('#cancelAdd').onclick = ()=> modal.remove();
   }
 
   // ========== ЗАДАНИЯ ==========
   function renderTasks() {
-    const c = screens.tasks;
-    c.innerHTML = '<h3 style="color:#ffd966;">📋 Задания</h3>';
+    const c = screens.tasks; c.innerHTML = '<h3>📋 Задания</h3>';
     const u = users[currentUser];
-    if (!u) return;
-    if (!u.friends.length) { c.innerHTML += '<p style="color:#aaa;">Добавь друга</p>'; return; }
-    
-    u.friends.forEach(f => {
+    u.friends.forEach(f=>{
       const fu = findByNick(f.nick);
-      const div = document.createElement('div');
-      div.className = 'card';
-      div.innerHTML = `<strong style="font-size:1.1rem;">${f.nick}</strong>`;
-      
-      [{l:'🚶 Прогулка +20',v:20},{l:'🏠 В гости +25',v:25},{l:'🎮 Игра +22',v:22},{l:'🆘 Помощь +15',v:15},{l:'🎁 Сюрприз +30',v:30}].forEach(t => {
-        const btn = document.createElement('button');
-        btn.className = 'btn'; btn.textContent = t.l;
-        btn.onclick = () => {
-          f.cups += t.v; f.streak = (f.streak||0)+1; u.totalTasks = (u.totalTasks||0)+1;
-          if (fu) { const rf = fu.friends.find(x => x.nick.toLowerCase() === u.nick.toLowerCase()); if (rf) rf.cups += t.v; }
-          save(); renderTasks(); renderFriends();
-        };
-        div.appendChild(btn);
+      const div = document.createElement('div'); div.className='card'; div.innerHTML=`<strong>${f.nick}</strong>`;
+      [{l:'🚶 +20',v:20},{l:'🏠 +25',v:25},{l:'🎮 +22',v:22},{l:'🆘 +15',v:15},{l:'🎁 +30',v:30}].forEach(t=>{
+        const b = document.createElement('button'); b.className='btn'; b.textContent=t.l;
+        b.onclick = ()=>{ f.cups+=t.v; f.streak=(f.streak||0)+1; u.totalTasks=(u.totalTasks||0)+1;
+          if(fu){ const rf=fu.friends.find(x=>x.nick.toLowerCase()===u.nick.toLowerCase()); if(rf) rf.cups+=t.v; }
+          save(); renderTasks(); renderFriends(); };
+        div.appendChild(b);
       });
-      const q = document.createElement('button'); q.className = 'btn danger'; q.textContent = '💢 Поссориться -18';
-      q.onclick = () => { f.cups = Math.max(0, f.cups-18); f.streak=0; save(); renderTasks(); };
+      const q = document.createElement('button'); q.className='btn danger'; q.textContent='💢 -18';
+      q.onclick = ()=>{ f.cups=Math.max(0,f.cups-18); f.streak=0; save(); renderTasks(); };
       div.appendChild(q); c.appendChild(div);
     });
   }
 
   // ========== ДОСТИЖЕНИЯ ==========
   function renderAchievements() {
-    const c = screens.achievements;
-    c.innerHTML = '<h3 style="color:#ffd966;">🏅 Достижения</h3>';
+    const c = screens.achievements; c.innerHTML='<h3>🏅 Достижения</h3>';
     const u = users[currentUser];
-    ACHIEVEMENTS.forEach(a => {
+    const list = [
+      {id:'f1',n:'🤝 Первый друг',d:'Добавь 1 друга',r:'avatar:🤝'},
+      {id:'f3',n:'👥 Три друга',d:'3 друга',r:'card:golden'},
+      {id:'c100',n:'💯 100 кубков',d:'100 кубков',r:'avatar:💯'},
+      {id:'c500',n:'🏆 500 кубков',d:'500 кубков',r:'avatar:🏆'}
+    ];
+    list.forEach(a=>{
       const done = u.claimed?.includes(a.id);
-      const check = () => {
-        const f = u.friends;
-        switch(a.id) {
-          case 'f1': return f.length>=1; case 'f3': return f.length>=3; case 'f5': return f.length>=5;
-          case 'c100': return f.some(x=>x.cups>=100); case 'c500': return f.some(x=>x.cups>=500);
-          case 'c1000': return f.some(x=>x.cups>=1000); case 'c2000': return f.some(x=>x.cups>=2000);
-          case 'q1': return f.some(x=>x.streak===0 && x.cups<100); case 's7': return f.some(x=>(x.streak||0)>=7);
-          case 's30': return f.some(x=>(x.streak||0)>=30); case 't10': return (u.totalTasks||0)>=10;
-          case 't50': return (u.totalTasks||0)>=50; case 'col5': return (u.unlockedCards||[]).length>=5;
-          default: return false;
-        }
-      };
-      const can = check() && !done;
-      const div = document.createElement('div'); div.className = 'card';
-      div.innerHTML = `<strong>${a.name}</strong><br><small>${a.desc}</small>`;
-      if (done) div.innerHTML += '<p style="color:#6fcf97;">✅ Получено</p>';
-      else if (can) {
-        const btn = document.createElement('button'); btn.className = 'btn'; btn.textContent = 'Получить';
-        btn.onclick = () => {
-          if (!u.claimed) u.claimed = []; u.claimed.push(a.id);
-          const [type,val] = a.reward.split(':');
-          if (type==='avatar' && !u.unlockedAvatars.includes(val)) u.unlockedAvatars.push(val);
-          if (type==='card' && !u.unlockedCards.includes(val)) u.unlockedCards.push(val);
+      const can = (a.id==='f1'&&u.friends.length>=1)||(a.id==='f3'&&u.friends.length>=3)||(a.id==='c100'&&u.friends.some(x=>x.cups>=100))||(a.id==='c500'&&u.friends.some(x=>x.cups>=500));
+      const div = document.createElement('div'); div.className='card';
+      div.innerHTML = `<strong>${a.n}</strong><br><small>${a.d}</small>`;
+      if (done) div.innerHTML+=' ✅';
+      else if (can&&!done) {
+        const btn = document.createElement('button'); btn.className='btn'; btn.textContent='Получить';
+        btn.onclick = ()=>{
+          if(!u.claimed) u.claimed=[]; u.claimed.push(a.id);
+          const [t,v]=a.r.split(':'); if(t==='avatar') u.unlockedAvatars.push(v); else u.unlockedCards.push(v);
           save(); renderAchievements(); renderProfile();
         };
         div.appendChild(btn);
-      } else div.innerHTML += '<p style="color:#ff6b6b;">🔒 Не выполнено</p>';
+      } else div.innerHTML+=' 🔒';
       c.appendChild(div);
     });
   }
@@ -414,47 +310,37 @@
     const c = screens.profile;
     const u = users[currentUser];
     const age = new Date().getFullYear() - u.profile.year;
-    const cardStyle = u.selectedCard === 'sheriff' ? 'border-gold' : u.selectedCard === 'royal' ? 'border-purple' : '';
-    c.innerHTML = `
-      <div class="card ${cardStyle}">
-        <div style="text-align:center;"><span style="font-size:4rem;">${u.profile.avatar}</span><h2>${u.nick}</h2>
-        <p>${age} лет · ${u.profile.day} ${MONTHS[u.profile.month-1]} ${u.profile.year}</p>
-        <p>🃏 Карточка: ${u.selectedCard}</p></div>
-        <button class="btn" id="editProfBtn">✏️ Изменить</button>
-      </div>`;
-    document.getElementById('editProfBtn').onclick = () => showEditProfileModal();
+    c.innerHTML = `<div class="card">
+      <div style="text-align:center;"><span style="font-size:4rem;">${u.profile.avatar}</span><h2>${u.nick}</h2>
+      <p>📧 ${u.email}</p><p>${age} лет · ${u.profile.day} ${MONTHS[u.profile.month-1]} ${u.profile.year}</p>
+      <p>🃏 ${u.selectedCard}</p></div>
+      <button class="btn" id="editProfBtn">✏️ Изменить</button></div>`;
+    document.getElementById('editProfBtn').onclick = ()=> showEditModal();
   }
 
-  function showEditProfileModal() {
+  function showEditModal() {
     const u = users[currentUser];
-    const modal = document.createElement('div'); modal.className = 'modal active';
-    let eD=u.profile.day, eM=u.profile.month, eY=u.profile.year;
+    const modal = document.createElement('div'); modal.className='modal active';
+    let eD=u.profile.day,eM=u.profile.month,eY=u.profile.year;
     modal.innerHTML = `<div class="modal-content"><h3>✏️ Профиль</h3>
-      <input id="editNick" class="input-field" value="${u.nick}"><span class="error-text" id="editNickErr"></span>
       <div class="wheel-container">
         <div class="wheel-col"><button class="wheel-btn" id="eDu">▲</button><span class="wheel-value" id="eDv">${eD}</span><button class="wheel-btn" id="eDd">▼</button></div>
         <div class="wheel-col"><button class="wheel-btn" id="eMu">▲</button><span class="wheel-value" id="eMv">${MONTHS[eM-1]}</span><button class="wheel-btn" id="eMd">▼</button></div>
         <div class="wheel-col"><button class="wheel-btn" id="eYu">▲</button><span class="wheel-value" id="eYv">${eY}</span><button class="wheel-btn" id="eYd">▼</button></div>
       </div>
       <label>Аватар:</label><div id="avGrid" style="display:flex;flex-wrap:wrap;gap:8px;">${u.unlockedAvatars.map(a=>`<span style="font-size:2rem;cursor:pointer;" data-a="${a}">${a}</span>`).join('')}</div>
-      <label>Карточка:</label><select id="cardSel" style="width:100%;padding:10px;border-radius:20px;background:#2a2340;color:white;">${u.unlockedCards.map(c=>`<option value="${c}" ${u.selectedCard===c?'selected':''}>${c}</option>`).join('')}</select>
-      <button class="btn" id="saveEdit">СОХРАНИТЬ</button><button class="btn" id="closeEdit" style="background:#555;">ОТМЕНА</button></div>`;
+      <label>Карточка:</label><select id="cardSel" style="width:100%;padding:10px;border-radius:20px;background:#2a2340;color:white;">${u.unlockedCards.map(c=>`<option ${u.selectedCard===c?'selected':''}>${c}</option>`).join('')}</select>
+      <button class="btn" id="saveEdit">СОХРАНИТЬ</button></div>`;
     document.body.appendChild(modal);
-    function upd() { modal.querySelector('#eDv').textContent=eD; modal.querySelector('#eMv').textContent=MONTHS[eM-1]; modal.querySelector('#eYv').textContent=eY; }
-    modal.querySelector('#eDu').onclick = ()=>{ eD=eD%31+1; upd(); }; modal.querySelector('#eDd').onclick = ()=>{ eD=eD-1||31; upd(); };
-    modal.querySelector('#eMu').onclick = ()=>{ eM=eM%12+1; upd(); }; modal.querySelector('#eMd').onclick = ()=>{ eM=eM-1||12; upd(); };
-    modal.querySelector('#eYu').onclick = ()=>{ if(eY<2026)eY++; upd(); }; modal.querySelector('#eYd').onclick = ()=>{ if(eY>1920)eY--; upd(); };
+    function upd(){ modal.querySelector('#eDv').textContent=eD; modal.querySelector('#eMv').textContent=MONTHS[eM-1]; modal.querySelector('#eYv').textContent=eY; }
+    modal.querySelector('#eDu').onclick=()=>{eD=eD%31+1;upd();}; modal.querySelector('#eDd').onclick=()=>{eD=eD-1||31;upd();};
+    modal.querySelector('#eMu').onclick=()=>{eM=eM%12+1;upd();}; modal.querySelector('#eMd').onclick=()=>{eM=eM-1||12;upd();};
+    modal.querySelector('#eYu').onclick=()=>{if(eY<2026)eY++;upd();}; modal.querySelector('#eYd').onclick=()=>{if(eY>1920)eY--;upd();};
     modal.querySelectorAll('#avGrid span').forEach(s=>s.onclick=function(){ u.profile.avatar=this.dataset.a; save(); renderProfile(); modal.remove(); });
     modal.querySelector('#saveEdit').onclick = ()=>{
-      const nn = modal.querySelector('#editNick').value.trim();
-      const err = modal.querySelector('#editNickErr');
-      if (nn && bad(nn)) { err.textContent='Запрещённые слова'; err.style.display='block'; return; }
-      if (nn && findByNick(nn) && nn !== u.nick) { err.textContent='Ник занят'; err.style.display='block'; return; }
-      if (nn) u.nick = nn;
       u.profile.day=eD; u.profile.month=eM; u.profile.year=eY; u.selectedCard=modal.querySelector('#cardSel').value;
       save(); renderProfile(); modal.remove();
     };
-    modal.querySelector('#closeEdit').onclick = ()=> modal.remove();
   }
 
   load();
