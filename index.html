@@ -11,6 +11,7 @@
       box-sizing: border-box;
       font-family: 'Segoe UI', 'Poppins', system-ui, -apple-system, sans-serif;
     }
+
     body {
       background: radial-gradient(ellipse at 30% 20%, #1a1025 0%, #0a0614 100%);
       min-height: 100vh;
@@ -20,6 +21,7 @@
       padding: 0;
       margin: 0;
     }
+
     .app {
       width: 100%;
       max-width: 500px;
@@ -37,15 +39,35 @@
       overflow: hidden;
       position: relative;
     }
+
+    .app::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle at 50% 50%, rgba(180, 130, 255, 0.06) 0%, transparent 60%);
+      animation: bgFloat 15s ease-in-out infinite;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    @keyframes bgFloat {
+      0%, 100% { transform: translate(0, 0) rotate(0deg); }
+      33% { transform: translate(25px, -15px) rotate(120deg); }
+      66% { transform: translate(-15px, 25px) rotate(240deg); }
+    }
+
     .app-header {
       padding: 20px 16px 12px;
       text-align: center;
       background: linear-gradient(180deg, rgba(100, 60, 200, 0.3) 0%, transparent 100%);
-      display: flex;
-      justify-content: center;
-      align-items: center;
+      position: relative;
+      z-index: 1;
       flex-shrink: 0;
     }
+
     .app-header h1 {
       font-size: 2.2rem;
       font-weight: 900;
@@ -54,8 +76,14 @@
       -webkit-text-fill-color: transparent;
       background-clip: text;
       letter-spacing: 2px;
-      text-shadow: 0 0 30px #c77dff;
+      animation: titleGlow 3s ease-in-out infinite alternate;
     }
+
+    @keyframes titleGlow {
+      from { filter: drop-shadow(0 0 6px #c77dff); }
+      to { filter: drop-shadow(0 0 18px #e0b3ff); }
+    }
+
     .tabs {
       display: flex;
       margin: 8px 16px;
@@ -63,8 +91,11 @@
       border-radius: 36px;
       padding: 5px;
       backdrop-filter: blur(10px);
+      position: relative;
+      z-index: 1;
       flex-shrink: 0;
     }
+
     .tab {
       flex: 1;
       text-align: center;
@@ -76,13 +107,19 @@
       border: none;
       color: #cdc0e0;
       cursor: pointer;
-      transition: all 0.2s ease;
+      transition: all 0.3s ease;
     }
+
     .tab.active {
       background: #ffbb2e;
       color: #1a122e;
       box-shadow: 0 0 25px #f90;
     }
+
+    .tab:not(.active):hover {
+      background: rgba(255, 187, 46, 0.15);
+    }
+
     .screen {
       display: none;
       flex: 1;
@@ -91,10 +128,26 @@
       padding: 10px 18px 24px;
       overflow-y: auto;
       overflow-x: hidden;
+      position: relative;
+      z-index: 1;
     }
+
     .screen.active {
       display: flex;
+      animation: fadeSlideIn 0.3s ease-out;
     }
+
+    @keyframes fadeSlideIn {
+      from {
+        opacity: 0;
+        transform: translateY(12px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
     .card {
       background: rgba(22, 18, 38, 0.8);
       backdrop-filter: blur(20px);
@@ -103,9 +156,14 @@
       padding: 18px;
       border: 1px solid rgba(255, 215, 150, 0.2);
       box-shadow: 0 10px 24px rgba(0, 0, 0, 0.5);
-      transition: all 0.3s ease;
-      position: relative;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
     }
+
+    .card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 14px 30px rgba(0, 0, 0, 0.6);
+    }
+
     .btn {
       background: linear-gradient(180deg, #fbb034 0%, #f08a1a 100%);
       border: none;
@@ -116,20 +174,25 @@
       color: #1a1423;
       cursor: pointer;
       box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5);
-      transition: all 0.15s ease;
+      transition: all 0.2s ease;
       text-transform: uppercase;
       letter-spacing: 0.5px;
       margin: 5px 0;
       width: 100%;
+      position: relative;
+      overflow: hidden;
     }
+
     .btn:active {
       transform: translateY(2px);
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
     }
+
     .btn.danger {
       background: linear-gradient(180deg, #ff6b6b, #c0392b);
       color: white;
     }
+
     .btn.logout {
       background: #ff6b6b;
       color: white;
@@ -137,6 +200,7 @@
       padding: 12px 24px;
       margin-top: 10px;
     }
+
     .modal {
       display: none;
       position: fixed;
@@ -151,9 +215,17 @@
       backdrop-filter: blur(6px);
       -webkit-backdrop-filter: blur(6px);
     }
+
     .modal.active {
       display: flex;
+      animation: modalFadeIn 0.25s ease-out;
     }
+
+    @keyframes modalFadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
     .modal-content {
       background: #1f1b2e;
       border-radius: 40px;
@@ -164,7 +236,20 @@
       box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8);
       max-height: 80vh;
       overflow-y: auto;
+      animation: modalSlideUp 0.3s ease-out;
     }
+
+    @keyframes modalSlideUp {
+      from {
+        transform: translateY(30px);
+        opacity: 0;
+      }
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
     .input-field {
       width: 100%;
       padding: 14px 16px;
@@ -175,24 +260,28 @@
       color: white;
       font-size: 1rem;
       outline: none;
-      transition: border-color 0.2s;
+      transition: all 0.3s ease;
     }
+
     .input-field:focus {
       border-color: #f7b32b;
-      box-shadow: 0 0 12px #f7b32b60;
+      box-shadow: 0 0 14px #f7b32b50;
     }
+
     .wheel-container {
       display: flex;
       justify-content: space-around;
       margin: 16px 0;
       gap: 10px;
     }
+
     .wheel-col {
       display: flex;
       flex-direction: column;
       align-items: center;
       gap: 4px;
     }
+
     .wheel-btn {
       background: none;
       border: none;
@@ -200,13 +289,14 @@
       color: #ffd966;
       cursor: pointer;
       padding: 0 10px;
-      line-height: 1;
-      transition: 0.15s;
+      transition: all 0.2s;
     }
+
     .wheel-btn:active {
-      transform: scale(0.85);
+      transform: scale(0.8);
       color: #fff;
     }
+
     .wheel-value {
       font-size: 1.4rem;
       font-weight: 700;
@@ -217,6 +307,7 @@
       text-align: center;
       border: 1px solid #ffd96640;
     }
+
     .error-text {
       color: #ff6b6b;
       font-size: 0.85rem;
@@ -224,16 +315,13 @@
       display: none;
       font-weight: 500;
     }
-    .friend-row {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-    }
+
     .friend-avatar {
       font-size: 2.5rem;
       width: 50px;
       text-align: center;
     }
+
     .streak-badge {
       background: #ff6b6b;
       border-radius: 20px;
@@ -243,29 +331,54 @@
       display: inline-block;
       margin-left: 6px;
     }
+
     .achievement-card {
       background: rgba(30, 25, 50, 0.9);
       border-radius: 20px;
       padding: 14px;
       margin: 8px 0;
       border: 1px solid #ffd96640;
+      transition: transform 0.2s;
     }
+
+    .achievement-card:hover {
+      transform: translateX(3px);
+    }
+
     .glow-achievement {
       box-shadow: 0 0 22px #f9c74f;
+      animation: achievementPulse 2s infinite;
     }
-    .border-gold { border: 2px solid #f9c74f !important; box-shadow: 0 0 35px #f9c74faa, 0 8px 20px rgba(0,0,0,0.6) !important; }
-    .border-green { border: 2px solid #6fcf97 !important; box-shadow: 0 0 35px #6fcf97cc, 0 8px 20px rgba(0,0,0,0.6) !important; }
-    .border-blue { border: 2px solid #56ccf2 !important; box-shadow: 0 0 45px #56ccf2, inset 0 0 15px rgba(86,204,242,0.4) !important; }
-    .border-purple { border: 2px solid #c77dff !important; box-shadow: 0 0 55px #c77dff, 0 0 25px #9d4edd !important; animation: purpleGlow 1.8s infinite alternate; }
-    .border-red { border: 2px solid #ff6b6b !important; box-shadow: 0 0 35px #ff6b6b !important; }
-    .border-rainbow {
-      border: 2px solid transparent !important;
-      background: linear-gradient(45deg, #ff6b6b, #feca57, #48dbfb, #ff9ff3) border-box;
-      box-shadow: 0 0 40px rgba(255,255,255,0.3) !important;
+
+    @keyframes achievementPulse {
+      0%, 100% { box-shadow: 0 0 18px #f9c74f; }
+      50% { box-shadow: 0 0 35px #f9c74f; }
     }
+
+    .border-gold {
+      border: 2px solid #f9c74f !important;
+      box-shadow: 0 0 35px #f9c74faa !important;
+    }
+
+    .border-green {
+      border: 2px solid #6fcf97 !important;
+      box-shadow: 0 0 35px #6fcf97cc !important;
+    }
+
+    .border-blue {
+      border: 2px solid #56ccf2 !important;
+      box-shadow: 0 0 45px #56ccf2 !important;
+    }
+
+    .border-purple {
+      border: 2px solid #c77dff !important;
+      box-shadow: 0 0 55px #c77dff !important;
+      animation: purpleGlow 1.8s infinite alternate;
+    }
+
     @keyframes purpleGlow {
-      from { box-shadow: 0 0 40px #c77dff, 0 0 20px #9d4edd; }
-      to { box-shadow: 0 0 70px #e0aaff, 0 0 35px #b185db; }
+      from { box-shadow: 0 0 40px #c77dff; }
+      to { box-shadow: 0 0 70px #e0aaff; }
     }
   </style>
 </head>
@@ -292,43 +405,67 @@
 <script>
 (function() {
   // ==================== КОНСТАНТЫ ====================
-  const STORAGE_KEY = 'uzi_sveta_complete';
-  const SESSION_KEY = 'uzi_session';
+  const STORAGE_KEY = 'uzi_sveta_full_v6';
+  const SESSION_KEY = 'uzi_session_v6';
   const MONTHS = ['Янв','Фев','Мар','Апр','Май','Июн','Июл','Авг','Сен','Окт','Ноя','Дек'];
-  const BAD_WORDS = ['мат','бля','хуй','пизд','еба','сука','нах','гандон','пидор','чмо','лох','гавно','жопа','член','хер','мудак','урод','дура','идиот','тупой','дебил','даун','педик','аутист'];
-  const ALL_AVATARS = ['🙂','😎','🤩','🦊','🐼','⭐','💎','👑','🔥','🌈','🌟','💜','🎭','🐉','🍀','🤝','💔','🎃','🎅','👻','🐱','🐶','🦄','🐲','🎉','💖','🦋','🐳','🌺','🍕','🎸','🚀','💡','🧩','🎯','🛡️','⚡','❄️','🌪️','🪐'];
-  const ALL_CARDS = ['default','golden','sheriff','night','diamond','royal','master','ocean','forest','sunset','galaxy','phoenix','unicorn','dragon','crystal','shadow','sparkle','thunder','angel','demon','rainbow','meteor','comet','nebula','aurora'];
-  const TITLES = [
-    {name:'Знакомый', min:0}, {name:'Товарищ', min:50}, {name:'Приятель', min:150},
-    {name:'Хороший друг', min:300}, {name:'Лучший друг', min:600},
-    {name:'Родной', min:1000}, {name:'🌟 Родственная душа', min:2000}, {name:'🔥 Брат навек', min:3500}
+
+  const BAD_WORDS = [
+    'мат','бля','хуй','пизд','еба','сука','нах','гандон','пидор',
+    'чмо','лох','гавно','жопа','член','хер','мудак','урод','дура',
+    'идиот','тупой','дебил','даун','педик','аутист'
   ];
+
+  const ALL_AVATARS = [
+    '🙂','😎','🤩','🦊','🐼','⭐','💎','👑','🔥','🌈',
+    '🌟','💜','🎭','🐉','🍀','🤝','💔','🎃','🎅','👻',
+    '🐱','🐶','🦄','🐲','🎉','💖','🦋','🐳','🌺','🍕',
+    '🎸','🚀','💡','🧩','🎯','🛡️','⚡','❄️','🌪️','🪐'
+  ];
+
+  const ALL_CARDS = [
+    'default','golden','sheriff','night','diamond','royal','master',
+    'ocean','forest','sunset','galaxy','phoenix','unicorn','dragon',
+    'crystal','shadow','sparkle','thunder','angel','demon','rainbow',
+    'meteor','comet','nebula','aurora'
+  ];
+
+  const TITLES = [
+    { name: 'Знакомый', min: 0 },
+    { name: 'Товарищ', min: 50 },
+    { name: 'Приятель', min: 150 },
+    { name: 'Хороший друг', min: 300 },
+    { name: 'Лучший друг', min: 600 },
+    { name: 'Родной', min: 1000 },
+    { name: '🌟 Родственная душа', min: 2000 },
+    { name: '🔥 Брат навек', min: 3500 }
+  ];
+
   const ACHIEVEMENTS = [
-    {id:'f1',  name:'🤝 Первый друг',     desc:'Добавь 1 друга',              reward:'avatar:🤝'},
-    {id:'f3',  name:'👥 Три друга',       desc:'Добавь 3 друзей',             reward:'card:golden'},
-    {id:'f5',  name:'🌟 Пять друзей',     desc:'Добавь 5 друзей',             reward:'card:diamond'},
-    {id:'f10', name:'💎 Десять друзей',   desc:'Добавь 10 друзей',            reward:'card:ocean'},
-    {id:'c50', name:'💯 50 кубков',       desc:'Любой друг набрал 50 кубков',  reward:'avatar:💯'},
-    {id:'c100',name:'🔥 100 кубков',      desc:'Любой друг набрал 100 кубков', reward:'avatar:🔥'},
-    {id:'c500',name:'🏆 500 кубков',      desc:'Любой друг набрал 500 кубков', reward:'avatar:🏆'},
-    {id:'c1000',name:'👑 Родной',         desc:'Любой друг набрал 1000 кубков',reward:'card:sheriff'},
-    {id:'c2000',name:'💎 Душа',           desc:'Любой друг набрал 2000 кубков',reward:'card:royal'},
-    {id:'c3500',name:'🔥 Брат навек',     desc:'Любой друг набрал 3500 кубков',reward:'card:dragon'},
-    {id:'q1',  name:'💔 Первая ссора',    desc:'Поссориться 1 раз',            reward:'avatar:💔'},
-    {id:'q5',  name:'💢 5 ссор',          desc:'Поссориться 5 раз',            reward:'avatar:💢'},
-    {id:'s3',  name:'🌈 3 дня мира',      desc:'3 дня без ссор',              reward:'avatar:🌈'},
-    {id:'s7',  name:'☀️ 7 дней мира',     desc:'7 дней без ссор',             reward:'avatar:☀️'},
-    {id:'s14', name:'🌙 14 дней мира',    desc:'14 дней без ссор',            reward:'card:night'},
-    {id:'s30', name:'⭐ 30 дней мира',    desc:'30 дней без ссор',            reward:'card:galaxy'},
-    {id:'s60', name:'🪐 60 дней мира',    desc:'60 дней без ссор',            reward:'card:nebula'},
-    {id:'t5',  name:'📅 5 заданий',       desc:'Выполни 5 заданий',           reward:'avatar:📅'},
-    {id:'t20', name:'📋 20 заданий',      desc:'Выполни 20 заданий',          reward:'card:forest'},
-    {id:'t50', name:'🎯 50 заданий',      desc:'Выполни 50 заданий',          reward:'card:phoenix'},
-    {id:'t100',name:'💪 100 заданий',     desc:'Выполни 100 заданий',         reward:'card:unicorn'},
-    {id:'col3',name:'🃏 3 карточки',      desc:'Открой 3 карточки',           reward:'avatar:🎭'},
-    {id:'col5',name:'🎴 5 карточек',      desc:'Открой 5 карточек',           reward:'avatar:🎴'},
-    {id:'col10',name:'🃏 Коллекционер',   desc:'Открой 10 карточек',          reward:'card:rainbow'},
-    {id:'all100',name:'🎖️ Все 100+',      desc:'У всех друзей 100+ кубков',   reward:'card:master'}
+    { id: 'f1',   name: '🤝 Первый друг',     desc: 'Добавьте первого друга',              reward: 'avatar:🤝' },
+    { id: 'f3',   name: '👥 Три друга',       desc: 'Добавьте 3 друзей',                   reward: 'card:golden' },
+    { id: 'f5',   name: '🌟 Пять друзей',     desc: 'Добавьте 5 друзей',                   reward: 'card:diamond' },
+    { id: 'f10',  name: '💎 Десять друзей',   desc: 'Добавьте 10 друзей',                  reward: 'card:ocean' },
+    { id: 'c50',  name: '💯 50 кубков',       desc: 'Любой друг набрал 50 кубков',         reward: 'avatar:💯' },
+    { id: 'c100', name: '🔥 100 кубков',      desc: 'Любой друг набрал 100 кубков',        reward: 'avatar:🔥' },
+    { id: 'c500', name: '🏆 500 кубков',      desc: 'Любой друг набрал 500 кубков',        reward: 'avatar:🏆' },
+    { id: 'c1000',name: '👑 Родной',          desc: 'Любой друг набрал 1000 кубков',       reward: 'card:sheriff' },
+    { id: 'c2000',name: '💎 Душа',            desc: 'Любой друг набрал 2000 кубков',       reward: 'card:royal' },
+    { id: 'c3500',name: '🔥 Брат навек',      desc: 'Любой друг набрал 3500 кубков',       reward: 'card:dragon' },
+    { id: 'q1',   name: '💔 Первая ссора',    desc: 'Поссориться 1 раз',                   reward: 'avatar:💔' },
+    { id: 'q5',   name: '💢 5 ссор',          desc: 'Поссориться 5 раз',                   reward: 'avatar:💢' },
+    { id: 's3',   name: '🌈 3 дня мира',      desc: '3 дня без ссор',                     reward: 'avatar:🌈' },
+    { id: 's7',   name: '☀️ 7 дней мира',     desc: '7 дней без ссор',                    reward: 'avatar:☀️' },
+    { id: 's14',  name: '🌙 14 дней мира',    desc: '14 дней без ссор',                   reward: 'card:night' },
+    { id: 's30',  name: '⭐ 30 дней',         desc: '30 дней без ссор',                   reward: 'card:galaxy' },
+    { id: 's60',  name: '🪐 60 дней',         desc: '60 дней без ссор',                   reward: 'card:nebula' },
+    { id: 't5',   name: '📅 5 заданий',       desc: 'Выполните 5 заданий',                reward: 'avatar:📅' },
+    { id: 't20',  name: '📋 20 заданий',      desc: 'Выполните 20 заданий',               reward: 'card:forest' },
+    { id: 't50',  name: '🎯 50 заданий',      desc: 'Выполните 50 заданий',               reward: 'card:phoenix' },
+    { id: 't100', name: '💪 100 заданий',     desc: 'Выполните 100 заданий',              reward: 'card:unicorn' },
+    { id: 'col3', name: '🃏 3 карточки',      desc: 'Откройте 3 карточки',                reward: 'avatar:🎭' },
+    { id: 'col5', name: '🎴 5 карточек',      desc: 'Откройте 5 карточек',                reward: 'avatar:🎴' },
+    { id: 'col10',name: '🃏 Коллекционер',    desc: 'Откройте 10 карточек',               reward: 'card:rainbow' },
+    { id: 'all100',name:'🎖️ Все 100+',        desc: 'У всех друзей 100+ кубков',          reward: 'card:master' }
   ];
 
   // ==================== СОСТОЯНИЕ ====================
@@ -347,15 +484,19 @@
       }
     }
   }
+
   function saveUsers() {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(users));
   }
+
   function saveSession(email) {
     localStorage.setItem(SESSION_KEY, email);
   }
+
   function getSession() {
     return localStorage.getItem(SESSION_KEY);
   }
+
   function clearSession() {
     localStorage.removeItem(SESSION_KEY);
   }
@@ -365,24 +506,25 @@
     const cleaned = text.toLowerCase().replace(/[^а-яёa-z]/g, '');
     return BAD_WORDS.some(word => cleaned.includes(word));
   }
+
   function findUserByEmail(email) {
     const cleanEmail = email.trim().toLowerCase();
     return users[cleanEmail] || null;
   }
+
   function getTitleByCups(cups) {
     for (let i = TITLES.length - 1; i >= 0; i--) {
       if (cups >= TITLES[i].min) return TITLES[i];
     }
     return TITLES[0];
   }
+
   function getCardClass(cups, selectedCard) {
-    if (selectedCard === 'rainbow') return 'border-rainbow';
+    if (selectedCard === 'rainbow') return 'border-purple';
     if (selectedCard === 'dragon' || selectedCard === 'royal' || selectedCard === 'nebula') return 'border-purple';
     if (selectedCard === 'sheriff' || selectedCard === 'golden' || selectedCard === 'phoenix' || selectedCard === 'unicorn') return 'border-gold';
-    if (selectedCard === 'ocean' || selectedCard === 'diamond' || selectedCard === 'sparkle') return 'border-blue';
-    if (selectedCard === 'master' || selectedCard === 'forest' || selectedCard === 'crystal') return 'border-green';
-    if (selectedCard === 'night' || selectedCard === 'galaxy' || selectedCard === 'shadow') return 'border-purple';
-    if (selectedCard === 'demon' || selectedCard === 'thunder') return 'border-red';
+    if (selectedCard === 'ocean' || selectedCard === 'diamond') return 'border-blue';
+    if (selectedCard === 'master' || selectedCard === 'forest') return 'border-green';
     if (cups >= 3500) return 'border-purple';
     if (cups >= 2000) return 'border-purple';
     if (cups >= 1000) return 'border-blue';
@@ -391,33 +533,73 @@
     return '';
   }
 
+  function checkAchievementCondition(user, achievementId) {
+    const friends = user.friends || [];
+    switch (achievementId) {
+      case 'f1': return friends.length >= 1;
+      case 'f3': return friends.length >= 3;
+      case 'f5': return friends.length >= 5;
+      case 'f10': return friends.length >= 10;
+      case 'c50': return friends.some(f => f.cups >= 50);
+      case 'c100': return friends.some(f => f.cups >= 100);
+      case 'c500': return friends.some(f => f.cups >= 500);
+      case 'c1000': return friends.some(f => f.cups >= 1000);
+      case 'c2000': return friends.some(f => f.cups >= 2000);
+      case 'c3500': return friends.some(f => f.cups >= 3500);
+      case 'q1': return (user.quarrelCount || 0) >= 1;
+      case 'q5': return (user.quarrelCount || 0) >= 5;
+      case 's3': return friends.some(f => (f.streak || 0) >= 3);
+      case 's7': return friends.some(f => (f.streak || 0) >= 7);
+      case 's14': return friends.some(f => (f.streak || 0) >= 14);
+      case 's30': return friends.some(f => (f.streak || 0) >= 30);
+      case 's60': return friends.some(f => (f.streak || 0) >= 60);
+      case 't5': return (user.totalTasksCompleted || 0) >= 5;
+      case 't20': return (user.totalTasksCompleted || 0) >= 20;
+      case 't50': return (user.totalTasksCompleted || 0) >= 50;
+      case 't100': return (user.totalTasksCompleted || 0) >= 100;
+      case 'col3': return (user.unlockedCards || []).length >= 3;
+      case 'col5': return (user.unlockedCards || []).length >= 5;
+      case 'col10': return (user.unlockedCards || []).length >= 10;
+      case 'all100': return friends.length > 0 && friends.every(f => f.cups >= 100);
+      default: return false;
+    }
+  }
+
   // ==================== ВЫХОД ИЗ АККАУНТА ====================
   function logout() {
     currentUser = null;
     clearSession();
     document.getElementById('mainTabs').style.display = 'none';
+    ['friendsScreen', 'tasksScreen', 'achievementsScreen', 'profileScreen'].forEach(id => {
+      document.getElementById(id).innerHTML = '';
+      document.getElementById(id).classList.remove('active');
+    });
     renderAuthScreen();
   }
 
-  // ==================== РЕНДЕР ЭКРАНА АВТОРИЗАЦИИ ====================
+  // ==================== ЭКРАН АВТОРИЗАЦИИ ====================
   function renderAuthScreen() {
     const authScreen = document.getElementById('authScreen');
-    authScreen.classList.add('active');
     authScreen.innerHTML = '';
+    authScreen.classList.add('active');
 
     const card = document.createElement('div');
     card.className = 'card';
     card.style.marginTop = '40px';
 
     card.innerHTML = `
-      <h2 style="color:#ffd966; text-align:center; margin-bottom:16px;">🌟 Вход / Регистрация</h2>
-      <input type="email" id="authEmail" class="input-field" placeholder="Почта (example@mail.com)" autocomplete="email">
+      <h2 style="color:#ffd966; text-align:center; margin-bottom:16px;">🌟 Добро пожаловать</h2>
+
+      <input type="email" id="authEmail" class="input-field" placeholder="Электронная почта" autocomplete="email">
       <span class="error-text" id="emailErr"></span>
-      <input type="text" id="authCode" class="input-field" placeholder="Код (ровно 8 символов)" maxlength="8" autocomplete="off">
+
+      <input type="text" id="authCode" class="input-field" placeholder="Код доступа (8 символов)" maxlength="8" autocomplete="off">
       <span class="error-text" id="codeErr"></span>
+
       <div id="regExtra" style="display:none;">
-        <input type="text" id="authNick" class="input-field" placeholder="Придумай ник" autocomplete="off">
+        <input type="text" id="authNick" class="input-field" placeholder="Придумайте никнейм" autocomplete="off">
         <span class="error-text" id="nickErr"></span>
+
         <label style="color:#ddd; display:block; margin-top:12px;">📅 Дата рождения:</label>
         <div class="wheel-container">
           <div class="wheel-col">
@@ -437,17 +619,22 @@
           </div>
         </div>
       </div>
-      <button class="btn" id="authBtn">ВОЙТИ</button>
-      <p style="text-align:center; margin-top:12px;">
-        <a id="toggleMode" style="color:#ffd966; cursor:pointer; font-weight:600;">Нет аккаунта? Регистрация</a>
+
+      <button class="btn" id="authBtn">ВОЙТИ В АККАУНТ</button>
+
+      <p style="text-align:center; margin-top:14px; color:#b9a9d9;">
+        <a id="toggleMode" style="color:#ffd966; cursor:pointer; font-weight:600;">
+          Нет аккаунта? Зарегистрироваться
+        </a>
       </p>
     `;
 
     authScreen.appendChild(card);
 
-    // Логика переключения режимов
     let mode = 'login';
-    let regDay = 15, regMonth = 6, regYear = 2005;
+    let regDay = 15;
+    let regMonth = 6;
+    let regYear = 2005;
 
     const regExtra = document.getElementById('regExtra');
     const authBtn = document.getElementById('authBtn');
@@ -468,8 +655,8 @@
     toggleModeLink.addEventListener('click', () => {
       mode = mode === 'login' ? 'register' : 'login';
       regExtra.style.display = mode === 'register' ? 'block' : 'none';
-      authBtn.textContent = mode === 'login' ? 'ВОЙТИ' : 'ЗАРЕГИСТРИРОВАТЬСЯ';
-      toggleModeLink.textContent = mode === 'login' ? 'Нет аккаунта? Регистрация' : 'Уже есть аккаунт? Войти';
+      authBtn.textContent = mode === 'login' ? 'ВОЙТИ В АККАУНТ' : 'ЗАРЕГИСТРИРОВАТЬСЯ';
+      toggleModeLink.textContent = mode === 'login' ? 'Нет аккаунта? Зарегистрироваться' : 'Уже есть аккаунт? Войти';
       emailErr.style.display = 'none';
       codeErr.style.display = 'none';
       nickErr.style.display = 'none';
@@ -491,30 +678,34 @@
       nickErr.style.display = 'none';
 
       if (!email || !email.includes('@')) {
-        emailErr.textContent = 'Введи корректную почту';
+        emailErr.textContent = 'Пожалуйста, введите корректный адрес почты';
         emailErr.style.display = 'block';
         return;
       }
+
       if (code.length !== 8) {
-        codeErr.textContent = 'Код должен быть ровно 8 символов';
+        codeErr.textContent = 'Код должен содержать ровно 8 символов';
         codeErr.style.display = 'block';
         return;
       }
 
       if (mode === 'register') {
         const nick = nickInput.value.trim();
+
         if (!nick) {
-          nickErr.textContent = 'Введи ник';
+          nickErr.textContent = 'Придумайте никнейм';
           nickErr.style.display = 'block';
           return;
         }
+
         if (containsBadWords(nick)) {
-          nickErr.textContent = 'Ник содержит запрещённые слова';
+          nickErr.textContent = 'Никнейм содержит недопустимые слова';
           nickErr.style.display = 'block';
           return;
         }
+
         if (findUserByEmail(email)) {
-          emailErr.textContent = 'Эта почта уже используется';
+          emailErr.textContent = 'Аккаунт с такой почтой уже существует';
           emailErr.style.display = 'block';
           return;
         }
@@ -537,22 +728,27 @@
           totalTasksCompleted: 0,
           quarrelCount: 0
         };
+
         saveUsers();
         currentUser = email;
         saveSession(email);
         enterApp();
+
       } else {
         const user = findUserByEmail(email);
+
         if (!user) {
           emailErr.textContent = 'Аккаунт с такой почтой не найден';
           emailErr.style.display = 'block';
           return;
         }
+
         if (user.code !== code) {
-          codeErr.textContent = 'Неверный код';
+          codeErr.textContent = 'Неверный код доступа';
           codeErr.style.display = 'block';
           return;
         }
+
         currentUser = email;
         saveSession(email);
         enterApp();
@@ -560,8 +756,10 @@
     });
   }
 
+  // ==================== ВХОД В ПРИЛОЖЕНИЕ ====================
   function enterApp() {
     document.getElementById('authScreen').classList.remove('active');
+    document.getElementById('authScreen').innerHTML = '';
     document.getElementById('mainTabs').style.display = 'flex';
     switchTab('friends');
   }
@@ -601,7 +799,7 @@
     if (!user) return;
 
     if (!user.friends || user.friends.length === 0) {
-      container.innerHTML = '<p style="text-align:center; color:#aaa; margin-top:60px;">Пока нет друзей. Добавь первого!</p>';
+      container.innerHTML = '<p style="text-align:center; color:#aaa; margin-top:60px;">У вас пока нет друзей. Добавьте первого!</p>';
     } else {
       user.friends.forEach(friend => {
         const friendUser = findUserByEmail(friend.email);
@@ -612,7 +810,7 @@
         card.className = `card ${cardClass}`;
 
         card.innerHTML = `
-          <div class="friend-row">
+          <div style="display:flex; align-items:center; gap:14px;">
             <span class="friend-avatar">${friendUser ? friendUser.profile.avatar : '🙂'}</span>
             <div style="flex:1;">
               <strong style="font-size:1.1rem;">${friendUser ? friendUser.nick : friend.email}</strong>
@@ -639,10 +837,11 @@
   function showAddFriendModal() {
     const modal = document.createElement('div');
     modal.className = 'modal active';
+
     modal.innerHTML = `
       <div class="modal-content">
         <h3 style="color:#ffd966; margin-bottom:14px;">➕ Добавить друга</h3>
-        <p style="color:#aaa; font-size:0.85rem; margin-bottom:6px;">Введи почту друга</p>
+        <p style="color:#aaa; font-size:0.85rem; margin-bottom:6px;">Введите почту друга, чтобы найти его</p>
         <input type="email" id="addEmailInput" class="input-field" placeholder="Почта друга" autocomplete="email">
         <span class="error-text" id="addErr"></span>
         <div id="addPreview" style="margin:14px 0; min-height:60px;"></div>
@@ -651,6 +850,7 @@
         <button class="btn" id="cancelAddBtn" style="background:#555; margin-top:6px;">ОТМЕНА</button>
       </div>
     `;
+
     document.body.appendChild(modal);
 
     const emailInput = modal.querySelector('#addEmailInput');
@@ -669,7 +869,7 @@
       foundUser = null;
 
       if (!email || !email.includes('@')) {
-        errorSpan.textContent = 'Введи корректную почту';
+        errorSpan.textContent = 'Введите корректную почту';
         errorSpan.style.display = 'block';
         return;
       }
@@ -684,7 +884,7 @@
         errorSpan.textContent = '❌ Нельзя добавить самого себя';
         errorSpan.style.display = 'block';
       } else if (currentUserData.friends.some(f => f.email === foundUser.email)) {
-        errorSpan.textContent = '❌ Этот друг уже добавлен';
+        errorSpan.textContent = '❌ Этот друг уже в списке';
         errorSpan.style.display = 'block';
       } else {
         previewDiv.innerHTML = `
@@ -702,12 +902,14 @@
 
     confirmBtn.addEventListener('click', () => {
       if (!foundUser) return;
+
       const currentUserData = users[currentUser];
       currentUserData.friends.push({
         email: foundUser.email,
         cups: 0,
         streak: 0
       });
+
       if (!foundUser.friends.some(f => f.email === currentUser)) {
         foundUser.friends.push({
           email: currentUser,
@@ -715,6 +917,7 @@
           streak: 0
         });
       }
+
       saveUsers();
       renderFriendsScreen();
       modal.remove();
@@ -732,7 +935,7 @@
     container.innerHTML = '<h3 style="color:#ffd966; margin-bottom:8px;">📋 Задания</h3>';
     const user = users[currentUser];
     if (!user || !user.friends.length) {
-      container.innerHTML += '<p style="color:#aaa;">Добавь друга, чтобы выполнять задания</p>';
+      container.innerHTML += '<p style="color:#aaa;">Добавьте друга для выполнения заданий</p>';
       return;
     }
 
@@ -754,6 +957,7 @@
         const taskBtn = document.createElement('button');
         taskBtn.className = 'btn';
         taskBtn.textContent = `${task.label} +${task.cups}🏆`;
+
         taskBtn.addEventListener('click', () => {
           friend.cups += task.cups;
           friend.streak = (friend.streak || 0) + 1;
@@ -765,16 +969,19 @@
               reverseFriend.cups += task.cups;
             }
           }
+
           saveUsers();
           renderTasksScreen();
           renderFriendsScreen();
         });
+
         card.appendChild(taskBtn);
       });
 
       const quarrelBtn = document.createElement('button');
       quarrelBtn.className = 'btn danger';
       quarrelBtn.textContent = '💢 Поссориться -18🏆';
+
       quarrelBtn.addEventListener('click', () => {
         friend.cups = Math.max(0, friend.cups - 18);
         friend.streak = 0;
@@ -783,8 +990,8 @@
         renderTasksScreen();
         renderFriendsScreen();
       });
-      card.appendChild(quarrelBtn);
 
+      card.appendChild(quarrelBtn);
       container.appendChild(card);
     });
   }
@@ -815,7 +1022,8 @@
       } else if (canClaim) {
         const claimBtn = document.createElement('button');
         claimBtn.className = 'btn';
-        claimBtn.textContent = '🎁 Получить';
+        claimBtn.textContent = '🎁 Получить награду';
+
         claimBtn.addEventListener('click', () => {
           if (!user.claimedAchievements) user.claimedAchievements = [];
           user.claimedAchievements.push(achievement.id);
@@ -827,10 +1035,12 @@
           if (type === 'card' && !user.unlockedCards.includes(value)) {
             user.unlockedCards.push(value);
           }
+
           saveUsers();
           renderAchievementsScreen();
           renderProfileScreen();
         });
+
         card.appendChild(claimBtn);
       } else {
         card.innerHTML += '<p style="color:#ff6b6b; font-weight:500;">🔒 Не выполнено</p>';
@@ -838,38 +1048,6 @@
 
       container.appendChild(card);
     });
-  }
-
-  function checkAchievementCondition(user, achievementId) {
-    const friends = user.friends || [];
-    switch (achievementId) {
-      case 'f1': return friends.length >= 1;
-      case 'f3': return friends.length >= 3;
-      case 'f5': return friends.length >= 5;
-      case 'f10': return friends.length >= 10;
-      case 'c50': return friends.some(f => f.cups >= 50);
-      case 'c100': return friends.some(f => f.cups >= 100);
-      case 'c500': return friends.some(f => f.cups >= 500);
-      case 'c1000': return friends.some(f => f.cups >= 1000);
-      case 'c2000': return friends.some(f => f.cups >= 2000);
-      case 'c3500': return friends.some(f => f.cups >= 3500);
-      case 'q1': return (user.quarrelCount || 0) >= 1;
-      case 'q5': return (user.quarrelCount || 0) >= 5;
-      case 's3': return friends.some(f => (f.streak || 0) >= 3);
-      case 's7': return friends.some(f => (f.streak || 0) >= 7);
-      case 's14': return friends.some(f => (f.streak || 0) >= 14);
-      case 's30': return friends.some(f => (f.streak || 0) >= 30);
-      case 's60': return friends.some(f => (f.streak || 0) >= 60);
-      case 't5': return (user.totalTasksCompleted || 0) >= 5;
-      case 't20': return (user.totalTasksCompleted || 0) >= 20;
-      case 't50': return (user.totalTasksCompleted || 0) >= 50;
-      case 't100': return (user.totalTasksCompleted || 0) >= 100;
-      case 'col3': return (user.unlockedCards || []).length >= 3;
-      case 'col5': return (user.unlockedCards || []).length >= 5;
-      case 'col10': return (user.unlockedCards || []).length >= 10;
-      case 'all100': return friends.length > 0 && friends.every(f => f.cups >= 100);
-      default: return false;
-    }
   }
 
   // ==================== ЭКРАН ПРОФИЛЯ ====================
@@ -898,7 +1076,7 @@
 
     const editBtn = document.createElement('button');
     editBtn.className = 'btn';
-    editBtn.textContent = '✏️ Изменить профиль';
+    editBtn.textContent = '✏️ Редактировать профиль';
     editBtn.addEventListener('click', () => showEditProfileModal());
     card.appendChild(editBtn);
 
@@ -916,13 +1094,15 @@
     const user = users[currentUser];
     const modal = document.createElement('div');
     modal.className = 'modal active';
+
     let editDay = user.profile.day;
     let editMonth = user.profile.month;
     let editYear = user.profile.year;
 
     modal.innerHTML = `
       <div class="modal-content">
-        <h3 style="color:#ffd966; margin-bottom:12px;">✏️ Редактировать профиль</h3>
+        <h3 style="color:#ffd966; margin-bottom:12px;">✏️ Редактирование профиля</h3>
+
         <label style="color:#ddd;">📅 Дата рождения:</label>
         <div class="wheel-container">
           <div class="wheel-col">
@@ -941,18 +1121,22 @@
             <button class="wheel-btn" id="eYd">▼</button>
           </div>
         </div>
+
         <label style="color:#ddd; display:block; margin-top:12px;">🖼️ Аватар:</label>
         <div id="avGrid" style="display:flex; flex-wrap:wrap; gap:8px; margin-bottom:12px;">
           ${user.unlockedAvatars.map(a => `<span style="font-size:2rem; cursor:pointer;" data-avatar="${a}">${a}</span>`).join('')}
         </div>
+
         <label style="color:#ddd; display:block;">🃏 Карточка профиля:</label>
         <select id="cardSelect" style="width:100%; padding:12px; border-radius:24px; background:#2a2340; color:white; border:1px solid #ffd96660; margin-bottom:14px;">
           ${user.unlockedCards.map(c => `<option value="${c}" ${user.selectedCard === c ? 'selected' : ''}>${c}</option>`).join('')}
         </select>
+
         <button class="btn" id="saveEditBtn">💾 СОХРАНИТЬ</button>
         <button class="btn" id="closeEditBtn" style="background:#555; margin-top:6px;">ОТМЕНА</button>
       </div>
     `;
+
     document.body.appendChild(modal);
 
     function updateWheels() {
@@ -996,6 +1180,7 @@
   // ==================== ЗАПУСК ПРИЛОЖЕНИЯ ====================
   loadUsers();
   const savedSession = getSession();
+
   if (savedSession && users[savedSession]) {
     currentUser = savedSession;
     enterApp();
