@@ -5,48 +5,283 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
   <title>🌟 Узы Света · Дружба звёзд</title>
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', 'Poppins', system-ui, sans-serif; }
-    body { background: radial-gradient(ellipse at 30% 20%, #1a1025 0%, #0a0614 100%); min-height: 100vh; display: flex; justify-content: center; align-items: center; }
-    .app { width: 100%; max-width: 500px; height: 100vh; max-height: 900px; background: rgba(12,8,24,0.85); backdrop-filter: blur(35px); border-radius: 0; display: flex; flex-direction: column; box-shadow: 0 0 80px rgba(120,60,220,0.4); border: 1px solid rgba(200,160,255,0.3); color: #f0e7ff; overflow: hidden; }
-    .app-header { padding: 16px; text-align: center; background: linear-gradient(180deg, rgba(100,60,200,0.3) 0%, transparent 100%); }
-    .app-header h1 { font-size: 2rem; font-weight: 900; background: linear-gradient(135deg, #ffd966, #e0b3ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-    .tabs { display: flex; margin: 8px 16px; background: rgba(0,0,0,0.5); border-radius: 36px; padding: 5px; }
-    .tab { flex: 1; text-align: center; padding: 12px 4px; border-radius: 30px; font-weight: 700; font-size: 0.75rem; background: transparent; border: none; color: #cdc0e0; cursor: pointer; }
-    .tab.active { background: #ffbb2e; color: #1a122e; box-shadow: 0 0 20px #f90; }
-    .screen { display: none; flex: 1; flex-direction: column; gap: 12px; padding: 8px 16px 20px; overflow-y: auto; }
-    .screen.active { display: flex; }
-    .card { background: rgba(22,18,38,0.8); backdrop-filter: blur(20px); border-radius: 24px; padding: 16px; border: 1px solid rgba(255,215,150,0.2); box-shadow: 0 8px 20px rgba(0,0,0,0.5); margin-bottom: 8px; }
-    .btn { background: linear-gradient(180deg, #fbb034, #f08a1a); border: none; border-radius: 30px; padding: 12px 18px; font-weight: 700; font-size: 0.9rem; color: #1a1423; cursor: pointer; box-shadow: 0 6px 12px rgba(0,0,0,0.5); margin: 4px 0; width: 100%; }
-    .btn.danger { background: linear-gradient(180deg, #ff6b6b, #c0392b); color: white; }
-    .btn.logout { background: #ff6b6b; color: white; width: auto; padding: 10px 20px; }
-    .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); align-items: center; justify-content: center; z-index: 1000; }
-    .modal.active { display: flex; }
-    .modal-content { background: #1f1b2e; border-radius: 36px; padding: 24px; width: 90%; max-width: 380px; border: 2px solid #ffd966; max-height: 80vh; overflow-y: auto; }
-    .input-field { width: 100%; padding: 12px; margin: 6px 0; border-radius: 20px; background: #2a2340; border: 1px solid #ffd96660; color: white; outline: none; }
-    .wheel-container { display: flex; justify-content: space-around; margin: 12px 0; }
-    .wheel-col { display: flex; flex-direction: column; align-items: center; }
-    .wheel-btn { background: none; border: none; font-size: 1.5rem; color: #ffd966; cursor: pointer; }
-    .wheel-value { font-size: 1.2rem; font-weight: 700; background: #1e1836; padding: 4px 12px; border-radius: 20px; min-width: 60px; text-align: center; }
-    .error-text { color: #ff6b6b; font-size: 0.8rem; display: none; }
-    .border-gold { border: 2px solid #f9c74f !important; box-shadow: 0 0 30px #f9c74faa; }
-    .border-green { border: 2px solid #6fcf97 !important; box-shadow: 0 0 30px #6fcf97cc; }
-    .border-blue { border: 2px solid #56ccf2 !important; box-shadow: 0 0 40px #56ccf2, inset 0 0 10px rgba(86,204,242,0.3); }
-    .border-purple { border: 2px solid #c77dff !important; box-shadow: 0 0 50px #c77dff, 0 0 20px #9d4edd; animation: purplePulse 1.8s infinite; }
-    .border-red { border: 2px solid #ff6b6b !important; box-shadow: 0 0 35px #ff6b6b; }
-    .border-rainbow { border: 2px solid transparent !important; background: linear-gradient(45deg, #ff6b6b, #feca57, #48dbfb, #ff9ff3) border-box; }
-    @keyframes purplePulse { 0%{box-shadow:0 0 40px #c77dff;} 100%{box-shadow:0 0 70px #e0aaff;} }
-    .streak-badge { background: #ff6b6b; border-radius: 20px; padding: 4px 10px; font-weight: bold; display: inline-block; margin-left: 6px; }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', 'Poppins', system-ui, -apple-system, sans-serif;
+    }
+    body {
+      background: radial-gradient(ellipse at 30% 20%, #1a1025 0%, #0a0614 100%);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 0;
+      margin: 0;
+    }
+    .app {
+      width: 100%;
+      max-width: 500px;
+      height: 100vh;
+      max-height: 900px;
+      background: rgba(12, 8, 24, 0.85);
+      backdrop-filter: blur(35px);
+      -webkit-backdrop-filter: blur(35px);
+      border-radius: 0;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 0 80px rgba(120, 60, 220, 0.4);
+      border: 1px solid rgba(200, 160, 255, 0.3);
+      color: #f0e7ff;
+      overflow: hidden;
+      position: relative;
+    }
+    .app-header {
+      padding: 20px 16px 12px;
+      text-align: center;
+      background: linear-gradient(180deg, rgba(100, 60, 200, 0.3) 0%, transparent 100%);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-shrink: 0;
+    }
+    .app-header h1 {
+      font-size: 2.2rem;
+      font-weight: 900;
+      background: linear-gradient(135deg, #ffd966, #e0b3ff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      letter-spacing: 2px;
+      text-shadow: 0 0 30px #c77dff;
+    }
+    .tabs {
+      display: flex;
+      margin: 8px 16px;
+      background: rgba(0, 0, 0, 0.5);
+      border-radius: 36px;
+      padding: 5px;
+      backdrop-filter: blur(10px);
+      flex-shrink: 0;
+    }
+    .tab {
+      flex: 1;
+      text-align: center;
+      padding: 12px 4px;
+      border-radius: 30px;
+      font-weight: 700;
+      font-size: 0.8rem;
+      background: transparent;
+      border: none;
+      color: #cdc0e0;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .tab.active {
+      background: #ffbb2e;
+      color: #1a122e;
+      box-shadow: 0 0 25px #f90;
+    }
+    .screen {
+      display: none;
+      flex: 1;
+      flex-direction: column;
+      gap: 14px;
+      padding: 10px 18px 24px;
+      overflow-y: auto;
+      overflow-x: hidden;
+    }
+    .screen.active {
+      display: flex;
+    }
+    .card {
+      background: rgba(22, 18, 38, 0.8);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-radius: 28px;
+      padding: 18px;
+      border: 1px solid rgba(255, 215, 150, 0.2);
+      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.5);
+      transition: all 0.3s ease;
+      position: relative;
+    }
+    .btn {
+      background: linear-gradient(180deg, #fbb034 0%, #f08a1a 100%);
+      border: none;
+      border-radius: 34px;
+      padding: 14px 22px;
+      font-weight: 700;
+      font-size: 0.95rem;
+      color: #1a1423;
+      cursor: pointer;
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5);
+      transition: all 0.15s ease;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin: 5px 0;
+      width: 100%;
+    }
+    .btn:active {
+      transform: translateY(2px);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+    }
+    .btn.danger {
+      background: linear-gradient(180deg, #ff6b6b, #c0392b);
+      color: white;
+    }
+    .btn.logout {
+      background: #ff6b6b;
+      color: white;
+      width: auto;
+      padding: 12px 24px;
+      margin-top: 10px;
+    }
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.85);
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+    }
+    .modal.active {
+      display: flex;
+    }
+    .modal-content {
+      background: #1f1b2e;
+      border-radius: 40px;
+      padding: 26px 22px;
+      width: 90%;
+      max-width: 380px;
+      border: 2px solid #ffd966;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8);
+      max-height: 80vh;
+      overflow-y: auto;
+    }
+    .input-field {
+      width: 100%;
+      padding: 14px 16px;
+      margin: 8px 0;
+      border-radius: 24px;
+      background: #2a2340;
+      border: 1px solid rgba(255, 215, 0, 0.5);
+      color: white;
+      font-size: 1rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .input-field:focus {
+      border-color: #f7b32b;
+      box-shadow: 0 0 12px #f7b32b60;
+    }
+    .wheel-container {
+      display: flex;
+      justify-content: space-around;
+      margin: 16px 0;
+      gap: 10px;
+    }
+    .wheel-col {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+    }
+    .wheel-btn {
+      background: none;
+      border: none;
+      font-size: 1.8rem;
+      color: #ffd966;
+      cursor: pointer;
+      padding: 0 10px;
+      line-height: 1;
+      transition: 0.15s;
+    }
+    .wheel-btn:active {
+      transform: scale(0.85);
+      color: #fff;
+    }
+    .wheel-value {
+      font-size: 1.4rem;
+      font-weight: 700;
+      background: #1e1836;
+      padding: 6px 16px;
+      border-radius: 24px;
+      min-width: 70px;
+      text-align: center;
+      border: 1px solid #ffd96640;
+    }
+    .error-text {
+      color: #ff6b6b;
+      font-size: 0.85rem;
+      margin-top: 2px;
+      display: none;
+      font-weight: 500;
+    }
+    .friend-row {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .friend-avatar {
+      font-size: 2.5rem;
+      width: 50px;
+      text-align: center;
+    }
+    .streak-badge {
+      background: #ff6b6b;
+      border-radius: 20px;
+      padding: 3px 10px;
+      font-weight: 700;
+      font-size: 0.85rem;
+      display: inline-block;
+      margin-left: 6px;
+    }
+    .achievement-card {
+      background: rgba(30, 25, 50, 0.9);
+      border-radius: 20px;
+      padding: 14px;
+      margin: 8px 0;
+      border: 1px solid #ffd96640;
+    }
+    .glow-achievement {
+      box-shadow: 0 0 22px #f9c74f;
+    }
+    .border-gold { border: 2px solid #f9c74f !important; box-shadow: 0 0 35px #f9c74faa, 0 8px 20px rgba(0,0,0,0.6) !important; }
+    .border-green { border: 2px solid #6fcf97 !important; box-shadow: 0 0 35px #6fcf97cc, 0 8px 20px rgba(0,0,0,0.6) !important; }
+    .border-blue { border: 2px solid #56ccf2 !important; box-shadow: 0 0 45px #56ccf2, inset 0 0 15px rgba(86,204,242,0.4) !important; }
+    .border-purple { border: 2px solid #c77dff !important; box-shadow: 0 0 55px #c77dff, 0 0 25px #9d4edd !important; animation: purpleGlow 1.8s infinite alternate; }
+    .border-red { border: 2px solid #ff6b6b !important; box-shadow: 0 0 35px #ff6b6b !important; }
+    .border-rainbow {
+      border: 2px solid transparent !important;
+      background: linear-gradient(45deg, #ff6b6b, #feca57, #48dbfb, #ff9ff3) border-box;
+      box-shadow: 0 0 40px rgba(255,255,255,0.3) !important;
+    }
+    @keyframes purpleGlow {
+      from { box-shadow: 0 0 40px #c77dff, 0 0 20px #9d4edd; }
+      to { box-shadow: 0 0 70px #e0aaff, 0 0 35px #b185db; }
+    }
   </style>
 </head>
 <body>
 <div class="app" id="appContainer">
-  <div class="app-header"><h1>✨ Узы Света</h1></div>
+  <div class="app-header">
+    <h1>✨ Узы Света</h1>
+  </div>
+
   <div class="tabs" id="mainTabs" style="display:none;">
     <button class="tab active" data-tab="friends">👥 Друзья</button>
     <button class="tab" data-tab="tasks">📋 Задания</button>
     <button class="tab" data-tab="achievements">🏅 Достижения</button>
     <button class="tab" data-tab="profile">👤 Профиль</button>
   </div>
+
   <div id="authScreen" class="screen active"></div>
   <div id="friendsScreen" class="screen"></div>
   <div id="tasksScreen" class="screen"></div>
@@ -56,275 +291,719 @@
 
 <script>
 (function() {
-  const STORAGE = 'uzi_complete_v5';
+  // ==================== КОНСТАНТЫ ====================
+  const STORAGE_KEY = 'uzi_sveta_complete';
+  const SESSION_KEY = 'uzi_session';
   const MONTHS = ['Янв','Фев','Мар','Апр','Май','Июн','Июл','Авг','Сен','Окт','Ноя','Дек'];
   const BAD_WORDS = ['мат','бля','хуй','пизд','еба','сука','нах','гандон','пидор','чмо','лох','гавно','жопа','член','хер','мудак','урод','дура','идиот','тупой','дебил','даун','педик','аутист'];
-
   const ALL_AVATARS = ['🙂','😎','🤩','🦊','🐼','⭐','💎','👑','🔥','🌈','🌟','💜','🎭','🐉','🍀','🤝','💔','🎃','🎅','👻','🐱','🐶','🦄','🐲','🎉','💖','🦋','🐳','🌺','🍕','🎸','🚀','💡','🧩','🎯','🛡️','⚡','❄️','🌪️','🪐'];
-  
   const ALL_CARDS = ['default','golden','sheriff','night','diamond','royal','master','ocean','forest','sunset','galaxy','phoenix','unicorn','dragon','crystal','shadow','sparkle','thunder','angel','demon','rainbow','meteor','comet','nebula','aurora'];
-
   const TITLES = [
-    {name:'Знакомый',min:0},{name:'Товарищ',min:50},{name:'Приятель',min:150},
-    {name:'Хороший друг',min:300},{name:'Лучший друг',min:600},
-    {name:'Родной',min:1000},{name:'🌟 Родственная душа',min:2000},{name:'🔥 Брат навек',min:3500}
+    {name:'Знакомый', min:0}, {name:'Товарищ', min:50}, {name:'Приятель', min:150},
+    {name:'Хороший друг', min:300}, {name:'Лучший друг', min:600},
+    {name:'Родной', min:1000}, {name:'🌟 Родственная душа', min:2000}, {name:'🔥 Брат навек', min:3500}
   ];
-
   const ACHIEVEMENTS = [
-    {id:'f1',name:'🤝 Первый друг',desc:'Добавь 1 друга',reward:'avatar:🤝'},
-    {id:'f3',name:'👥 Три друга',desc:'3 друга',reward:'card:golden'},
-    {id:'f5',name:'🌟 Пять друзей',desc:'5 друзей',reward:'card:diamond'},
-    {id:'f10',name:'💎 Десять друзей',desc:'10 друзей',reward:'card:ocean'},
-    {id:'c50',name:'💯 50 кубков',desc:'Друг набрал 50 кубков',reward:'avatar:💯'},
-    {id:'c100',name:'🔥 100 кубков',desc:'Друг набрал 100 кубков',reward:'avatar:🔥'},
-    {id:'c500',name:'🏆 500 кубков',desc:'Друг набрал 500 кубков',reward:'avatar:🏆'},
-    {id:'c1000',name:'👑 Родной',desc:'Друг набрал 1000 кубков',reward:'card:sheriff'},
-    {id:'c2000',name:'💎 Душа',desc:'Друг набрал 2000 кубков',reward:'card:royal'},
-    {id:'c3500',name:'🔥 Брат навек',desc:'Друг набрал 3500 кубков',reward:'card:dragon'},
-    {id:'q1',name:'💔 Первая ссора',desc:'Поссориться 1 раз',reward:'avatar:💔'},
-    {id:'q5',name:'💢 5 ссор',desc:'Поссориться 5 раз',reward:'avatar:💢'},
-    {id:'s3',name:'🌈 3 дня мира',desc:'3 дня без ссор',reward:'avatar:🌈'},
-    {id:'s7',name:'☀️ 7 дней мира',desc:'7 дней без ссор',reward:'avatar:☀️'},
-    {id:'s14',name:'🌙 14 дней мира',desc:'14 дней без ссор',reward:'card:night'},
-    {id:'s30',name:'⭐ 30 дней мира',desc:'30 дней без ссор',reward:'card:galaxy'},
-    {id:'s60',name:'🪐 60 дней мира',desc:'60 дней без ссор',reward:'card:nebula'},
-    {id:'t5',name:'📅 5 заданий',desc:'Выполни 5 заданий',reward:'avatar:📅'},
-    {id:'t20',name:'📋 20 заданий',desc:'Выполни 20 заданий',reward:'card:forest'},
-    {id:'t50',name:'🎯 50 заданий',desc:'Выполни 50 заданий',reward:'card:phoenix'},
-    {id:'t100',name:'💪 100 заданий',desc:'Выполни 100 заданий',reward:'card:unicorn'},
-    {id:'col3',name:'🃏 3 карточки',desc:'Открой 3 карточки',reward:'avatar:🎭'},
-    {id:'col5',name:'🎴 5 карточек',desc:'Открой 5 карточек',reward:'avatar:🎴'},
-    {id:'col10',name:'🃏 Коллекционер',desc:'Открой 10 карточек',reward:'card:rainbow'},
-    {id:'all100',name:'🎖️ Все 100+',desc:'У всех друзей 100+ кубков',reward:'card:master'}
+    {id:'f1',  name:'🤝 Первый друг',     desc:'Добавь 1 друга',              reward:'avatar:🤝'},
+    {id:'f3',  name:'👥 Три друга',       desc:'Добавь 3 друзей',             reward:'card:golden'},
+    {id:'f5',  name:'🌟 Пять друзей',     desc:'Добавь 5 друзей',             reward:'card:diamond'},
+    {id:'f10', name:'💎 Десять друзей',   desc:'Добавь 10 друзей',            reward:'card:ocean'},
+    {id:'c50', name:'💯 50 кубков',       desc:'Любой друг набрал 50 кубков',  reward:'avatar:💯'},
+    {id:'c100',name:'🔥 100 кубков',      desc:'Любой друг набрал 100 кубков', reward:'avatar:🔥'},
+    {id:'c500',name:'🏆 500 кубков',      desc:'Любой друг набрал 500 кубков', reward:'avatar:🏆'},
+    {id:'c1000',name:'👑 Родной',         desc:'Любой друг набрал 1000 кубков',reward:'card:sheriff'},
+    {id:'c2000',name:'💎 Душа',           desc:'Любой друг набрал 2000 кубков',reward:'card:royal'},
+    {id:'c3500',name:'🔥 Брат навек',     desc:'Любой друг набрал 3500 кубков',reward:'card:dragon'},
+    {id:'q1',  name:'💔 Первая ссора',    desc:'Поссориться 1 раз',            reward:'avatar:💔'},
+    {id:'q5',  name:'💢 5 ссор',          desc:'Поссориться 5 раз',            reward:'avatar:💢'},
+    {id:'s3',  name:'🌈 3 дня мира',      desc:'3 дня без ссор',              reward:'avatar:🌈'},
+    {id:'s7',  name:'☀️ 7 дней мира',     desc:'7 дней без ссор',             reward:'avatar:☀️'},
+    {id:'s14', name:'🌙 14 дней мира',    desc:'14 дней без ссор',            reward:'card:night'},
+    {id:'s30', name:'⭐ 30 дней мира',    desc:'30 дней без ссор',            reward:'card:galaxy'},
+    {id:'s60', name:'🪐 60 дней мира',    desc:'60 дней без ссор',            reward:'card:nebula'},
+    {id:'t5',  name:'📅 5 заданий',       desc:'Выполни 5 заданий',           reward:'avatar:📅'},
+    {id:'t20', name:'📋 20 заданий',      desc:'Выполни 20 заданий',          reward:'card:forest'},
+    {id:'t50', name:'🎯 50 заданий',      desc:'Выполни 50 заданий',          reward:'card:phoenix'},
+    {id:'t100',name:'💪 100 заданий',     desc:'Выполни 100 заданий',         reward:'card:unicorn'},
+    {id:'col3',name:'🃏 3 карточки',      desc:'Открой 3 карточки',           reward:'avatar:🎭'},
+    {id:'col5',name:'🎴 5 карточек',      desc:'Открой 5 карточек',           reward:'avatar:🎴'},
+    {id:'col10',name:'🃏 Коллекционер',   desc:'Открой 10 карточек',          reward:'card:rainbow'},
+    {id:'all100',name:'🎖️ Все 100+',      desc:'У всех друзей 100+ кубков',   reward:'card:master'}
   ];
 
-  let users = {}, currentUser = null;
+  // ==================== СОСТОЯНИЕ ====================
+  let users = {};
+  let currentUser = null;
 
-  function load() { const s = localStorage.getItem(STORAGE); if (s) { try { users = JSON.parse(s); } catch(e) { users = {}; } } }
-  function save() { localStorage.setItem(STORAGE, JSON.stringify(users)); }
-  function saveSession(email) { localStorage.setItem('uzi_session', email); }
-  function getSession() { return localStorage.getItem('uzi_session'); }
-  function clearSession() { localStorage.removeItem('uzi_session'); }
-  function bad(t) { return BAD_WORDS.some(w => t.toLowerCase().replace(/[^а-яёa-z]/g,'').includes(w)); }
-  function findByEmail(email) { return users[email.trim().toLowerCase()]; }
-  function getTitle(cups) { return TITLES.reduce((a,b)=>cups>=b.min?b:a); }
-  function getCardClass(cups, card) {
-    if (card==='rainbow') return 'border-rainbow';
-    if (card==='dragon'||card==='royal') return 'border-purple';
-    if (card==='sheriff'||card==='golden'||card==='phoenix') return 'border-gold';
-    if (card==='ocean'||card==='diamond') return 'border-blue';
-    if (card==='master'||card==='forest') return 'border-green';
-    if (card==='night'||card==='galaxy'||card==='nebula') return 'border-purple';
-    if (cups>=3500) return 'border-purple';
-    if (cups>=2000) return 'border-purple';
-    if (cups>=1000) return 'border-blue';
-    if (cups>=500) return 'border-green';
-    if (cups>=200) return 'border-gold';
+  // ==================== БАЗА ДАННЫХ ====================
+  function loadUsers() {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) {
+      try {
+        users = JSON.parse(saved);
+        if (typeof users !== 'object' || users === null) users = {};
+      } catch (e) {
+        users = {};
+      }
+    }
+  }
+  function saveUsers() {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(users));
+  }
+  function saveSession(email) {
+    localStorage.setItem(SESSION_KEY, email);
+  }
+  function getSession() {
+    return localStorage.getItem(SESSION_KEY);
+  }
+  function clearSession() {
+    localStorage.removeItem(SESSION_KEY);
+  }
+
+  // ==================== ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ====================
+  function containsBadWords(text) {
+    const cleaned = text.toLowerCase().replace(/[^а-яёa-z]/g, '');
+    return BAD_WORDS.some(word => cleaned.includes(word));
+  }
+  function findUserByEmail(email) {
+    const cleanEmail = email.trim().toLowerCase();
+    return users[cleanEmail] || null;
+  }
+  function getTitleByCups(cups) {
+    for (let i = TITLES.length - 1; i >= 0; i--) {
+      if (cups >= TITLES[i].min) return TITLES[i];
+    }
+    return TITLES[0];
+  }
+  function getCardClass(cups, selectedCard) {
+    if (selectedCard === 'rainbow') return 'border-rainbow';
+    if (selectedCard === 'dragon' || selectedCard === 'royal' || selectedCard === 'nebula') return 'border-purple';
+    if (selectedCard === 'sheriff' || selectedCard === 'golden' || selectedCard === 'phoenix' || selectedCard === 'unicorn') return 'border-gold';
+    if (selectedCard === 'ocean' || selectedCard === 'diamond' || selectedCard === 'sparkle') return 'border-blue';
+    if (selectedCard === 'master' || selectedCard === 'forest' || selectedCard === 'crystal') return 'border-green';
+    if (selectedCard === 'night' || selectedCard === 'galaxy' || selectedCard === 'shadow') return 'border-purple';
+    if (selectedCard === 'demon' || selectedCard === 'thunder') return 'border-red';
+    if (cups >= 3500) return 'border-purple';
+    if (cups >= 2000) return 'border-purple';
+    if (cups >= 1000) return 'border-blue';
+    if (cups >= 500) return 'border-green';
+    if (cups >= 200) return 'border-gold';
     return '';
   }
 
+  // ==================== ВЫХОД ИЗ АККАУНТА ====================
   function logout() {
-    currentUser = null; clearSession();
+    currentUser = null;
+    clearSession();
     document.getElementById('mainTabs').style.display = 'none';
-    renderAuth();
+    renderAuthScreen();
   }
 
-  // ========== АВТОРИЗАЦИЯ ==========
-  function renderAuth() {
-    document.getElementById('authScreen').classList.add('active');
-    const c = document.getElementById('authScreen');
-    c.innerHTML = `
-      <div class="card" style="margin-top:40px;"><h2>🌟 Вход / Регистрация</h2>
-      <input id="authEmail" class="input-field" placeholder="Почта"><span class="error-text" id="emailErr"></span>
-      <input id="authCode" class="input-field" placeholder="Код (8 символов)" maxlength="8"><span class="error-text" id="codeErr"></span>
-      <div id="regExtra" style="display:none;"><input id="authNick" class="input-field" placeholder="Придумай ник"><span class="error-text" id="nickErr"></span>
-      <label style="color:#ddd;">📅 Дата рождения:</label>
-      <div class="wheel-container">
-        <div class="wheel-col"><button class="wheel-btn" id="rDu">▲</button><span class="wheel-value" id="rDv">15</span><button class="wheel-btn" id="rDd">▼</button></div>
-        <div class="wheel-col"><button class="wheel-btn" id="rMu">▲</button><span class="wheel-value" id="rMv">Янв</span><button class="wheel-btn" id="rMd">▼</button></div>
-        <div class="wheel-col"><button class="wheel-btn" id="rYu">▲</button><span class="wheel-value" id="rYv">2005</span><button class="wheel-btn" id="rYd">▼</button></div>
-      </div></div>
+  // ==================== РЕНДЕР ЭКРАНА АВТОРИЗАЦИИ ====================
+  function renderAuthScreen() {
+    const authScreen = document.getElementById('authScreen');
+    authScreen.classList.add('active');
+    authScreen.innerHTML = '';
+
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.style.marginTop = '40px';
+
+    card.innerHTML = `
+      <h2 style="color:#ffd966; text-align:center; margin-bottom:16px;">🌟 Вход / Регистрация</h2>
+      <input type="email" id="authEmail" class="input-field" placeholder="Почта (example@mail.com)" autocomplete="email">
+      <span class="error-text" id="emailErr"></span>
+      <input type="text" id="authCode" class="input-field" placeholder="Код (ровно 8 символов)" maxlength="8" autocomplete="off">
+      <span class="error-text" id="codeErr"></span>
+      <div id="regExtra" style="display:none;">
+        <input type="text" id="authNick" class="input-field" placeholder="Придумай ник" autocomplete="off">
+        <span class="error-text" id="nickErr"></span>
+        <label style="color:#ddd; display:block; margin-top:12px;">📅 Дата рождения:</label>
+        <div class="wheel-container">
+          <div class="wheel-col">
+            <button class="wheel-btn" id="rDu">▲</button>
+            <span class="wheel-value" id="rDv">15</span>
+            <button class="wheel-btn" id="rDd">▼</button>
+          </div>
+          <div class="wheel-col">
+            <button class="wheel-btn" id="rMu">▲</button>
+            <span class="wheel-value" id="rMv">Янв</span>
+            <button class="wheel-btn" id="rMd">▼</button>
+          </div>
+          <div class="wheel-col">
+            <button class="wheel-btn" id="rYu">▲</button>
+            <span class="wheel-value" id="rYv">2005</span>
+            <button class="wheel-btn" id="rYd">▼</button>
+          </div>
+        </div>
+      </div>
       <button class="btn" id="authBtn">ВОЙТИ</button>
-      <p style="text-align:center;"><a id="toggleMode" style="color:#ffd966;cursor:pointer;">Нет аккаунта? Регистрация</a></p></div>`;
-    
-    let mode='login', rD=15, rM=6, rY=2005;
-    function upd(){ document.getElementById('rDv').textContent=rD; document.getElementById('rMv').textContent=MONTHS[rM-1]; document.getElementById('rYv').textContent=rY; }
-    document.getElementById('toggleMode').onclick = ()=>{ mode=mode==='login'?'register':'login'; document.getElementById('regExtra').style.display=mode==='register'?'block':'none'; document.getElementById('authBtn').textContent=mode==='login'?'ВОЙТИ':'ЗАРЕГИСТРИРОВАТЬСЯ'; };
-    document.getElementById('rDu').onclick=()=>{rD=rD%31+1;upd();}; document.getElementById('rDd').onclick=()=>{rD=rD-1||31;upd();};
-    document.getElementById('rMu').onclick=()=>{rM=rM%12+1;upd();}; document.getElementById('rMd').onclick=()=>{rM=rM-1||12;upd();};
-    document.getElementById('rYu').onclick=()=>{if(rY<2026)rY++;upd();}; document.getElementById('rYd').onclick=()=>{if(rY>1920)rY--;upd();};
-    
-    document.getElementById('authBtn').onclick = ()=>{
-      const email = document.getElementById('authEmail').value.trim().toLowerCase();
-      const code = document.getElementById('authCode').value.trim();
-      if (!email.includes('@')) return alert('Введи почту');
-      if (code.length!==8) return alert('Код 8 символов');
-      if (mode==='register'){
-        const nick = document.getElementById('authNick').value.trim();
-        if (!nick || bad(nick)) return alert('Некорректный ник');
-        if (findByEmail(email)) return alert('Почта занята');
-        users[email] = {email,nick,code,profile:{avatar:'🙂',day:rD,month:rM,year:rY},friends:[],unlockedAvatars:['🙂'],unlockedCards:['default'],selectedCard:'default',claimed:[],totalTasks:0,quarrelCount:0};
-        save(); currentUser=email; saveSession(email); enterApp();
-      } else {
-        const u = findByEmail(email);
-        if (!u) return alert('Аккаунт не найден');
-        if (u.code!==code) return alert('Неверный код');
-        currentUser=email; saveSession(email); enterApp();
+      <p style="text-align:center; margin-top:12px;">
+        <a id="toggleMode" style="color:#ffd966; cursor:pointer; font-weight:600;">Нет аккаунта? Регистрация</a>
+      </p>
+    `;
+
+    authScreen.appendChild(card);
+
+    // Логика переключения режимов
+    let mode = 'login';
+    let regDay = 15, regMonth = 6, regYear = 2005;
+
+    const regExtra = document.getElementById('regExtra');
+    const authBtn = document.getElementById('authBtn');
+    const toggleModeLink = document.getElementById('toggleMode');
+    const emailInput = document.getElementById('authEmail');
+    const codeInput = document.getElementById('authCode');
+    const nickInput = document.getElementById('authNick');
+    const emailErr = document.getElementById('emailErr');
+    const codeErr = document.getElementById('codeErr');
+    const nickErr = document.getElementById('nickErr');
+
+    function updateWheels() {
+      document.getElementById('rDv').textContent = regDay;
+      document.getElementById('rMv').textContent = MONTHS[regMonth - 1];
+      document.getElementById('rYv').textContent = regYear;
+    }
+
+    toggleModeLink.addEventListener('click', () => {
+      mode = mode === 'login' ? 'register' : 'login';
+      regExtra.style.display = mode === 'register' ? 'block' : 'none';
+      authBtn.textContent = mode === 'login' ? 'ВОЙТИ' : 'ЗАРЕГИСТРИРОВАТЬСЯ';
+      toggleModeLink.textContent = mode === 'login' ? 'Нет аккаунта? Регистрация' : 'Уже есть аккаунт? Войти';
+      emailErr.style.display = 'none';
+      codeErr.style.display = 'none';
+      nickErr.style.display = 'none';
+    });
+
+    document.getElementById('rDu').addEventListener('click', () => { regDay = regDay % 31 + 1; updateWheels(); });
+    document.getElementById('rDd').addEventListener('click', () => { regDay = regDay - 1 || 31; updateWheels(); });
+    document.getElementById('rMu').addEventListener('click', () => { regMonth = regMonth % 12 + 1; updateWheels(); });
+    document.getElementById('rMd').addEventListener('click', () => { regMonth = regMonth - 1 || 12; updateWheels(); });
+    document.getElementById('rYu').addEventListener('click', () => { if (regYear < 2026) regYear++; updateWheels(); });
+    document.getElementById('rYd').addEventListener('click', () => { if (regYear > 1920) regYear--; updateWheels(); });
+
+    authBtn.addEventListener('click', () => {
+      const email = emailInput.value.trim().toLowerCase();
+      const code = codeInput.value.trim();
+
+      emailErr.style.display = 'none';
+      codeErr.style.display = 'none';
+      nickErr.style.display = 'none';
+
+      if (!email || !email.includes('@')) {
+        emailErr.textContent = 'Введи корректную почту';
+        emailErr.style.display = 'block';
+        return;
       }
-    };
+      if (code.length !== 8) {
+        codeErr.textContent = 'Код должен быть ровно 8 символов';
+        codeErr.style.display = 'block';
+        return;
+      }
+
+      if (mode === 'register') {
+        const nick = nickInput.value.trim();
+        if (!nick) {
+          nickErr.textContent = 'Введи ник';
+          nickErr.style.display = 'block';
+          return;
+        }
+        if (containsBadWords(nick)) {
+          nickErr.textContent = 'Ник содержит запрещённые слова';
+          nickErr.style.display = 'block';
+          return;
+        }
+        if (findUserByEmail(email)) {
+          emailErr.textContent = 'Эта почта уже используется';
+          emailErr.style.display = 'block';
+          return;
+        }
+
+        users[email] = {
+          email: email,
+          nick: nick,
+          code: code,
+          profile: {
+            avatar: '🙂',
+            day: regDay,
+            month: regMonth,
+            year: regYear
+          },
+          friends: [],
+          unlockedAvatars: ['🙂'],
+          unlockedCards: ['default'],
+          selectedCard: 'default',
+          claimedAchievements: [],
+          totalTasksCompleted: 0,
+          quarrelCount: 0
+        };
+        saveUsers();
+        currentUser = email;
+        saveSession(email);
+        enterApp();
+      } else {
+        const user = findUserByEmail(email);
+        if (!user) {
+          emailErr.textContent = 'Аккаунт с такой почтой не найден';
+          emailErr.style.display = 'block';
+          return;
+        }
+        if (user.code !== code) {
+          codeErr.textContent = 'Неверный код';
+          codeErr.style.display = 'block';
+          return;
+        }
+        currentUser = email;
+        saveSession(email);
+        enterApp();
+      }
+    });
   }
 
   function enterApp() {
     document.getElementById('authScreen').classList.remove('active');
-    document.getElementById('mainTabs').style.display='flex';
+    document.getElementById('mainTabs').style.display = 'flex';
     switchTab('friends');
   }
 
-  const tabs = document.querySelectorAll('#mainTabs .tab');
-  const screens = {friends:document.getElementById('friendsScreen'),tasks:document.getElementById('tasksScreen'),achievements:document.getElementById('achievementsScreen'),profile:document.getElementById('profileScreen')};
-  function switchTab(t) {
-    tabs.forEach(b=>b.classList.remove('active'));
-    document.querySelector(`#mainTabs .tab[data-tab="${t}"]`).classList.add('active');
-    Object.values(screens).forEach(s=>s.classList.remove('active'));
-    screens[t].classList.add('active');
-    if(t==='friends') renderFriends();
-    if(t==='tasks') renderTasks();
-    if(t==='achievements') renderAchievements();
-    if(t==='profile') renderProfile();
-  }
-  tabs.forEach(t=>t.addEventListener('click',()=>switchTab(t.dataset.tab)));
+  // ==================== ПЕРЕКЛЮЧЕНИЕ ВКЛАДОК ====================
+  const tabButtons = document.querySelectorAll('#mainTabs .tab');
+  const screens = {
+    friends: document.getElementById('friendsScreen'),
+    tasks: document.getElementById('tasksScreen'),
+    achievements: document.getElementById('achievementsScreen'),
+    profile: document.getElementById('profileScreen')
+  };
 
-  // ========== ДРУЗЬЯ ==========
-  function renderFriends() {
-    const c = screens.friends; c.innerHTML='';
-    const u = users[currentUser];
-    if (!u.friends.length) c.innerHTML='<p style="text-align:center;color:#aaa;">Пока нет друзей</p>';
-    else u.friends.forEach(f=>{
-      const fu = findByEmail(f.email);
-      const title = getTitle(f.cups);
-      const cardCls = getCardClass(f.cups, fu?.selectedCard);
-      const div = document.createElement('div'); div.className = `card ${cardCls}`;
-      div.innerHTML = `<div style="display:flex;align-items:center;gap:10px;"><span style="font-size:2.2rem;">${fu?.profile?.avatar||'🙂'}</span><div><strong>${fu?.nick||f.email}</strong><br>${title.name}</div><div>🏆${f.cups} <span class="streak-badge">🔥${f.streak||0}д</span></div></div>`;
-      c.appendChild(div);
-    });
-    const add = document.createElement('button'); add.className='btn'; add.textContent='➕ Добавить друга';
-    add.onclick = ()=> showAddFriendModal(); c.appendChild(add);
+  function switchTab(tabName) {
+    tabButtons.forEach(btn => btn.classList.remove('active'));
+    const activeTab = document.querySelector(`#mainTabs .tab[data-tab="${tabName}"]`);
+    if (activeTab) activeTab.classList.add('active');
+
+    Object.values(screens).forEach(screen => screen.classList.remove('active'));
+    if (screens[tabName]) screens[tabName].classList.add('active');
+
+    if (tabName === 'friends') renderFriendsScreen();
+    if (tabName === 'tasks') renderTasksScreen();
+    if (tabName === 'achievements') renderAchievementsScreen();
+    if (tabName === 'profile') renderProfileScreen();
   }
 
-  function showAddFriendModal() {
-    const modal = document.createElement('div'); modal.className='modal active';
-    modal.innerHTML = `<div class="modal-content"><h3>➕ Добавить друга</h3><input id="addEmailInput" class="input-field" placeholder="Почта друга"><span class="error-text" id="addErr"></span><div id="addPreview" style="margin:12px 0;min-height:60px;"></div><button class="btn" id="searchBtn">🔍 НАЙТИ</button><button class="btn" id="confirmAddBtn" disabled>ПОДТВЕРДИТЬ</button><button class="btn" id="cancelAdd" style="background:#555;">ОТМЕНА</button></div>`;
-    document.body.appendChild(modal);
-    const inp = modal.querySelector('#addEmailInput'), err = modal.querySelector('#addErr'), preview = modal.querySelector('#addPreview'), search = modal.querySelector('#searchBtn'), confirm = modal.querySelector('#confirmAddBtn');
-    let found = null;
-    search.onclick = ()=>{
-      const email = inp.value.trim().toLowerCase(); err.style.display='none'; preview.innerHTML=''; confirm.disabled=true; found=null;
-      if (!email.includes('@')) { err.textContent='Введи почту'; err.style.display='block'; return; }
-      found = findByEmail(email);
-      const u = users[currentUser];
-      if (!found) { err.textContent='❌ Не найден'; err.style.display='block'; }
-      else if (found.email===currentUser) { err.textContent='❌ Нельзя добавить себя'; err.style.display='block'; }
-      else if (u.friends.some(f=>f.email===found.email)) { err.textContent='❌ Уже в друзьях'; err.style.display='block'; }
-      else { preview.innerHTML = `<div class="card"><span style="font-size:2rem;">${found.profile.avatar}</span> <strong>${found.nick}</strong></div>`; confirm.disabled=false; }
-    };
-    confirm.onclick = ()=>{
-      if (!found) return;
-      const u = users[currentUser];
-      u.friends.push({email:found.email,cups:0,streak:0});
-      if (!found.friends.some(f=>f.email===currentUser)) found.friends.push({email:currentUser,cups:0,streak:0});
-      save(); renderFriends(); modal.remove();
-    };
-    modal.querySelector('#cancelAdd').onclick = ()=> modal.remove();
-  }
+  tabButtons.forEach(btn => {
+    btn.addEventListener('click', () => switchTab(btn.dataset.tab));
+  });
 
-  // ========== ЗАДАНИЯ ==========
-  function renderTasks() {
-    const c = screens.tasks; c.innerHTML='<h3>📋 Задания</h3>';
-    const u = users[currentUser];
-    u.friends.forEach(f=>{
-      const fu = findByEmail(f.email);
-      const div = document.createElement('div'); div.className='card'; div.innerHTML=`<strong>${fu?.nick||f.email}</strong>`;
-      [{l:'🚶 Прогулка +20',v:20},{l:'🏠 В гости +25',v:25},{l:'🎮 Игра +22',v:22},{l:'🆘 Помощь +15',v:15},{l:'🎁 Сюрприз +30',v:30}].forEach(t=>{
-        const b = document.createElement('button'); b.className='btn'; b.textContent=t.l;
-        b.onclick = ()=>{ f.cups+=t.v; f.streak=(f.streak||0)+1; u.totalTasks=(u.totalTasks||0)+1; if(fu){ const rf=fu.friends.find(x=>x.email===currentUser); if(rf) rf.cups+=t.v; } save(); renderTasks(); renderFriends(); };
-        div.appendChild(b);
+  // ==================== ЭКРАН ДРУЗЕЙ ====================
+  function renderFriendsScreen() {
+    const container = screens.friends;
+    container.innerHTML = '';
+    const user = users[currentUser];
+    if (!user) return;
+
+    if (!user.friends || user.friends.length === 0) {
+      container.innerHTML = '<p style="text-align:center; color:#aaa; margin-top:60px;">Пока нет друзей. Добавь первого!</p>';
+    } else {
+      user.friends.forEach(friend => {
+        const friendUser = findUserByEmail(friend.email);
+        const title = getTitleByCups(friend.cups);
+        const cardClass = getCardClass(friend.cups, friendUser ? friendUser.selectedCard : 'default');
+
+        const card = document.createElement('div');
+        card.className = `card ${cardClass}`;
+
+        card.innerHTML = `
+          <div class="friend-row">
+            <span class="friend-avatar">${friendUser ? friendUser.profile.avatar : '🙂'}</span>
+            <div style="flex:1;">
+              <strong style="font-size:1.1rem;">${friendUser ? friendUser.nick : friend.email}</strong>
+              <div style="color:#f9c74f; font-size:0.9rem;">${title.name}</div>
+            </div>
+            <div style="text-align:right;">
+              <div style="font-weight:700;">🏆 ${friend.cups}</div>
+              <span class="streak-badge">🔥 ${friend.streak || 0} дн</span>
+            </div>
+          </div>
+        `;
+        container.appendChild(card);
       });
-      const q = document.createElement('button'); q.className='btn danger'; q.textContent='💢 Поссориться -18';
-      q.onclick = ()=>{ f.cups=Math.max(0,f.cups-18); f.streak=0; u.quarrelCount=(u.quarrelCount||0)+1; save(); renderTasks(); };
-      div.appendChild(q); c.appendChild(div);
-    });
+    }
+
+    const addButton = document.createElement('button');
+    addButton.className = 'btn';
+    addButton.textContent = '➕ Добавить друга';
+    addButton.addEventListener('click', () => showAddFriendModal());
+    container.appendChild(addButton);
   }
 
-  // ========== ДОСТИЖЕНИЯ ==========
-  function renderAchievements() {
-    const c = screens.achievements; c.innerHTML='<h3>🏅 Достижения</h3>';
-    const u = users[currentUser];
-    ACHIEVEMENTS.forEach(a=>{
-      const done = u.claimed?.includes(a.id);
-      const check = ()=>{
-        const f = u.friends;
-        switch(a.id){
-          case 'f1': return f.length>=1; case 'f3': return f.length>=3; case 'f5': return f.length>=5; case 'f10': return f.length>=10;
-          case 'c50': return f.some(x=>x.cups>=50); case 'c100': return f.some(x=>x.cups>=100); case 'c500': return f.some(x=>x.cups>=500);
-          case 'c1000': return f.some(x=>x.cups>=1000); case 'c2000': return f.some(x=>x.cups>=2000); case 'c3500': return f.some(x=>x.cups>=3500);
-          case 'q1': return (u.quarrelCount||0)>=1; case 'q5': return (u.quarrelCount||0)>=5;
-          case 's3': return f.some(x=>(x.streak||0)>=3); case 's7': return f.some(x=>(x.streak||0)>=7);
-          case 's14': return f.some(x=>(x.streak||0)>=14); case 's30': return f.some(x=>(x.streak||0)>=30); case 's60': return f.some(x=>(x.streak||0)>=60);
-          case 't5': return (u.totalTasks||0)>=5; case 't20': return (u.totalTasks||0)>=20; case 't50': return (u.totalTasks||0)>=50; case 't100': return (u.totalTasks||0)>=100;
-          case 'col3': return (u.unlockedCards||[]).length>=3; case 'col5': return (u.unlockedCards||[]).length>=5; case 'col10': return (u.unlockedCards||[]).length>=10;
-          case 'all100': return f.length>0 && f.every(x=>x.cups>=100);
-          default: return false;
-        }
-      };
-      const can = check() && !done;
-      const div = document.createElement('div'); div.className='card';
-      div.innerHTML = `<strong>${a.name}</strong><br><small>${a.desc} | Награда: ${a.reward}</small>`;
-      if (done) div.innerHTML+='<p style="color:#6fcf97;">✅ Получено</p>';
-      else if (can) { const btn=document.createElement('button'); btn.className='btn'; btn.textContent='🎁 Получить';
-        btn.onclick = ()=>{ if(!u.claimed) u.claimed=[]; u.claimed.push(a.id); const [t,v]=a.reward.split(':'); if(t==='avatar'&&!u.unlockedAvatars.includes(v)) u.unlockedAvatars.push(v); if(t==='card'&&!u.unlockedCards.includes(v)) u.unlockedCards.push(v); save(); renderAchievements(); renderProfile(); };
-        div.appendChild(btn); }
-      else div.innerHTML+='<p style="color:#ff6b6b;">🔒 Не выполнено</p>';
-      c.appendChild(div);
-    });
-  }
-
-  // ========== ПРОФИЛЬ ==========
-  function renderProfile() {
-    const c = screens.profile;
-    const u = users[currentUser];
-    const age = new Date().getFullYear()-u.profile.year;
-    const cardCls = getCardClass(0, u.selectedCard);
-    c.innerHTML = `<div class="card ${cardCls}"><div style="text-align:center;"><span style="font-size:4rem;">${u.profile.avatar}</span><h2>${u.nick}</h2><p>📧 ${u.email}</p><p>${age} лет · ${u.profile.day} ${MONTHS[u.profile.month-1]} ${u.profile.year}</p><p>🃏 Карточка: ${u.selectedCard}</p></div><button class="btn" id="editProfBtn">✏️ Изменить</button><button class="btn logout" id="logoutProfileBtn">🚪 Выйти</button></div>`;
-    document.getElementById('editProfBtn').onclick = ()=> showEditModal();
-    document.getElementById('logoutProfileBtn').onclick = ()=> logout();
-  }
-
-  function showEditModal() {
-    const u = users[currentUser];
-    const modal = document.createElement('div'); modal.className='modal active';
-    let eD=u.profile.day,eM=u.profile.month,eY=u.profile.year;
-    modal.innerHTML = `<div class="modal-content"><h3>✏️ Профиль</h3>
-      <div class="wheel-container">
-        <div class="wheel-col"><button class="wheel-btn" id="eDu">▲</button><span class="wheel-value" id="eDv">${eD}</span><button class="wheel-btn" id="eDd">▼</button></div>
-        <div class="wheel-col"><button class="wheel-btn" id="eMu">▲</button><span class="wheel-value" id="eMv">${MONTHS[eM-1]}</span><button class="wheel-btn" id="eMd">▼</button></div>
-        <div class="wheel-col"><button class="wheel-btn" id="eYu">▲</button><span class="wheel-value" id="eYv">${eY}</span><button class="wheel-btn" id="eYd">▼</button></div>
+  // ==================== МОДАЛКА ДОБАВЛЕНИЯ ДРУГА ====================
+  function showAddFriendModal() {
+    const modal = document.createElement('div');
+    modal.className = 'modal active';
+    modal.innerHTML = `
+      <div class="modal-content">
+        <h3 style="color:#ffd966; margin-bottom:14px;">➕ Добавить друга</h3>
+        <p style="color:#aaa; font-size:0.85rem; margin-bottom:6px;">Введи почту друга</p>
+        <input type="email" id="addEmailInput" class="input-field" placeholder="Почта друга" autocomplete="email">
+        <span class="error-text" id="addErr"></span>
+        <div id="addPreview" style="margin:14px 0; min-height:60px;"></div>
+        <button class="btn" id="searchFriendBtn">🔍 НАЙТИ</button>
+        <button class="btn" id="confirmAddBtn" disabled>✅ ПОДТВЕРДИТЬ</button>
+        <button class="btn" id="cancelAddBtn" style="background:#555; margin-top:6px;">ОТМЕНА</button>
       </div>
-      <label>Аватар:</label><div id="avGrid" style="display:flex;flex-wrap:wrap;gap:8px;">${u.unlockedAvatars.map(a=>`<span style="font-size:2rem;cursor:pointer;" data-a="${a}">${a}</span>`).join('')}</div>
-      <label>Карточка:</label><select id="cardSel" style="width:100%;padding:10px;border-radius:20px;background:#2a2340;color:white;">${u.unlockedCards.map(c=>`<option ${u.selectedCard===c?'selected':''}>${c}</option>`).join('')}</select>
-      <button class="btn" id="saveEdit">СОХРАНИТЬ</button></div>`;
+    `;
     document.body.appendChild(modal);
-    function upd(){ modal.querySelector('#eDv').textContent=eD; modal.querySelector('#eMv').textContent=MONTHS[eM-1]; modal.querySelector('#eYv').textContent=eY; }
-    modal.querySelector('#eDu').onclick=()=>{eD=eD%31+1;upd();}; modal.querySelector('#eDd').onclick=()=>{eD=eD-1||31;upd();};
-    modal.querySelector('#eMu').onclick=()=>{eM=eM%12+1;upd();}; modal.querySelector('#eMd').onclick=()=>{eM=eM-1||12;upd();};
-    modal.querySelector('#eYu').onclick=()=>{if(eY<2026)eY++;upd();}; modal.querySelector('#eYd').onclick=()=>{if(eY>1920)eY--;upd();};
-    modal.querySelectorAll('#avGrid span').forEach(s=>s.onclick=function(){ u.profile.avatar=this.dataset.a; save(); renderProfile(); modal.remove(); });
-    modal.querySelector('#saveEdit').onclick = ()=>{ u.profile.day=eD; u.profile.month=eM; u.profile.year=eY; u.selectedCard=modal.querySelector('#cardSel').value; save(); renderProfile(); modal.remove(); };
+
+    const emailInput = modal.querySelector('#addEmailInput');
+    const errorSpan = modal.querySelector('#addErr');
+    const previewDiv = modal.querySelector('#addPreview');
+    const searchBtn = modal.querySelector('#searchFriendBtn');
+    const confirmBtn = modal.querySelector('#confirmAddBtn');
+    const cancelBtn = modal.querySelector('#cancelAddBtn');
+    let foundUser = null;
+
+    searchBtn.addEventListener('click', () => {
+      const email = emailInput.value.trim().toLowerCase();
+      errorSpan.style.display = 'none';
+      previewDiv.innerHTML = '';
+      confirmBtn.disabled = true;
+      foundUser = null;
+
+      if (!email || !email.includes('@')) {
+        errorSpan.textContent = 'Введи корректную почту';
+        errorSpan.style.display = 'block';
+        return;
+      }
+
+      foundUser = findUserByEmail(email);
+      const currentUserData = users[currentUser];
+
+      if (!foundUser) {
+        errorSpan.textContent = '❌ Аккаунт не найден';
+        errorSpan.style.display = 'block';
+      } else if (foundUser.email === currentUser) {
+        errorSpan.textContent = '❌ Нельзя добавить самого себя';
+        errorSpan.style.display = 'block';
+      } else if (currentUserData.friends.some(f => f.email === foundUser.email)) {
+        errorSpan.textContent = '❌ Этот друг уже добавлен';
+        errorSpan.style.display = 'block';
+      } else {
+        previewDiv.innerHTML = `
+          <div class="card" style="display:flex; align-items:center; gap:12px;">
+            <span style="font-size:2rem;">${foundUser.profile.avatar}</span>
+            <div>
+              <strong>${foundUser.nick}</strong>
+              <div style="font-size:0.8rem; color:#aaa;">${foundUser.email}</div>
+            </div>
+          </div>
+        `;
+        confirmBtn.disabled = false;
+      }
+    });
+
+    confirmBtn.addEventListener('click', () => {
+      if (!foundUser) return;
+      const currentUserData = users[currentUser];
+      currentUserData.friends.push({
+        email: foundUser.email,
+        cups: 0,
+        streak: 0
+      });
+      if (!foundUser.friends.some(f => f.email === currentUser)) {
+        foundUser.friends.push({
+          email: currentUser,
+          cups: 0,
+          streak: 0
+        });
+      }
+      saveUsers();
+      renderFriendsScreen();
+      modal.remove();
+    });
+
+    cancelBtn.addEventListener('click', () => modal.remove());
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) modal.remove();
+    });
   }
 
-  load();
-  const session = getSession();
-  if (session && users[session]) { currentUser=session; enterApp(); }
-  else { currentUser=null; clearSession(); renderAuth(); }
+  // ==================== ЭКРАН ЗАДАНИЙ ====================
+  function renderTasksScreen() {
+    const container = screens.tasks;
+    container.innerHTML = '<h3 style="color:#ffd966; margin-bottom:8px;">📋 Задания</h3>';
+    const user = users[currentUser];
+    if (!user || !user.friends.length) {
+      container.innerHTML += '<p style="color:#aaa;">Добавь друга, чтобы выполнять задания</p>';
+      return;
+    }
+
+    user.friends.forEach(friend => {
+      const friendUser = findUserByEmail(friend.email);
+      const card = document.createElement('div');
+      card.className = 'card';
+      card.innerHTML = `<strong style="font-size:1.1rem;">${friendUser ? friendUser.nick : friend.email}</strong>`;
+
+      const tasks = [
+        { label: '🚶 Прогулка', cups: 20 },
+        { label: '🏠 В гости', cups: 25 },
+        { label: '🎮 Игра', cups: 22 },
+        { label: '🆘 Помощь', cups: 15 },
+        { label: '🎁 Сюрприз', cups: 30 }
+      ];
+
+      tasks.forEach(task => {
+        const taskBtn = document.createElement('button');
+        taskBtn.className = 'btn';
+        taskBtn.textContent = `${task.label} +${task.cups}🏆`;
+        taskBtn.addEventListener('click', () => {
+          friend.cups += task.cups;
+          friend.streak = (friend.streak || 0) + 1;
+          user.totalTasksCompleted = (user.totalTasksCompleted || 0) + 1;
+
+          if (friendUser) {
+            const reverseFriend = friendUser.friends.find(f => f.email === currentUser);
+            if (reverseFriend) {
+              reverseFriend.cups += task.cups;
+            }
+          }
+          saveUsers();
+          renderTasksScreen();
+          renderFriendsScreen();
+        });
+        card.appendChild(taskBtn);
+      });
+
+      const quarrelBtn = document.createElement('button');
+      quarrelBtn.className = 'btn danger';
+      quarrelBtn.textContent = '💢 Поссориться -18🏆';
+      quarrelBtn.addEventListener('click', () => {
+        friend.cups = Math.max(0, friend.cups - 18);
+        friend.streak = 0;
+        user.quarrelCount = (user.quarrelCount || 0) + 1;
+        saveUsers();
+        renderTasksScreen();
+        renderFriendsScreen();
+      });
+      card.appendChild(quarrelBtn);
+
+      container.appendChild(card);
+    });
+  }
+
+  // ==================== ЭКРАН ДОСТИЖЕНИЙ ====================
+  function renderAchievementsScreen() {
+    const container = screens.achievements;
+    container.innerHTML = '<h3 style="color:#ffd966; margin-bottom:8px;">🏅 Достижения</h3>';
+    const user = users[currentUser];
+    if (!user) return;
+
+    ACHIEVEMENTS.forEach(achievement => {
+      const isClaimed = user.claimedAchievements && user.claimedAchievements.includes(achievement.id);
+      const canClaim = checkAchievementCondition(user, achievement.id) && !isClaimed;
+
+      const card = document.createElement('div');
+      card.className = 'achievement-card';
+      if (canClaim) card.classList.add('glow-achievement');
+
+      card.innerHTML = `
+        <strong>${achievement.name}</strong>
+        <p style="color:#aaa; font-size:0.85rem;">${achievement.desc}</p>
+        <p style="font-size:0.8rem; color:#f9c74f;">Награда: ${achievement.reward}</p>
+      `;
+
+      if (isClaimed) {
+        card.innerHTML += '<p style="color:#6fcf97; font-weight:600;">✅ Получено</p>';
+      } else if (canClaim) {
+        const claimBtn = document.createElement('button');
+        claimBtn.className = 'btn';
+        claimBtn.textContent = '🎁 Получить';
+        claimBtn.addEventListener('click', () => {
+          if (!user.claimedAchievements) user.claimedAchievements = [];
+          user.claimedAchievements.push(achievement.id);
+
+          const [type, value] = achievement.reward.split(':');
+          if (type === 'avatar' && !user.unlockedAvatars.includes(value)) {
+            user.unlockedAvatars.push(value);
+          }
+          if (type === 'card' && !user.unlockedCards.includes(value)) {
+            user.unlockedCards.push(value);
+          }
+          saveUsers();
+          renderAchievementsScreen();
+          renderProfileScreen();
+        });
+        card.appendChild(claimBtn);
+      } else {
+        card.innerHTML += '<p style="color:#ff6b6b; font-weight:500;">🔒 Не выполнено</p>';
+      }
+
+      container.appendChild(card);
+    });
+  }
+
+  function checkAchievementCondition(user, achievementId) {
+    const friends = user.friends || [];
+    switch (achievementId) {
+      case 'f1': return friends.length >= 1;
+      case 'f3': return friends.length >= 3;
+      case 'f5': return friends.length >= 5;
+      case 'f10': return friends.length >= 10;
+      case 'c50': return friends.some(f => f.cups >= 50);
+      case 'c100': return friends.some(f => f.cups >= 100);
+      case 'c500': return friends.some(f => f.cups >= 500);
+      case 'c1000': return friends.some(f => f.cups >= 1000);
+      case 'c2000': return friends.some(f => f.cups >= 2000);
+      case 'c3500': return friends.some(f => f.cups >= 3500);
+      case 'q1': return (user.quarrelCount || 0) >= 1;
+      case 'q5': return (user.quarrelCount || 0) >= 5;
+      case 's3': return friends.some(f => (f.streak || 0) >= 3);
+      case 's7': return friends.some(f => (f.streak || 0) >= 7);
+      case 's14': return friends.some(f => (f.streak || 0) >= 14);
+      case 's30': return friends.some(f => (f.streak || 0) >= 30);
+      case 's60': return friends.some(f => (f.streak || 0) >= 60);
+      case 't5': return (user.totalTasksCompleted || 0) >= 5;
+      case 't20': return (user.totalTasksCompleted || 0) >= 20;
+      case 't50': return (user.totalTasksCompleted || 0) >= 50;
+      case 't100': return (user.totalTasksCompleted || 0) >= 100;
+      case 'col3': return (user.unlockedCards || []).length >= 3;
+      case 'col5': return (user.unlockedCards || []).length >= 5;
+      case 'col10': return (user.unlockedCards || []).length >= 10;
+      case 'all100': return friends.length > 0 && friends.every(f => f.cups >= 100);
+      default: return false;
+    }
+  }
+
+  // ==================== ЭКРАН ПРОФИЛЯ ====================
+  function renderProfileScreen() {
+    const container = screens.profile;
+    container.innerHTML = '';
+    const user = users[currentUser];
+    if (!user) return;
+
+    const age = new Date().getFullYear() - user.profile.year;
+    const cardStyle = getCardClass(0, user.selectedCard);
+
+    const card = document.createElement('div');
+    card.className = `card ${cardStyle}`;
+
+    card.innerHTML = `
+      <div style="text-align:center;">
+        <span style="font-size:4.5rem; display:block; margin-bottom:8px;">${user.profile.avatar}</span>
+        <h2 style="color:#f0e7ff;">${user.nick}</h2>
+        <p style="color:#b9a9d9; margin:4px 0;">📧 ${user.email}</p>
+        <p style="color:#b9a9d9;">🎂 ${age} лет · ${user.profile.day} ${MONTHS[user.profile.month - 1]} ${user.profile.year}</p>
+        <p style="color:#f9c74f; margin-top:6px;">🃏 Карточка: ${user.selectedCard}</p>
+        <p style="color:#aaa; font-size:0.8rem;">🎨 Карточек: ${user.unlockedCards.length} | 🖼️ Аватаров: ${user.unlockedAvatars.length}</p>
+      </div>
+    `;
+
+    const editBtn = document.createElement('button');
+    editBtn.className = 'btn';
+    editBtn.textContent = '✏️ Изменить профиль';
+    editBtn.addEventListener('click', () => showEditProfileModal());
+    card.appendChild(editBtn);
+
+    const logoutBtn = document.createElement('button');
+    logoutBtn.className = 'btn logout';
+    logoutBtn.textContent = '🚪 Выйти из аккаунта';
+    logoutBtn.addEventListener('click', () => logout());
+    card.appendChild(logoutBtn);
+
+    container.appendChild(card);
+  }
+
+  // ==================== МОДАЛКА РЕДАКТИРОВАНИЯ ПРОФИЛЯ ====================
+  function showEditProfileModal() {
+    const user = users[currentUser];
+    const modal = document.createElement('div');
+    modal.className = 'modal active';
+    let editDay = user.profile.day;
+    let editMonth = user.profile.month;
+    let editYear = user.profile.year;
+
+    modal.innerHTML = `
+      <div class="modal-content">
+        <h3 style="color:#ffd966; margin-bottom:12px;">✏️ Редактировать профиль</h3>
+        <label style="color:#ddd;">📅 Дата рождения:</label>
+        <div class="wheel-container">
+          <div class="wheel-col">
+            <button class="wheel-btn" id="eDu">▲</button>
+            <span class="wheel-value" id="eDv">${editDay}</span>
+            <button class="wheel-btn" id="eDd">▼</button>
+          </div>
+          <div class="wheel-col">
+            <button class="wheel-btn" id="eMu">▲</button>
+            <span class="wheel-value" id="eMv">${MONTHS[editMonth - 1]}</span>
+            <button class="wheel-btn" id="eMd">▼</button>
+          </div>
+          <div class="wheel-col">
+            <button class="wheel-btn" id="eYu">▲</button>
+            <span class="wheel-value" id="eYv">${editYear}</span>
+            <button class="wheel-btn" id="eYd">▼</button>
+          </div>
+        </div>
+        <label style="color:#ddd; display:block; margin-top:12px;">🖼️ Аватар:</label>
+        <div id="avGrid" style="display:flex; flex-wrap:wrap; gap:8px; margin-bottom:12px;">
+          ${user.unlockedAvatars.map(a => `<span style="font-size:2rem; cursor:pointer;" data-avatar="${a}">${a}</span>`).join('')}
+        </div>
+        <label style="color:#ddd; display:block;">🃏 Карточка профиля:</label>
+        <select id="cardSelect" style="width:100%; padding:12px; border-radius:24px; background:#2a2340; color:white; border:1px solid #ffd96660; margin-bottom:14px;">
+          ${user.unlockedCards.map(c => `<option value="${c}" ${user.selectedCard === c ? 'selected' : ''}>${c}</option>`).join('')}
+        </select>
+        <button class="btn" id="saveEditBtn">💾 СОХРАНИТЬ</button>
+        <button class="btn" id="closeEditBtn" style="background:#555; margin-top:6px;">ОТМЕНА</button>
+      </div>
+    `;
+    document.body.appendChild(modal);
+
+    function updateWheels() {
+      modal.querySelector('#eDv').textContent = editDay;
+      modal.querySelector('#eMv').textContent = MONTHS[editMonth - 1];
+      modal.querySelector('#eYv').textContent = editYear;
+    }
+
+    modal.querySelector('#eDu').addEventListener('click', () => { editDay = editDay % 31 + 1; updateWheels(); });
+    modal.querySelector('#eDd').addEventListener('click', () => { editDay = editDay - 1 || 31; updateWheels(); });
+    modal.querySelector('#eMu').addEventListener('click', () => { editMonth = editMonth % 12 + 1; updateWheels(); });
+    modal.querySelector('#eMd').addEventListener('click', () => { editMonth = editMonth - 1 || 12; updateWheels(); });
+    modal.querySelector('#eYu').addEventListener('click', () => { if (editYear < 2026) editYear++; updateWheels(); });
+    modal.querySelector('#eYd').addEventListener('click', () => { if (editYear > 1920) editYear--; updateWheels(); });
+
+    modal.querySelectorAll('#avGrid span').forEach(span => {
+      span.addEventListener('click', function() {
+        user.profile.avatar = this.dataset.avatar;
+        saveUsers();
+        renderProfileScreen();
+        modal.remove();
+      });
+    });
+
+    modal.querySelector('#saveEditBtn').addEventListener('click', () => {
+      user.profile.day = editDay;
+      user.profile.month = editMonth;
+      user.profile.year = editYear;
+      user.selectedCard = modal.querySelector('#cardSelect').value;
+      saveUsers();
+      renderProfileScreen();
+      modal.remove();
+    });
+
+    modal.querySelector('#closeEditBtn').addEventListener('click', () => modal.remove());
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) modal.remove();
+    });
+  }
+
+  // ==================== ЗАПУСК ПРИЛОЖЕНИЯ ====================
+  loadUsers();
+  const savedSession = getSession();
+  if (savedSession && users[savedSession]) {
+    currentUser = savedSession;
+    enterApp();
+  } else {
+    currentUser = null;
+    clearSession();
+    renderAuthScreen();
+  }
 })();
 </script>
 </body>
