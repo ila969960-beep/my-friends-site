@@ -8,17 +8,17 @@
     * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', 'Poppins', system-ui, sans-serif; }
     body { background: radial-gradient(ellipse at 30% 20%, #1a1025 0%, #0a0614 100%); min-height: 100vh; display: flex; justify-content: center; align-items: center; }
     .app { width: 100%; max-width: 500px; height: 100vh; max-height: 900px; background: rgba(12,8,24,0.85); backdrop-filter: blur(35px); border-radius: 0; display: flex; flex-direction: column; box-shadow: 0 0 80px rgba(120,60,220,0.4); border: 1px solid rgba(200,160,255,0.3); color: #f0e7ff; overflow: hidden; }
-    .app-header { padding: 16px; text-align: center; background: linear-gradient(180deg, rgba(100,60,200,0.3) 0%, transparent 100%); display: flex; justify-content: space-between; align-items: center; }
+    .app-header { padding: 16px; text-align: center; background: linear-gradient(180deg, rgba(100,60,200,0.3) 0%, transparent 100%); }
     .app-header h1 { font-size: 2rem; font-weight: 900; background: linear-gradient(135deg, #ffd966, #e0b3ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-    .logout-btn { background: #ff6b6b; border: none; color: white; padding: 8px 16px; border-radius: 20px; font-weight: 700; cursor: pointer; font-size: 0.8rem; }
     .tabs { display: flex; margin: 8px 16px; background: rgba(0,0,0,0.5); border-radius: 36px; padding: 5px; }
-    .tab { flex: 1; text-align: center; padding: 12px 4px; border-radius: 30px; font-weight: 700; font-size: 0.8rem; background: transparent; border: none; color: #cdc0e0; cursor: pointer; }
+    .tab { flex: 1; text-align: center; padding: 12px 4px; border-radius: 30px; font-weight: 700; font-size: 0.75rem; background: transparent; border: none; color: #cdc0e0; cursor: pointer; }
     .tab.active { background: #ffbb2e; color: #1a122e; box-shadow: 0 0 20px #f90; }
     .screen { display: none; flex: 1; flex-direction: column; gap: 12px; padding: 8px 16px 20px; overflow-y: auto; }
     .screen.active { display: flex; }
-    .card { background: rgba(22,18,38,0.8); backdrop-filter: blur(20px); border-radius: 24px; padding: 16px; border: 1px solid rgba(255,215,150,0.2); box-shadow: 0 8px 20px rgba(0,0,0,0.5); }
+    .card { background: rgba(22,18,38,0.8); backdrop-filter: blur(20px); border-radius: 24px; padding: 16px; border: 1px solid rgba(255,215,150,0.2); box-shadow: 0 8px 20px rgba(0,0,0,0.5); margin-bottom: 8px; }
     .btn { background: linear-gradient(180deg, #fbb034, #f08a1a); border: none; border-radius: 30px; padding: 12px 18px; font-weight: 700; font-size: 0.9rem; color: #1a1423; cursor: pointer; box-shadow: 0 6px 12px rgba(0,0,0,0.5); margin: 4px 0; width: 100%; }
     .btn.danger { background: linear-gradient(180deg, #ff6b6b, #c0392b); color: white; }
+    .btn.logout { background: #ff6b6b; color: white; width: auto; padding: 10px 20px; }
     .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); align-items: center; justify-content: center; z-index: 1000; }
     .modal.active { display: flex; }
     .modal-content { background: #1f1b2e; border-radius: 36px; padding: 24px; width: 90%; max-width: 380px; border: 2px solid #ffd966; max-height: 80vh; overflow-y: auto; }
@@ -28,14 +28,19 @@
     .wheel-btn { background: none; border: none; font-size: 1.5rem; color: #ffd966; cursor: pointer; }
     .wheel-value { font-size: 1.2rem; font-weight: 700; background: #1e1836; padding: 4px 12px; border-radius: 20px; min-width: 60px; text-align: center; }
     .error-text { color: #ff6b6b; font-size: 0.8rem; display: none; }
+    .border-gold { border: 2px solid #f9c74f !important; box-shadow: 0 0 30px #f9c74faa; }
+    .border-green { border: 2px solid #6fcf97 !important; box-shadow: 0 0 30px #6fcf97cc; }
+    .border-blue { border: 2px solid #56ccf2 !important; box-shadow: 0 0 40px #56ccf2, inset 0 0 10px rgba(86,204,242,0.3); }
+    .border-purple { border: 2px solid #c77dff !important; box-shadow: 0 0 50px #c77dff, 0 0 20px #9d4edd; animation: purplePulse 1.8s infinite; }
+    .border-red { border: 2px solid #ff6b6b !important; box-shadow: 0 0 35px #ff6b6b; }
+    .border-rainbow { border: 2px solid transparent !important; background: linear-gradient(45deg, #ff6b6b, #feca57, #48dbfb, #ff9ff3) border-box; }
+    @keyframes purplePulse { 0%{box-shadow:0 0 40px #c77dff;} 100%{box-shadow:0 0 70px #e0aaff;} }
+    .streak-badge { background: #ff6b6b; border-radius: 20px; padding: 4px 10px; font-weight: bold; display: inline-block; margin-left: 6px; }
   </style>
 </head>
 <body>
 <div class="app" id="appContainer">
-  <div class="app-header">
-    <h1>✨ Узы Света</h1>
-    <button class="logout-btn" id="logoutBtn" style="display:none;">🚪 Выйти</button>
-  </div>
+  <div class="app-header"><h1>✨ Узы Света</h1></div>
   <div class="tabs" id="mainTabs" style="display:none;">
     <button class="tab active" data-tab="friends">👥 Друзья</button>
     <button class="tab" data-tab="tasks">📋 Задания</button>
@@ -51,154 +56,155 @@
 
 <script>
 (function() {
-  const STORAGE = 'uzi_final_working';
+  const STORAGE = 'uzi_complete_v5';
   const MONTHS = ['Янв','Фев','Мар','Апр','Май','Июн','Июл','Авг','Сен','Окт','Ноя','Дек'];
   const BAD_WORDS = ['мат','бля','хуй','пизд','еба','сука','нах','гандон','пидор','чмо','лох','гавно','жопа','член','хер','мудак','урод','дура','идиот','тупой','дебил','даун','педик','аутист'];
-  const ALL_AVATARS = ['🙂','😎','🤩','🦊','🐼','⭐','💎','👑','🔥','🌈','🌟','💜','🎭','🐉','🍀','🤝','💔','🎃','🎅','👻','🐱','🐶','🦄','🐲','🎉','💖'];
-  const ALL_CARDS = ['default','golden','sheriff','night','diamond','royal','master','ocean','forest','sunset','galaxy','phoenix'];
 
-  let users = {};
-  let currentUser = null;
+  const ALL_AVATARS = ['🙂','😎','🤩','🦊','🐼','⭐','💎','👑','🔥','🌈','🌟','💜','🎭','🐉','🍀','🤝','💔','🎃','🎅','👻','🐱','🐶','🦄','🐲','🎉','💖','🦋','🐳','🌺','🍕','🎸','🚀','💡','🧩','🎯','🛡️','⚡','❄️','🌪️','🪐'];
+  
+  const ALL_CARDS = ['default','golden','sheriff','night','diamond','royal','master','ocean','forest','sunset','galaxy','phoenix','unicorn','dragon','crystal','shadow','sparkle','thunder','angel','demon','rainbow','meteor','comet','nebula','aurora'];
 
-  // ========== ЗАГРУЗКА И СОХРАНЕНИЕ ==========
-  function load() { 
-    const s = localStorage.getItem(STORAGE); 
-    if (s) { try { users = JSON.parse(s); } catch(e) { users = {}; } }
-  }
+  const TITLES = [
+    {name:'Знакомый',min:0},{name:'Товарищ',min:50},{name:'Приятель',min:150},
+    {name:'Хороший друг',min:300},{name:'Лучший друг',min:600},
+    {name:'Родной',min:1000},{name:'🌟 Родственная душа',min:2000},{name:'🔥 Брат навек',min:3500}
+  ];
+
+  const ACHIEVEMENTS = [
+    {id:'f1',name:'🤝 Первый друг',desc:'Добавь 1 друга',reward:'avatar:🤝'},
+    {id:'f3',name:'👥 Три друга',desc:'3 друга',reward:'card:golden'},
+    {id:'f5',name:'🌟 Пять друзей',desc:'5 друзей',reward:'card:diamond'},
+    {id:'f10',name:'💎 Десять друзей',desc:'10 друзей',reward:'card:ocean'},
+    {id:'c50',name:'💯 50 кубков',desc:'Друг набрал 50 кубков',reward:'avatar:💯'},
+    {id:'c100',name:'🔥 100 кубков',desc:'Друг набрал 100 кубков',reward:'avatar:🔥'},
+    {id:'c500',name:'🏆 500 кубков',desc:'Друг набрал 500 кубков',reward:'avatar:🏆'},
+    {id:'c1000',name:'👑 Родной',desc:'Друг набрал 1000 кубков',reward:'card:sheriff'},
+    {id:'c2000',name:'💎 Душа',desc:'Друг набрал 2000 кубков',reward:'card:royal'},
+    {id:'c3500',name:'🔥 Брат навек',desc:'Друг набрал 3500 кубков',reward:'card:dragon'},
+    {id:'q1',name:'💔 Первая ссора',desc:'Поссориться 1 раз',reward:'avatar:💔'},
+    {id:'q5',name:'💢 5 ссор',desc:'Поссориться 5 раз',reward:'avatar:💢'},
+    {id:'s3',name:'🌈 3 дня мира',desc:'3 дня без ссор',reward:'avatar:🌈'},
+    {id:'s7',name:'☀️ 7 дней мира',desc:'7 дней без ссор',reward:'avatar:☀️'},
+    {id:'s14',name:'🌙 14 дней мира',desc:'14 дней без ссор',reward:'card:night'},
+    {id:'s30',name:'⭐ 30 дней мира',desc:'30 дней без ссор',reward:'card:galaxy'},
+    {id:'s60',name:'🪐 60 дней мира',desc:'60 дней без ссор',reward:'card:nebula'},
+    {id:'t5',name:'📅 5 заданий',desc:'Выполни 5 заданий',reward:'avatar:📅'},
+    {id:'t20',name:'📋 20 заданий',desc:'Выполни 20 заданий',reward:'card:forest'},
+    {id:'t50',name:'🎯 50 заданий',desc:'Выполни 50 заданий',reward:'card:phoenix'},
+    {id:'t100',name:'💪 100 заданий',desc:'Выполни 100 заданий',reward:'card:unicorn'},
+    {id:'col3',name:'🃏 3 карточки',desc:'Открой 3 карточки',reward:'avatar:🎭'},
+    {id:'col5',name:'🎴 5 карточек',desc:'Открой 5 карточек',reward:'avatar:🎴'},
+    {id:'col10',name:'🃏 Коллекционер',desc:'Открой 10 карточек',reward:'card:rainbow'},
+    {id:'all100',name:'🎖️ Все 100+',desc:'У всех друзей 100+ кубков',reward:'card:master'}
+  ];
+
+  let users = {}, currentUser = null;
+
+  function load() { const s = localStorage.getItem(STORAGE); if (s) { try { users = JSON.parse(s); } catch(e) { users = {}; } } }
   function save() { localStorage.setItem(STORAGE, JSON.stringify(users)); }
   function saveSession(email) { localStorage.setItem('uzi_session', email); }
   function getSession() { return localStorage.getItem('uzi_session'); }
   function clearSession() { localStorage.removeItem('uzi_session'); }
   function bad(t) { return BAD_WORDS.some(w => t.toLowerCase().replace(/[^а-яёa-z]/g,'').includes(w)); }
   function findByEmail(email) { return users[email.trim().toLowerCase()]; }
+  function getTitle(cups) { return TITLES.reduce((a,b)=>cups>=b.min?b:a); }
+  function getCardClass(cups, card) {
+    if (card==='rainbow') return 'border-rainbow';
+    if (card==='dragon'||card==='royal') return 'border-purple';
+    if (card==='sheriff'||card==='golden'||card==='phoenix') return 'border-gold';
+    if (card==='ocean'||card==='diamond') return 'border-blue';
+    if (card==='master'||card==='forest') return 'border-green';
+    if (card==='night'||card==='galaxy'||card==='nebula') return 'border-purple';
+    if (cups>=3500) return 'border-purple';
+    if (cups>=2000) return 'border-purple';
+    if (cups>=1000) return 'border-blue';
+    if (cups>=500) return 'border-green';
+    if (cups>=200) return 'border-gold';
+    return '';
+  }
 
-  // ========== ВЫХОД ==========
-  document.getElementById('logoutBtn').onclick = () => {
-    currentUser = null;
-    clearSession();
+  function logout() {
+    currentUser = null; clearSession();
     document.getElementById('mainTabs').style.display = 'none';
-    document.getElementById('logoutBtn').style.display = 'none';
     renderAuth();
-  };
+  }
 
   // ========== АВТОРИЗАЦИЯ ==========
   function renderAuth() {
+    document.getElementById('authScreen').classList.add('active');
     const c = document.getElementById('authScreen');
     c.innerHTML = `
-      <div class="card" style="margin-top:40px;">
-        <h2>🌟 Вход / Регистрация</h2>
-        <input id="authEmail" class="input-field" placeholder="Почта"><span class="error-text" id="emailErr"></span>
-        <input id="authCode" class="input-field" placeholder="Код (8 символов)" maxlength="8"><span class="error-text" id="codeErr"></span>
-        <div id="regExtra" style="display:none;">
-          <input id="authNick" class="input-field" placeholder="Придумай ник"><span class="error-text" id="nickErr"></span>
-          <label style="color:#ddd;">📅 Дата рождения:</label>
-          <div class="wheel-container">
-            <div class="wheel-col"><button class="wheel-btn" id="rDu">▲</button><span class="wheel-value" id="rDv">15</span><button class="wheel-btn" id="rDd">▼</button></div>
-            <div class="wheel-col"><button class="wheel-btn" id="rMu">▲</button><span class="wheel-value" id="rMv">Янв</span><button class="wheel-btn" id="rMd">▼</button></div>
-            <div class="wheel-col"><button class="wheel-btn" id="rYu">▲</button><span class="wheel-value" id="rYv">2005</span><button class="wheel-btn" id="rYd">▼</button></div>
-          </div>
-        </div>
-        <button class="btn" id="authBtn">ВОЙТИ</button>
-        <p style="text-align:center;margin-top:8px;"><a id="toggleMode" style="color:#ffd966;cursor:pointer;">Нет аккаунта? Регистрация</a></p>
-      </div>`;
+      <div class="card" style="margin-top:40px;"><h2>🌟 Вход / Регистрация</h2>
+      <input id="authEmail" class="input-field" placeholder="Почта"><span class="error-text" id="emailErr"></span>
+      <input id="authCode" class="input-field" placeholder="Код (8 символов)" maxlength="8"><span class="error-text" id="codeErr"></span>
+      <div id="regExtra" style="display:none;"><input id="authNick" class="input-field" placeholder="Придумай ник"><span class="error-text" id="nickErr"></span>
+      <label style="color:#ddd;">📅 Дата рождения:</label>
+      <div class="wheel-container">
+        <div class="wheel-col"><button class="wheel-btn" id="rDu">▲</button><span class="wheel-value" id="rDv">15</span><button class="wheel-btn" id="rDd">▼</button></div>
+        <div class="wheel-col"><button class="wheel-btn" id="rMu">▲</button><span class="wheel-value" id="rMv">Янв</span><button class="wheel-btn" id="rMd">▼</button></div>
+        <div class="wheel-col"><button class="wheel-btn" id="rYu">▲</button><span class="wheel-value" id="rYv">2005</span><button class="wheel-btn" id="rYd">▼</button></div>
+      </div></div>
+      <button class="btn" id="authBtn">ВОЙТИ</button>
+      <p style="text-align:center;"><a id="toggleMode" style="color:#ffd966;cursor:pointer;">Нет аккаунта? Регистрация</a></p></div>`;
     
-    let mode = 'login', rD=15, rM=6, rY=2005;
+    let mode='login', rD=15, rM=6, rY=2005;
+    function upd(){ document.getElementById('rDv').textContent=rD; document.getElementById('rMv').textContent=MONTHS[rM-1]; document.getElementById('rYv').textContent=rY; }
+    document.getElementById('toggleMode').onclick = ()=>{ mode=mode==='login'?'register':'login'; document.getElementById('regExtra').style.display=mode==='register'?'block':'none'; document.getElementById('authBtn').textContent=mode==='login'?'ВОЙТИ':'ЗАРЕГИСТРИРОВАТЬСЯ'; };
+    document.getElementById('rDu').onclick=()=>{rD=rD%31+1;upd();}; document.getElementById('rDd').onclick=()=>{rD=rD-1||31;upd();};
+    document.getElementById('rMu').onclick=()=>{rM=rM%12+1;upd();}; document.getElementById('rMd').onclick=()=>{rM=rM-1||12;upd();};
+    document.getElementById('rYu').onclick=()=>{if(rY<2026)rY++;upd();}; document.getElementById('rYd').onclick=()=>{if(rY>1920)rY--;upd();};
     
-    function upd() {
-      document.getElementById('rDv').textContent = rD;
-      document.getElementById('rMv').textContent = MONTHS[rM-1];
-      document.getElementById('rYv').textContent = rY;
-    }
-    
-    document.getElementById('toggleMode').onclick = () => {
-      mode = mode === 'login' ? 'register' : 'login';
-      document.getElementById('regExtra').style.display = mode === 'register' ? 'block' : 'none';
-      document.getElementById('authBtn').textContent = mode === 'login' ? 'ВОЙТИ' : 'ЗАРЕГИСТРИРОВАТЬСЯ';
-      document.getElementById('toggleMode').textContent = mode === 'login' ? 'Нет аккаунта? Регистрация' : 'Уже есть аккаунт? Войти';
-    };
-    
-    document.getElementById('rDu').onclick = () => { rD = rD % 31 + 1; upd(); };
-    document.getElementById('rDd').onclick = () => { rD = rD - 1 || 31; upd(); };
-    document.getElementById('rMu').onclick = () => { rM = rM % 12 + 1; upd(); };
-    document.getElementById('rMd').onclick = () => { rM = rM - 1 || 12; upd(); };
-    document.getElementById('rYu').onclick = () => { if (rY < 2026) rY++; upd(); };
-    document.getElementById('rYd').onclick = () => { if (rY > 1920) rY--; upd(); };
-    
-    document.getElementById('authBtn').onclick = () => {
+    document.getElementById('authBtn').onclick = ()=>{
       const email = document.getElementById('authEmail').value.trim().toLowerCase();
       const code = document.getElementById('authCode').value.trim();
-      
-      if (!email || !email.includes('@')) return alert('Введи корректную почту');
-      if (code.length !== 8) return alert('Код должен быть ровно 8 символов');
-      
-      if (mode === 'register') {
+      if (!email.includes('@')) return alert('Введи почту');
+      if (code.length!==8) return alert('Код 8 символов');
+      if (mode==='register'){
         const nick = document.getElementById('authNick').value.trim();
-        if (!nick) return alert('Введи ник');
-        if (bad(nick)) return alert('Ник содержит запрещённые слова');
-        if (findByEmail(email)) return alert('Эта почта уже используется');
-        
-        users[email] = {
-          email, nick, code,
-          profile: { avatar: '🙂', day: rD, month: rM, year: rY },
-          friends: [],
-          unlockedAvatars: ['🙂'],
-          unlockedCards: ['default'],
-          selectedCard: 'default',
-          claimed: [],
-          totalTasks: 0
-        };
-        save();
-        currentUser = email;
-        saveSession(email);
-        enterApp();
+        if (!nick || bad(nick)) return alert('Некорректный ник');
+        if (findByEmail(email)) return alert('Почта занята');
+        users[email] = {email,nick,code,profile:{avatar:'🙂',day:rD,month:rM,year:rY},friends:[],unlockedAvatars:['🙂'],unlockedCards:['default'],selectedCard:'default',claimed:[],totalTasks:0,quarrelCount:0};
+        save(); currentUser=email; saveSession(email); enterApp();
       } else {
-        const user = findByEmail(email);
-        if (!user) return alert('Аккаунт не найден');
-        if (user.code !== code) return alert('Неверный код');
-        currentUser = email;
-        saveSession(email);
-        enterApp();
+        const u = findByEmail(email);
+        if (!u) return alert('Аккаунт не найден');
+        if (u.code!==code) return alert('Неверный код');
+        currentUser=email; saveSession(email); enterApp();
       }
     };
   }
 
   function enterApp() {
     document.getElementById('authScreen').classList.remove('active');
-    document.getElementById('mainTabs').style.display = 'flex';
-    document.getElementById('logoutBtn').style.display = 'block';
+    document.getElementById('mainTabs').style.display='flex';
     switchTab('friends');
   }
 
-  // ========== ВКЛАДКИ ==========
   const tabs = document.querySelectorAll('#mainTabs .tab');
-  const screens = {
-    friends: document.getElementById('friendsScreen'),
-    tasks: document.getElementById('tasksScreen'),
-    achievements: document.getElementById('achievementsScreen'),
-    profile: document.getElementById('profileScreen')
-  };
-  
+  const screens = {friends:document.getElementById('friendsScreen'),tasks:document.getElementById('tasksScreen'),achievements:document.getElementById('achievementsScreen'),profile:document.getElementById('profileScreen')};
   function switchTab(t) {
-    tabs.forEach(b => b.classList.remove('active'));
+    tabs.forEach(b=>b.classList.remove('active'));
     document.querySelector(`#mainTabs .tab[data-tab="${t}"]`).classList.add('active');
-    Object.values(screens).forEach(s => s.classList.remove('active'));
+    Object.values(screens).forEach(s=>s.classList.remove('active'));
     screens[t].classList.add('active');
-    if (t === 'friends') renderFriends();
-    if (t === 'tasks') renderTasks();
-    if (t === 'achievements') renderAchievements();
-    if (t === 'profile') renderProfile();
+    if(t==='friends') renderFriends();
+    if(t==='tasks') renderTasks();
+    if(t==='achievements') renderAchievements();
+    if(t==='profile') renderProfile();
   }
-  tabs.forEach(t => t.addEventListener('click', () => switchTab(t.dataset.tab)));
+  tabs.forEach(t=>t.addEventListener('click',()=>switchTab(t.dataset.tab)));
 
-  // ========== ДРУЗЬЯ (ПОИСК ПО ПОЧТЕ) ==========
+  // ========== ДРУЗЬЯ ==========
   function renderFriends() {
-    const c = screens.friends; c.innerHTML = '';
-    const u = users[currentUser]; if (!u) return;
-    if (!u.friends.length) c.innerHTML = '<p style="text-align:center;color:#aaa;">Пока нет друзей</p>';
-    else u.friends.forEach(f => {
+    const c = screens.friends; c.innerHTML='';
+    const u = users[currentUser];
+    if (!u.friends.length) c.innerHTML='<p style="text-align:center;color:#aaa;">Пока нет друзей</p>';
+    else u.friends.forEach(f=>{
       const fu = findByEmail(f.email);
-      const div = document.createElement('div'); div.className = 'card';
-      div.innerHTML = `<div style="display:flex;align-items:center;gap:12px;"><span style="font-size:2.5rem;">${fu?fu.profile.avatar:'🙂'}</span><div><strong>${fu?fu.nick:f.email}</strong><br>🏆${f.cups} 🔥${f.streak||0}д</div></div>`;
+      const title = getTitle(f.cups);
+      const cardCls = getCardClass(f.cups, fu?.selectedCard);
+      const div = document.createElement('div'); div.className = `card ${cardCls}`;
+      div.innerHTML = `<div style="display:flex;align-items:center;gap:10px;"><span style="font-size:2.2rem;">${fu?.profile?.avatar||'🙂'}</span><div><strong>${fu?.nick||f.email}</strong><br>${title.name}</div><div>🏆${f.cups} <span class="streak-badge">🔥${f.streak||0}д</span></div></div>`;
       c.appendChild(div);
     });
     const add = document.createElement('button'); add.className='btn'; add.textContent='➕ Добавить друга';
@@ -206,40 +212,26 @@
   }
 
   function showAddFriendModal() {
-    const modal = document.createElement('div'); modal.className = 'modal active';
-    modal.innerHTML = `<div class="modal-content"><h3>➕ Добавить друга</h3>
-      <p style="color:#aaa;font-size:0.8rem;">Введи почту друга</p>
-      <input id="addEmailInput" class="input-field" placeholder="Почта друга"><span class="error-text" id="addErr"></span>
-      <div id="addPreview" style="margin:12px 0;min-height:60px;"></div>
-      <button class="btn" id="searchBtn">🔍 НАЙТИ</button>
-      <button class="btn" id="confirmAddBtn" disabled>ПОДТВЕРДИТЬ</button>
-      <button class="btn" id="cancelAdd" style="background:#555;">ОТМЕНА</button></div>`;
+    const modal = document.createElement('div'); modal.className='modal active';
+    modal.innerHTML = `<div class="modal-content"><h3>➕ Добавить друга</h3><input id="addEmailInput" class="input-field" placeholder="Почта друга"><span class="error-text" id="addErr"></span><div id="addPreview" style="margin:12px 0;min-height:60px;"></div><button class="btn" id="searchBtn">🔍 НАЙТИ</button><button class="btn" id="confirmAddBtn" disabled>ПОДТВЕРДИТЬ</button><button class="btn" id="cancelAdd" style="background:#555;">ОТМЕНА</button></div>`;
     document.body.appendChild(modal);
-    const inp = modal.querySelector('#addEmailInput');
-    const err = modal.querySelector('#addErr');
-    const preview = modal.querySelector('#addPreview');
-    const search = modal.querySelector('#searchBtn');
-    const confirm = modal.querySelector('#confirmAddBtn');
+    const inp = modal.querySelector('#addEmailInput'), err = modal.querySelector('#addErr'), preview = modal.querySelector('#addPreview'), search = modal.querySelector('#searchBtn'), confirm = modal.querySelector('#confirmAddBtn');
     let found = null;
-
     search.onclick = ()=>{
       const email = inp.value.trim().toLowerCase(); err.style.display='none'; preview.innerHTML=''; confirm.disabled=true; found=null;
-      if (!email || !email.includes('@')) { err.textContent='Введи почту'; err.style.display='block'; return; }
+      if (!email.includes('@')) { err.textContent='Введи почту'; err.style.display='block'; return; }
       found = findByEmail(email);
       const u = users[currentUser];
-      if (!found) { err.textContent='❌ Аккаунт не найден'; err.style.display='block'; }
-      else if (found.email === currentUser) { err.textContent='❌ Нельзя добавить себя'; err.style.display='block'; }
-      else if (u.friends.some(f=>f.email === found.email)) { err.textContent='❌ Уже в друзьях'; err.style.display='block'; }
-      else {
-        preview.innerHTML = `<div class="card"><span style="font-size:2rem;">${found.profile.avatar}</span> <strong>${found.nick}</strong><br><small>${found.email}</small></div>`;
-        confirm.disabled = false;
-      }
+      if (!found) { err.textContent='❌ Не найден'; err.style.display='block'; }
+      else if (found.email===currentUser) { err.textContent='❌ Нельзя добавить себя'; err.style.display='block'; }
+      else if (u.friends.some(f=>f.email===found.email)) { err.textContent='❌ Уже в друзьях'; err.style.display='block'; }
+      else { preview.innerHTML = `<div class="card"><span style="font-size:2rem;">${found.profile.avatar}</span> <strong>${found.nick}</strong></div>`; confirm.disabled=false; }
     };
     confirm.onclick = ()=>{
       if (!found) return;
       const u = users[currentUser];
-      u.friends.push({email: found.email, cups: 0, streak: 0});
-      if (!found.friends.some(f=>f.email === currentUser)) found.friends.push({email: currentUser, cups: 0, streak: 0});
+      u.friends.push({email:found.email,cups:0,streak:0});
+      if (!found.friends.some(f=>f.email===currentUser)) found.friends.push({email:currentUser,cups:0,streak:0});
       save(); renderFriends(); modal.remove();
     };
     modal.querySelector('#cancelAdd').onclick = ()=> modal.remove();
@@ -247,20 +239,18 @@
 
   // ========== ЗАДАНИЯ ==========
   function renderTasks() {
-    const c = screens.tasks; c.innerHTML = '<h3>📋 Задания</h3>';
+    const c = screens.tasks; c.innerHTML='<h3>📋 Задания</h3>';
     const u = users[currentUser];
     u.friends.forEach(f=>{
       const fu = findByEmail(f.email);
-      const div = document.createElement('div'); div.className='card'; div.innerHTML=`<strong>${fu?fu.nick:f.email}</strong>`;
-      [{l:'🚶 +20',v:20},{l:'🏠 +25',v:25},{l:'🎮 +22',v:22},{l:'🆘 +15',v:15},{l:'🎁 +30',v:30}].forEach(t=>{
+      const div = document.createElement('div'); div.className='card'; div.innerHTML=`<strong>${fu?.nick||f.email}</strong>`;
+      [{l:'🚶 Прогулка +20',v:20},{l:'🏠 В гости +25',v:25},{l:'🎮 Игра +22',v:22},{l:'🆘 Помощь +15',v:15},{l:'🎁 Сюрприз +30',v:30}].forEach(t=>{
         const b = document.createElement('button'); b.className='btn'; b.textContent=t.l;
-        b.onclick = ()=>{ f.cups+=t.v; f.streak=(f.streak||0)+1; u.totalTasks=(u.totalTasks||0)+1;
-          if(fu){ const rf=fu.friends.find(x=>x.email===currentUser); if(rf) rf.cups+=t.v; }
-          save(); renderTasks(); renderFriends(); };
+        b.onclick = ()=>{ f.cups+=t.v; f.streak=(f.streak||0)+1; u.totalTasks=(u.totalTasks||0)+1; if(fu){ const rf=fu.friends.find(x=>x.email===currentUser); if(rf) rf.cups+=t.v; } save(); renderTasks(); renderFriends(); };
         div.appendChild(b);
       });
-      const q = document.createElement('button'); q.className='btn danger'; q.textContent='💢 -18';
-      q.onclick = ()=>{ f.cups=Math.max(0,f.cups-18); f.streak=0; save(); renderTasks(); };
+      const q = document.createElement('button'); q.className='btn danger'; q.textContent='💢 Поссориться -18';
+      q.onclick = ()=>{ f.cups=Math.max(0,f.cups-18); f.streak=0; u.quarrelCount=(u.quarrelCount||0)+1; save(); renderTasks(); };
       div.appendChild(q); c.appendChild(div);
     });
   }
@@ -269,27 +259,31 @@
   function renderAchievements() {
     const c = screens.achievements; c.innerHTML='<h3>🏅 Достижения</h3>';
     const u = users[currentUser];
-    const list = [
-      {id:'f1',n:'🤝 Первый друг',d:'Добавь 1 друга',r:'avatar:🤝'},
-      {id:'f3',n:'👥 Три друга',d:'3 друга',r:'card:golden'},
-      {id:'c100',n:'💯 100 кубков',d:'100 кубков',r:'avatar:💯'},
-      {id:'c500',n:'🏆 500 кубков',d:'500 кубков',r:'avatar:🏆'}
-    ];
-    list.forEach(a=>{
+    ACHIEVEMENTS.forEach(a=>{
       const done = u.claimed?.includes(a.id);
-      const can = (a.id==='f1'&&u.friends.length>=1)||(a.id==='f3'&&u.friends.length>=3)||(a.id==='c100'&&u.friends.some(x=>x.cups>=100))||(a.id==='c500'&&u.friends.some(x=>x.cups>=500));
+      const check = ()=>{
+        const f = u.friends;
+        switch(a.id){
+          case 'f1': return f.length>=1; case 'f3': return f.length>=3; case 'f5': return f.length>=5; case 'f10': return f.length>=10;
+          case 'c50': return f.some(x=>x.cups>=50); case 'c100': return f.some(x=>x.cups>=100); case 'c500': return f.some(x=>x.cups>=500);
+          case 'c1000': return f.some(x=>x.cups>=1000); case 'c2000': return f.some(x=>x.cups>=2000); case 'c3500': return f.some(x=>x.cups>=3500);
+          case 'q1': return (u.quarrelCount||0)>=1; case 'q5': return (u.quarrelCount||0)>=5;
+          case 's3': return f.some(x=>(x.streak||0)>=3); case 's7': return f.some(x=>(x.streak||0)>=7);
+          case 's14': return f.some(x=>(x.streak||0)>=14); case 's30': return f.some(x=>(x.streak||0)>=30); case 's60': return f.some(x=>(x.streak||0)>=60);
+          case 't5': return (u.totalTasks||0)>=5; case 't20': return (u.totalTasks||0)>=20; case 't50': return (u.totalTasks||0)>=50; case 't100': return (u.totalTasks||0)>=100;
+          case 'col3': return (u.unlockedCards||[]).length>=3; case 'col5': return (u.unlockedCards||[]).length>=5; case 'col10': return (u.unlockedCards||[]).length>=10;
+          case 'all100': return f.length>0 && f.every(x=>x.cups>=100);
+          default: return false;
+        }
+      };
+      const can = check() && !done;
       const div = document.createElement('div'); div.className='card';
-      div.innerHTML = `<strong>${a.n}</strong><br><small>${a.d}</small>`;
-      if (done) div.innerHTML+=' ✅';
-      else if (can&&!done) {
-        const btn = document.createElement('button'); btn.className='btn'; btn.textContent='Получить';
-        btn.onclick = ()=>{
-          if(!u.claimed) u.claimed=[]; u.claimed.push(a.id);
-          const [t,v]=a.r.split(':'); if(t==='avatar') u.unlockedAvatars.push(v); else u.unlockedCards.push(v);
-          save(); renderAchievements(); renderProfile();
-        };
-        div.appendChild(btn);
-      } else div.innerHTML+=' 🔒';
+      div.innerHTML = `<strong>${a.name}</strong><br><small>${a.desc} | Награда: ${a.reward}</small>`;
+      if (done) div.innerHTML+='<p style="color:#6fcf97;">✅ Получено</p>';
+      else if (can) { const btn=document.createElement('button'); btn.className='btn'; btn.textContent='🎁 Получить';
+        btn.onclick = ()=>{ if(!u.claimed) u.claimed=[]; u.claimed.push(a.id); const [t,v]=a.reward.split(':'); if(t==='avatar'&&!u.unlockedAvatars.includes(v)) u.unlockedAvatars.push(v); if(t==='card'&&!u.unlockedCards.includes(v)) u.unlockedCards.push(v); save(); renderAchievements(); renderProfile(); };
+        div.appendChild(btn); }
+      else div.innerHTML+='<p style="color:#ff6b6b;">🔒 Не выполнено</p>';
       c.appendChild(div);
     });
   }
@@ -298,13 +292,11 @@
   function renderProfile() {
     const c = screens.profile;
     const u = users[currentUser];
-    const age = new Date().getFullYear() - u.profile.year;
-    c.innerHTML = `<div class="card">
-      <div style="text-align:center;"><span style="font-size:4rem;">${u.profile.avatar}</span><h2>${u.nick}</h2>
-      <p>📧 ${u.email}</p><p>${age} лет · ${u.profile.day} ${MONTHS[u.profile.month-1]} ${u.profile.year}</p>
-      <p>🃏 ${u.selectedCard}</p></div>
-      <button class="btn" id="editProfBtn">✏️ Изменить</button></div>`;
+    const age = new Date().getFullYear()-u.profile.year;
+    const cardCls = getCardClass(0, u.selectedCard);
+    c.innerHTML = `<div class="card ${cardCls}"><div style="text-align:center;"><span style="font-size:4rem;">${u.profile.avatar}</span><h2>${u.nick}</h2><p>📧 ${u.email}</p><p>${age} лет · ${u.profile.day} ${MONTHS[u.profile.month-1]} ${u.profile.year}</p><p>🃏 Карточка: ${u.selectedCard}</p></div><button class="btn" id="editProfBtn">✏️ Изменить</button><button class="btn logout" id="logoutProfileBtn">🚪 Выйти</button></div>`;
     document.getElementById('editProfBtn').onclick = ()=> showEditModal();
+    document.getElementById('logoutProfileBtn').onclick = ()=> logout();
   }
 
   function showEditModal() {
@@ -326,23 +318,13 @@
     modal.querySelector('#eMu').onclick=()=>{eM=eM%12+1;upd();}; modal.querySelector('#eMd').onclick=()=>{eM=eM-1||12;upd();};
     modal.querySelector('#eYu').onclick=()=>{if(eY<2026)eY++;upd();}; modal.querySelector('#eYd').onclick=()=>{if(eY>1920)eY--;upd();};
     modal.querySelectorAll('#avGrid span').forEach(s=>s.onclick=function(){ u.profile.avatar=this.dataset.a; save(); renderProfile(); modal.remove(); });
-    modal.querySelector('#saveEdit').onclick = ()=>{
-      u.profile.day=eD; u.profile.month=eM; u.profile.year=eY; u.selectedCard=modal.querySelector('#cardSel').value;
-      save(); renderProfile(); modal.remove();
-    };
+    modal.querySelector('#saveEdit').onclick = ()=>{ u.profile.day=eD; u.profile.month=eM; u.profile.year=eY; u.selectedCard=modal.querySelector('#cardSel').value; save(); renderProfile(); modal.remove(); };
   }
 
-  // ========== ЗАПУСК ==========
   load();
   const session = getSession();
-  if (session && users[session]) {
-    currentUser = session;
-    enterApp();
-  } else {
-    currentUser = null;
-    clearSession();
-    renderAuth();
-  }
+  if (session && users[session]) { currentUser=session; enterApp(); }
+  else { currentUser=null; clearSession(); renderAuth(); }
 })();
 </script>
 </body>
