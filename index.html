@@ -8,8 +8,9 @@
     * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', 'Poppins', system-ui, sans-serif; }
     body { background: radial-gradient(ellipse at 30% 20%, #1a1025 0%, #0a0614 100%); min-height: 100vh; display: flex; justify-content: center; align-items: center; }
     .app { width: 100%; max-width: 500px; height: 100vh; max-height: 900px; background: rgba(12,8,24,0.85); backdrop-filter: blur(35px); border-radius: 0; display: flex; flex-direction: column; box-shadow: 0 0 80px rgba(120,60,220,0.4); border: 1px solid rgba(200,160,255,0.3); color: #f0e7ff; overflow: hidden; }
-    .app-header { padding: 20px 16px 8px; text-align: center; background: linear-gradient(180deg, rgba(100,60,200,0.3) 0%, transparent 100%); }
-    .app-header h1 { font-size: 2.2rem; font-weight: 900; background: linear-gradient(135deg, #ffd966, #e0b3ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: 2px; }
+    .app-header { padding: 16px; text-align: center; background: linear-gradient(180deg, rgba(100,60,200,0.3) 0%, transparent 100%); display: flex; justify-content: space-between; align-items: center; }
+    .app-header h1 { font-size: 2rem; font-weight: 900; background: linear-gradient(135deg, #ffd966, #e0b3ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .logout-btn { background: #ff6b6b; border: none; color: white; padding: 8px 16px; border-radius: 20px; font-weight: 700; cursor: pointer; font-size: 0.8rem; }
     .tabs { display: flex; margin: 8px 16px; background: rgba(0,0,0,0.5); border-radius: 36px; padding: 5px; }
     .tab { flex: 1; text-align: center; padding: 12px 4px; border-radius: 30px; font-weight: 700; font-size: 0.8rem; background: transparent; border: none; color: #cdc0e0; cursor: pointer; }
     .tab.active { background: #ffbb2e; color: #1a122e; box-shadow: 0 0 20px #f90; }
@@ -26,15 +27,15 @@
     .wheel-col { display: flex; flex-direction: column; align-items: center; }
     .wheel-btn { background: none; border: none; font-size: 1.5rem; color: #ffd966; cursor: pointer; }
     .wheel-value { font-size: 1.2rem; font-weight: 700; background: #1e1836; padding: 4px 12px; border-radius: 20px; min-width: 60px; text-align: center; }
-    .error-text { color: #ff6b6b; font-size: 0.8rem; margin-top: -2px; display: none; }
-    .border-gold { border: 2px solid #f9c74f !important; box-shadow: 0 0 30px #f9c74faa; }
-    .border-purple { border: 2px solid #c77dff !important; box-shadow: 0 0 50px #c77dff; animation: purplePulse 1.8s infinite; }
-    @keyframes purplePulse { 0%{box-shadow:0 0 40px #c77dff;} 100%{box-shadow:0 0 70px #e0aaff;} }
+    .error-text { color: #ff6b6b; font-size: 0.8rem; display: none; }
   </style>
 </head>
 <body>
 <div class="app" id="appContainer">
-  <div class="app-header"><h1>✨ Узы Света</h1></div>
+  <div class="app-header">
+    <h1>✨ Узы Света</h1>
+    <button class="logout-btn" id="logoutBtn" style="display:none;">🚪 Выйти</button>
+  </div>
   <div class="tabs" id="mainTabs" style="display:none;">
     <button class="tab active" data-tab="friends">👥 Друзья</button>
     <button class="tab" data-tab="tasks">📋 Задания</button>
@@ -50,30 +51,35 @@
 
 <script>
 (function() {
-  const STORAGE = 'uzi_working_v3';
+  const STORAGE = 'uzi_final_working';
   const MONTHS = ['Янв','Фев','Мар','Апр','Май','Июн','Июл','Авг','Сен','Окт','Ноя','Дек'];
   const BAD_WORDS = ['мат','бля','хуй','пизд','еба','сука','нах','гандон','пидор','чмо','лох','гавно','жопа','член','хер','мудак','урод','дура','идиот','тупой','дебил','даун','педик','аутист'];
-  const ALL_AVATARS = ['🙂','😎','🤩','🦊','🐼','⭐','💎','👑','🔥','🌈','🌟','💜','🎭','🐉','🍀','🤝','💔','🎃','🎅','👻','🐱','🐶','🦄','🐲','🎉','💖','🦋','🐳','🌺','🍕','🎸','🚀'];
-  const ALL_CARDS = ['default','golden','sheriff','night','diamond','royal','master','ocean','forest','sunset','galaxy','phoenix','unicorn','dragon','crystal','shadow','sparkle','thunder','angel','demon','rainbow','meteor','comet','nebula','aurora'];
+  const ALL_AVATARS = ['🙂','😎','🤩','🦊','🐼','⭐','💎','👑','🔥','🌈','🌟','💜','🎭','🐉','🍀','🤝','💔','🎃','🎅','👻','🐱','🐶','🦄','🐲','🎉','💖'];
+  const ALL_CARDS = ['default','golden','sheriff','night','diamond','royal','master','ocean','forest','sunset','galaxy','phoenix'];
 
-  let users = {}, currentUser = null;
+  let users = {};
+  let currentUser = null;
 
-  // ========== БАЗА ДАННЫХ ==========
+  // ========== ЗАГРУЗКА И СОХРАНЕНИЕ ==========
   function load() { 
     const s = localStorage.getItem(STORAGE); 
     if (s) { try { users = JSON.parse(s); } catch(e) { users = {}; } }
   }
   function save() { localStorage.setItem(STORAGE, JSON.stringify(users)); }
+  function saveSession(email) { localStorage.setItem('uzi_session', email); }
+  function getSession() { return localStorage.getItem('uzi_session'); }
+  function clearSession() { localStorage.removeItem('uzi_session'); }
   function bad(t) { return BAD_WORDS.some(w => t.toLowerCase().replace(/[^а-яёa-z]/g,'').includes(w)); }
-  
-  // Точный поиск по нику (без учёта регистра, но с учётом пробелов)
-  function findByNick(nick) { 
-    return Object.values(users).find(u => u.nick.toLowerCase() === nick.trim().toLowerCase()); 
-  }
-  // Точный поиск по почте
-  function findByEmail(email) { 
-    return users[email.trim().toLowerCase()]; 
-  }
+  function findByEmail(email) { return users[email.trim().toLowerCase()]; }
+
+  // ========== ВЫХОД ==========
+  document.getElementById('logoutBtn').onclick = () => {
+    currentUser = null;
+    clearSession();
+    document.getElementById('mainTabs').style.display = 'none';
+    document.getElementById('logoutBtn').style.display = 'none';
+    renderAuth();
+  };
 
   // ========== АВТОРИЗАЦИЯ ==========
   function renderAuth() {
@@ -81,8 +87,8 @@
     c.innerHTML = `
       <div class="card" style="margin-top:40px;">
         <h2>🌟 Вход / Регистрация</h2>
-        <input id="authEmail" class="input-field" placeholder="Почта (example@mail.com)"><span class="error-text" id="emailErr"></span>
-        <input id="authCode" class="input-field" placeholder="Код (ровно 8 символов)" maxlength="8"><span class="error-text" id="codeErr"></span>
+        <input id="authEmail" class="input-field" placeholder="Почта"><span class="error-text" id="emailErr"></span>
+        <input id="authCode" class="input-field" placeholder="Код (8 символов)" maxlength="8"><span class="error-text" id="codeErr"></span>
         <div id="regExtra" style="display:none;">
           <input id="authNick" class="input-field" placeholder="Придумай ник"><span class="error-text" id="nickErr"></span>
           <label style="color:#ddd;">📅 Дата рождения:</label>
@@ -97,12 +103,6 @@
       </div>`;
     
     let mode = 'login', rD=15, rM=6, rY=2005;
-    const emailInput = document.getElementById('authEmail');
-    const codeInput = document.getElementById('authCode');
-    const emailErr = document.getElementById('emailErr');
-    const codeErr = document.getElementById('codeErr');
-    const nickInput = document.getElementById('authNick');
-    const nickErr = document.getElementById('nickErr');
     
     function upd() {
       document.getElementById('rDv').textContent = rD;
@@ -115,7 +115,6 @@
       document.getElementById('regExtra').style.display = mode === 'register' ? 'block' : 'none';
       document.getElementById('authBtn').textContent = mode === 'login' ? 'ВОЙТИ' : 'ЗАРЕГИСТРИРОВАТЬСЯ';
       document.getElementById('toggleMode').textContent = mode === 'login' ? 'Нет аккаунта? Регистрация' : 'Уже есть аккаунт? Войти';
-      emailErr.style.display = 'none'; nickErr.style.display = 'none'; codeErr.style.display = 'none';
     };
     
     document.getElementById('rDu').onclick = () => { rD = rD % 31 + 1; upd(); };
@@ -126,25 +125,17 @@
     document.getElementById('rYd').onclick = () => { if (rY > 1920) rY--; upd(); };
     
     document.getElementById('authBtn').onclick = () => {
-      const email = emailInput.value.trim().toLowerCase();
-      const code = codeInput.value.trim();
-      emailErr.style.display = 'none'; codeErr.style.display = 'none'; nickErr.style.display = 'none';
+      const email = document.getElementById('authEmail').value.trim().toLowerCase();
+      const code = document.getElementById('authCode').value.trim();
       
-      if (!email || !email.includes('@')) {
-        emailErr.textContent = 'Введи корректную почту';
-        emailErr.style.display = 'block'; return;
-      }
-      if (code.length !== 8) {
-        codeErr.textContent = 'Код должен быть ровно 8 символов';
-        codeErr.style.display = 'block'; return;
-      }
+      if (!email || !email.includes('@')) return alert('Введи корректную почту');
+      if (code.length !== 8) return alert('Код должен быть ровно 8 символов');
       
       if (mode === 'register') {
-        const nick = nickInput.value.trim();
-        if (!nick) { nickErr.textContent = 'Введи ник'; nickErr.style.display = 'block'; return; }
-        if (bad(nick)) { nickErr.textContent = 'Ник содержит запрещённые слова'; nickErr.style.display = 'block'; return; }
-        if (findByNick(nick)) { nickErr.textContent = 'Этот ник уже занят'; nickErr.style.display = 'block'; return; }
-        if (findByEmail(email)) { emailErr.textContent = 'Эта почта уже используется'; emailErr.style.display = 'block'; return; }
+        const nick = document.getElementById('authNick').value.trim();
+        if (!nick) return alert('Введи ник');
+        if (bad(nick)) return alert('Ник содержит запрещённые слова');
+        if (findByEmail(email)) return alert('Эта почта уже используется');
         
         users[email] = {
           email, nick, code,
@@ -158,18 +149,14 @@
         };
         save();
         currentUser = email;
+        saveSession(email);
         enterApp();
       } else {
         const user = findByEmail(email);
-        if (!user) {
-          emailErr.textContent = 'Аккаунт с такой почтой не найден';
-          emailErr.style.display = 'block'; return;
-        }
-        if (user.code !== code) {
-          codeErr.textContent = 'Неверный код';
-          codeErr.style.display = 'block'; return;
-        }
+        if (!user) return alert('Аккаунт не найден');
+        if (user.code !== code) return alert('Неверный код');
         currentUser = email;
+        saveSession(email);
         enterApp();
       }
     };
@@ -178,6 +165,7 @@
   function enterApp() {
     document.getElementById('authScreen').classList.remove('active');
     document.getElementById('mainTabs').style.display = 'flex';
+    document.getElementById('logoutBtn').style.display = 'block';
     switchTab('friends');
   }
 
@@ -202,15 +190,15 @@
   }
   tabs.forEach(t => t.addEventListener('click', () => switchTab(t.dataset.tab)));
 
-  // ========== ДРУЗЬЯ ==========
+  // ========== ДРУЗЬЯ (ПОИСК ПО ПОЧТЕ) ==========
   function renderFriends() {
     const c = screens.friends; c.innerHTML = '';
     const u = users[currentUser]; if (!u) return;
     if (!u.friends.length) c.innerHTML = '<p style="text-align:center;color:#aaa;">Пока нет друзей</p>';
     else u.friends.forEach(f => {
-      const fu = findByNick(f.nick);
+      const fu = findByEmail(f.email);
       const div = document.createElement('div'); div.className = 'card';
-      div.innerHTML = `<div style="display:flex;align-items:center;gap:12px;"><span style="font-size:2.5rem;">${fu?fu.profile.avatar:'🙂'}</span><div><strong>${f.nick}</strong><br>🏆${f.cups} 🔥${f.streak||0}д</div></div>`;
+      div.innerHTML = `<div style="display:flex;align-items:center;gap:12px;"><span style="font-size:2.5rem;">${fu?fu.profile.avatar:'🙂'}</span><div><strong>${fu?fu.nick:f.email}</strong><br>🏆${f.cups} 🔥${f.streak||0}д</div></div>`;
       c.appendChild(div);
     });
     const add = document.createElement('button'); add.className='btn'; add.textContent='➕ Добавить друга';
@@ -220,13 +208,14 @@
   function showAddFriendModal() {
     const modal = document.createElement('div'); modal.className = 'modal active';
     modal.innerHTML = `<div class="modal-content"><h3>➕ Добавить друга</h3>
-      <input id="addNickInput" class="input-field" placeholder="Введи ник друга"><span class="error-text" id="addErr"></span>
+      <p style="color:#aaa;font-size:0.8rem;">Введи почту друга</p>
+      <input id="addEmailInput" class="input-field" placeholder="Почта друга"><span class="error-text" id="addErr"></span>
       <div id="addPreview" style="margin:12px 0;min-height:60px;"></div>
       <button class="btn" id="searchBtn">🔍 НАЙТИ</button>
       <button class="btn" id="confirmAddBtn" disabled>ПОДТВЕРДИТЬ</button>
       <button class="btn" id="cancelAdd" style="background:#555;">ОТМЕНА</button></div>`;
     document.body.appendChild(modal);
-    const inp = modal.querySelector('#addNickInput');
+    const inp = modal.querySelector('#addEmailInput');
     const err = modal.querySelector('#addErr');
     const preview = modal.querySelector('#addPreview');
     const search = modal.querySelector('#searchBtn');
@@ -234,23 +223,23 @@
     let found = null;
 
     search.onclick = ()=>{
-      const nick = inp.value.trim(); err.style.display='none'; preview.innerHTML=''; confirm.disabled=true; found=null;
-      if (!nick) { err.textContent='Введи ник'; err.style.display='block'; return; }
-      found = findByNick(nick);
+      const email = inp.value.trim().toLowerCase(); err.style.display='none'; preview.innerHTML=''; confirm.disabled=true; found=null;
+      if (!email || !email.includes('@')) { err.textContent='Введи почту'; err.style.display='block'; return; }
+      found = findByEmail(email);
       const u = users[currentUser];
       if (!found) { err.textContent='❌ Аккаунт не найден'; err.style.display='block'; }
       else if (found.email === currentUser) { err.textContent='❌ Нельзя добавить себя'; err.style.display='block'; }
-      else if (u.friends.some(f=>f.nick.toLowerCase()===found.nick.toLowerCase())) { err.textContent='❌ Уже в друзьях'; err.style.display='block'; }
+      else if (u.friends.some(f=>f.email === found.email)) { err.textContent='❌ Уже в друзьях'; err.style.display='block'; }
       else {
-        preview.innerHTML = `<div class="card"><span style="font-size:2rem;">${found.profile.avatar}</span> <strong>${found.nick}</strong></div>`;
+        preview.innerHTML = `<div class="card"><span style="font-size:2rem;">${found.profile.avatar}</span> <strong>${found.nick}</strong><br><small>${found.email}</small></div>`;
         confirm.disabled = false;
       }
     };
     confirm.onclick = ()=>{
       if (!found) return;
       const u = users[currentUser];
-      u.friends.push({nick:found.nick, cups:0, streak:0});
-      if (!found.friends.some(f=>f.nick.toLowerCase()===u.nick.toLowerCase())) found.friends.push({nick:u.nick, cups:0, streak:0});
+      u.friends.push({email: found.email, cups: 0, streak: 0});
+      if (!found.friends.some(f=>f.email === currentUser)) found.friends.push({email: currentUser, cups: 0, streak: 0});
       save(); renderFriends(); modal.remove();
     };
     modal.querySelector('#cancelAdd').onclick = ()=> modal.remove();
@@ -261,12 +250,12 @@
     const c = screens.tasks; c.innerHTML = '<h3>📋 Задания</h3>';
     const u = users[currentUser];
     u.friends.forEach(f=>{
-      const fu = findByNick(f.nick);
-      const div = document.createElement('div'); div.className='card'; div.innerHTML=`<strong>${f.nick}</strong>`;
+      const fu = findByEmail(f.email);
+      const div = document.createElement('div'); div.className='card'; div.innerHTML=`<strong>${fu?fu.nick:f.email}</strong>`;
       [{l:'🚶 +20',v:20},{l:'🏠 +25',v:25},{l:'🎮 +22',v:22},{l:'🆘 +15',v:15},{l:'🎁 +30',v:30}].forEach(t=>{
         const b = document.createElement('button'); b.className='btn'; b.textContent=t.l;
         b.onclick = ()=>{ f.cups+=t.v; f.streak=(f.streak||0)+1; u.totalTasks=(u.totalTasks||0)+1;
-          if(fu){ const rf=fu.friends.find(x=>x.nick.toLowerCase()===u.nick.toLowerCase()); if(rf) rf.cups+=t.v; }
+          if(fu){ const rf=fu.friends.find(x=>x.email===currentUser); if(rf) rf.cups+=t.v; }
           save(); renderTasks(); renderFriends(); };
         div.appendChild(b);
       });
@@ -343,8 +332,17 @@
     };
   }
 
+  // ========== ЗАПУСК ==========
   load();
-  if (currentUser && users[currentUser]) enterApp(); else renderAuth();
+  const session = getSession();
+  if (session && users[session]) {
+    currentUser = session;
+    enterApp();
+  } else {
+    currentUser = null;
+    clearSession();
+    renderAuth();
+  }
 })();
 </script>
 </body>
