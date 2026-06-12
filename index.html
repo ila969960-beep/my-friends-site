@@ -25,6 +25,7 @@
     .screen.active{display:flex}
     .card{background:rgba(22,18,38,0.8);backdrop-filter:blur(20px);border-radius:24px;padding:16px;border:1px solid rgba(255,215,150,0.2);box-shadow:0 8px 20px rgba(0,0,0,0.5);margin-bottom:6px}
     .btn{background:linear-gradient(180deg,#fbb034,#f08a1a);border:none;border-radius:30px;padding:12px 18px;font-weight:700;font-size:0.9rem;color:#1a1423;cursor:pointer;box-shadow:0 6px 12px rgba(0,0,0,0.5);margin:4px 0;width:100%}
+    .btn:disabled{opacity:0.6;transform:none}
     .btn.danger{background:linear-gradient(180deg,#ff6b6b,#c0392b);color:white}
     .btn.logout{background:#ff6b6b;color:white;width:auto;padding:10px 20px;margin-top:8px}
     .btn.copy{background:#56ccf2;color:#000;width:auto;padding:6px 14px;font-size:0.75rem;margin:0}
@@ -36,7 +37,8 @@
     .wheel-col{display:flex;flex-direction:column;align-items:center;gap:3px}
     .wheel-btn{background:none;border:none;font-size:1.5rem;color:#ffd966;cursor:pointer}
     .wheel-value{font-size:1.2rem;font-weight:700;background:#1e1836;padding:4px 14px;border-radius:20px;min-width:60px;text-align:center;border:1px solid #ffd96640}
-    .error-text{color:#ff6b6b;font-size:0.8rem;display:none;margin-top:2px}
+    .error-text{color:#ff6b6b;font-size:0.8rem;margin-top:2px;display:none}
+    .loading-text{color:#aaa;text-align:center;padding:20px}
     .friend-avatar{font-size:2.5rem;width:50px;text-align:center}
     .streak-badge{background:#ff6b6b;border-radius:20px;padding:3px 10px;font-weight:700;font-size:0.85rem}
     .code-display{background:#1e1836;border-radius:16px;padding:10px 14px;font-family:monospace;font-size:0.95rem;color:#ffd966;display:flex;align-items:center;justify-content:space-between;gap:8px;margin:8px 0}
@@ -73,8 +75,8 @@
 <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
 
 <script>
-  // ТВОЙ КОНФИГ FIREBASE (уже вставлен)
-  const firebaseConfig = {
+  // Конфигурация Firebase (уже настроена)
+  firebase.initializeApp({
     apiKey: "AIzaSyA0mgaZOv6dqVo-pNbRY7kFdP1HX1u9qg8",
     authDomain: "cdsferw-50ff9.firebaseapp.com",
     databaseURL: "https://cdsferw-50ff9-default-rtdb.europe-west1.firebasedatabase.app",
@@ -82,15 +84,10 @@
     storageBucket: "cdsferw-50ff9.firebasestorage.app",
     messagingSenderId: "489957947610",
     appId: "1:489957947610:web:833bed6e55fbede597cde3"
-  };
-  firebase.initializeApp(firebaseConfig);
+  });
   const db = firebase.database();
 
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('data:application/javascript,' + encodeURIComponent('self.addEventListener("fetch",e=>{e.respondWith(fetch(e.request))});'));
-  }
-
-  // ====================== ЯЗЫКОВЫЕ НАБОРЫ ======================
+  // ========== ПЕРЕВОДЫ ==========
   const MONTHS = {
     ru: ['Янв','Фев','Мар','Апр','Май','Июн','Июл','Авг','Сен','Окт','Ноя','Дек'],
     en: ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],
@@ -127,175 +124,41 @@
     {id:'col5',name:'🎴 5 карточек',desc:'5 карточек',reward:'avatar:🎴'},
     {id:'all100',name:'🎖️ Все 100+',desc:'У всех 100+',reward:'card:master'}
   ];
-
   const LANGS = {
-    ru: {
-      app_title:'✨ Узы Света', welcome:'🌟 Добро пожаловать', email_ph:'Электронная почта', code_ph:'Код доступа (8 символов)',
-      nick_ph:'Придумайте никнейм', date_label:'📅 Дата рождения:', login_btn:'ВОЙТИ', register_btn:'РЕГИСТРАЦИЯ',
-      no_acc:'Нет аккаунта?', has_acc:'Уже есть аккаунт?', tab_friends:'👥 Друзья', tab_tasks:'📋 Задания', tab_ach:'🏅 Достижения',
-      tab_profile:'👤 Профиль', no_friends:'Пока нет друзей', add_friend:'➕ Добавить друга', confirm:'✅ Подтвердить', cancel:'Отмена',
-      tasks_title:'📋 Задания', quarrel:'💢 Поссориться -18', edit:'✏️ Редактировать', logout:'🚪 Выйти', save:'💾 Сохранить',
-      not_found:'❌ Аккаунт не найден', self_add:'❌ Нельзя добавить себя', already:'❌ Уже в друзьях', email_err:'Введите почту',
-      code_err:'Код 8 символов', nick_err:'Введите ник', bad_nick:'Запрещённые слова', email_used:'Почта занята',
-      email_not_found:'Аккаунт не найден', wrong_code:'Неверный код', claimed:'✅ Получено', get:'🎁 Получить', locked:'🔒 Не выполнено',
-      card_label:'🃏 Карточка:', avatar_label:'🖼️ Аватар:', your_code:'Твой код:', copy:'📋 Копировать', copied:'✅ Скопировано!',
-      add_by_code:'Введите код друга', found_friend:'Это твой друг!', years:'лет'
-    },
-    en: {
-      app_title:'✨ Bonds of Light', welcome:'🌟 Welcome', email_ph:'Email', code_ph:'Access code (8 chars)',
-      nick_ph:'Nickname', date_label:'📅 Birth date:', login_btn:'LOG IN', register_btn:'SIGN UP', no_acc:'No account?',
-      has_acc:'Already have account?', tab_friends:'👥 Friends', tab_tasks:'📋 Tasks', tab_ach:'🏅 Achievements', tab_profile:'👤 Profile',
-      no_friends:'No friends yet', add_friend:'➕ Add friend', confirm:'✅ Confirm', cancel:'Cancel', tasks_title:'📋 Tasks',
-      quarrel:'💢 Quarrel -18', edit:'✏️ Edit', logout:'🚪 Log out', save:'💾 Save', not_found:'❌ Not found',
-      self_add:'❌ Cannot add yourself', already:'❌ Already friend', email_err:'Enter email', code_err:'Code 8 chars',
-      nick_err:'Enter nick', bad_nick:'Forbidden words', email_used:'Email taken', email_not_found:'Account not found',
-      wrong_code:'Wrong code', claimed:'✅ Claimed', get:'🎁 Claim', locked:'🔒 Locked', card_label:'🃏 Card:',
-      avatar_label:'🖼️ Avatar:', your_code:'Your code:', copy:'📋 Copy', copied:'✅ Copied!', add_by_code:'Enter friend code',
-      found_friend:'This is your friend!', years:'years'
-    },
-    es: {
-      app_title:'✨ Lazos de Luz', welcome:'🌟 Bienvenido', email_ph:'Correo', code_ph:'Código (8 caracteres)',
-      nick_ph:'Apodo', date_label:'📅 Nacimiento:', login_btn:'ENTRAR', register_btn:'REGISTRO', no_acc:'¿Sin cuenta?',
-      has_acc:'¿Ya tienes cuenta?', tab_friends:'👥 Amigos', tab_tasks:'📋 Tareas', tab_ach:'🏅 Logros', tab_profile:'👤 Perfil',
-      no_friends:'Sin amigos', add_friend:'➕ Añadir amigo', confirm:'✅ Confirmar', cancel:'Cancelar', tasks_title:'📋 Tareas',
-      quarrel:'💢 Pelear -18', edit:'✏️ Editar', logout:'🚪 Salir', save:'💾 Guardar', not_found:'❌ No encontrado',
-      self_add:'❌ No puedes', already:'❌ Ya amigo', email_err:'Ingresa correo', code_err:'Código 8', nick_err:'Ingresa apodo',
-      bad_nick:'Prohibido', email_used:'Correo ocupado', email_not_found:'No encontrado', wrong_code:'Código incorrecto',
-      claimed:'✅ Reclamado', get:'🎁 Reclamar', locked:'🔒 Bloqueado', card_label:'🃏 Tarjeta:', avatar_label:'🖼️ Avatar:',
-      your_code:'Tu código:', copy:'📋 Copiar', copied:'✅ ¡Copiado!', add_by_code:'Ingresa código', found_friend:'¡Este es tu amigo!',
-      years:'años'
-    },
-    fr: {
-      app_title:'✨ Liens de Lumière', welcome:'🌟 Bienvenue', email_ph:'Email', code_ph:'Code (8 caractères)',
-      nick_ph:'Pseudo', date_label:'📅 Naissance:', login_btn:'CONNEXION', register_btn:'INSCRIPTION', no_acc:'Pas de compte?',
-      has_acc:'Déjà un compte?', tab_friends:'👥 Amis', tab_tasks:'📋 Tâches', tab_ach:'🏅 Succès', tab_profile:'👤 Profil',
-      no_friends:'Pas encore d\'amis', add_friend:'➕ Ajouter', confirm:'✅ Confirmer', cancel:'Annuler', tasks_title:'📋 Tâches',
-      quarrel:'💢 Dispute -18', edit:'✏️ Modifier', logout:'🚪 Déconnexion', save:'💾 Sauvegarder', not_found:'❌ Non trouvé',
-      self_add:'❌ Impossible', already:'❌ Déjà ami', email_err:'Email valide', code_err:'Code 8', nick_err:'Pseudo',
-      bad_nick:'Mots interdits', email_used:'Email utilisé', email_not_found:'Non trouvé', wrong_code:'Mauvais code',
-      claimed:'✅ Obtenu', get:'🎁 Obtenir', locked:'🔒 Verrouillé', card_label:'🃏 Carte:', avatar_label:'🖼️ Avatar:',
-      your_code:'Votre code:', copy:'📋 Copier', copied:'✅ Copié!', add_by_code:'Code ami', found_friend:'C\'est ton ami!',
-      years:'ans'
-    },
-    de: {
-      app_title:'✨ Bande des Lichts', welcome:'🌟 Willkommen', email_ph:'Email', code_ph:'Code (8 Zeichen)',
-      nick_ph:'Spitzname', date_label:'📅 Geburtsdatum:', login_btn:'ANMELDEN', register_btn:'REGISTRIEREN', no_acc:'Kein Konto?',
-      has_acc:'Bereits Konto?', tab_friends:'👥 Freunde', tab_tasks:'📋 Aufgaben', tab_ach:'🏅 Erfolge', tab_profile:'👤 Profil',
-      no_friends:'Noch keine Freunde', add_friend:'➕ Hinzufügen', confirm:'✅ Bestätigen', cancel:'Abbrechen', tasks_title:'📋 Aufgaben',
-      quarrel:'💢 Streit -18', edit:'✏️ Bearbeiten', logout:'🚪 Abmelden', save:'💾 Speichern', not_found:'❌ Nicht gefunden',
-      self_add:'❌ Nicht möglich', already:'❌ Bereits Freund', email_err:'Email eingeben', code_err:'Code 8', nick_err:'Spitzname',
-      bad_nick:'Verboten', email_used:'Email vergeben', email_not_found:'Nicht gefunden', wrong_code:'Falscher Code',
-      claimed:'✅ Erhalten', get:'🎁 Erhalten', locked:'🔒 Gesperrt', card_label:'🃏 Karte:', avatar_label:'🖼️ Avatar:',
-      your_code:'Dein Code:', copy:'📋 Kopieren', copied:'✅ Kopiert!', add_by_code:'Freundescode', found_friend:'Das ist dein Freund!',
-      years:'Jahre'
-    },
-    pt: {
-      app_title:'✨ Laços de Luz', welcome:'🌟 Bem-vindo', email_ph:'Email', code_ph:'Código (8 caracteres)',
-      nick_ph:'Apelido', date_label:'📅 Nascimento:', login_btn:'ENTRAR', register_btn:'REGISTRAR', no_acc:'Sem conta?',
-      has_acc:'Já tem conta?', tab_friends:'👥 Amigos', tab_tasks:'📋 Tarefas', tab_ach:'🏅 Conquistas', tab_profile:'👤 Perfil',
-      no_friends:'Sem amigos', add_friend:'➕ Adicionar', confirm:'✅ Confirmar', cancel:'Cancelar', tasks_title:'📋 Tarefas',
-      quarrel:'💢 Briga -18', edit:'✏️ Editar', logout:'🚪 Sair', save:'💾 Salvar', not_found:'❌ Não encontrado',
-      self_add:'❌ Impossível', already:'❌ Já amigo', email_err:'Email válido', code_err:'Código 8', nick_err:'Apelido',
-      bad_nick:'Proibido', email_used:'Email usado', email_not_found:'Não encontrado', wrong_code:'Código errado',
-      claimed:'✅ Obtido', get:'🎁 Obter', locked:'🔒 Bloqueado', card_label:'🃏 Cartão:', avatar_label:'🖼️ Avatar:',
-      your_code:'Seu código:', copy:'📋 Copiar', copied:'✅ Copiado!', add_by_code:'Código amigo', found_friend:'Este é o seu amigo!',
-      years:'anos'
-    },
-    it: {
-      app_title:'✨ Legami di Luce', welcome:'🌟 Benvenuto', email_ph:'Email', code_ph:'Codice (8 caratteri)',
-      nick_ph:'Nickname', date_label:'📅 Nascita:', login_btn:'ACCEDI', register_btn:'REGISTRATI', no_acc:'Nessun account?',
-      has_acc:'Hai già account?', tab_friends:'👥 Amici', tab_tasks:'📋 Compiti', tab_ach:'🏅 Obiettivi', tab_profile:'👤 Profilo',
-      no_friends:'Nessun amico', add_friend:'➕ Aggiungi', confirm:'✅ Conferma', cancel:'Annulla', tasks_title:'📋 Compiti',
-      quarrel:'💢 Litigio -18', edit:'✏️ Modifica', logout:'🚪 Esci', save:'💾 Salva', not_found:'❌ Non trovato',
-      self_add:'❌ Impossibile', already:'❌ Già amico', email_err:'Email valida', code_err:'Codice 8', nick_err:'Nickname',
-      bad_nick:'Vietato', email_used:'Email usata', email_not_found:'Non trovato', wrong_code:'Codice errato',
-      claimed:'✅ Ottenuto', get:'🎁 Ottieni', locked:'🔒 Bloccato', card_label:'🃏 Carta:', avatar_label:'🖼️ Avatar:',
-      your_code:'Tuo codice:', copy:'📋 Copia', copied:'✅ Copiato!', add_by_code:'Codice amico', found_friend:'Questo è il tuo amico!',
-      years:'anni'
-    },
-    zh: {
-      app_title:'✨ 光之纽带', welcome:'🌟 欢迎', email_ph:'邮箱', code_ph:'访问码(8位)', nick_ph:'昵称', date_label:'📅 生日:',
-      login_btn:'登录', register_btn:'注册', no_acc:'没有账号?', has_acc:'已有账号?', tab_friends:'👥 朋友', tab_tasks:'📋 任务',
-      tab_ach:'🏅 成就', tab_profile:'👤 个人', no_friends:'还没有朋友', add_friend:'➕ 添加', confirm:'✅ 确认', cancel:'取消',
-      tasks_title:'📋 任务', quarrel:'💢 吵架 -18', edit:'✏️ 编辑', logout:'🚪 退出', save:'💾 保存', not_found:'❌ 未找到',
-      self_add:'❌ 不能添加自己', already:'❌ 已是朋友', email_err:'输入邮箱', code_err:'8位码', nick_err:'输入昵称',
-      bad_nick:'禁止', email_used:'邮箱已用', email_not_found:'未找到', wrong_code:'错误码', claimed:'✅ 已领取', get:'🎁 领取',
-      locked:'🔒 锁定', card_label:'🃏 卡片:', avatar_label:'🖼️ 头像:', your_code:'你的好友码:', copy:'📋 复制', copied:'✅ 已复制!',
-      add_by_code:'输入好友码', found_friend:'这是你的朋友！', years:'岁'
-    },
-    ja: {
-      app_title:'✨ 光の絆', welcome:'🌟 ようこそ', email_ph:'メール', code_ph:'コード(8文字)', nick_ph:'ニックネーム',
-      date_label:'📅 誕生日:', login_btn:'ログイン', register_btn:'登録', no_acc:'アカウントなし?', has_acc:'アカウントあり?',
-      tab_friends:'👥 友達', tab_tasks:'📋 タスク', tab_ach:'🏅 実績', tab_profile:'👤 プロフ', no_friends:'友達なし',
-      add_friend:'➕ 追加', confirm:'✅ 確認', cancel:'キャンセル', tasks_title:'📋 タスク', quarrel:'💢 喧嘩 -18',
-      edit:'✏️ 編集', logout:'🚪 ログアウト', save:'💾 保存', not_found:'❌ 見つかりません', self_add:'❌ 自分は追加不可',
-      already:'❌ 既に友達', email_err:'メール入力', code_err:'8文字', nick_err:'ニック入力', bad_nick:'禁止',
-      email_used:'メール使用済', email_not_found:'見つかりません', wrong_code:'間違ったコード', claimed:'✅ 取得済',
-      get:'🎁 取得', locked:'🔒 ロック', card_label:'🃏 カード:', avatar_label:'🖼️ アバター:', your_code:'友達コード:',
-      copy:'📋 コピー', copied:'✅ コピー!', add_by_code:'友達コード入力', found_friend:'これがあなたの友達です！', years:'歳'
-    },
-    ko: {
-      app_title:'✨ 빛의 끈', welcome:'🌟 환영합니다', email_ph:'이메일', code_ph:'코드(8자)', nick_ph:'닉네임', date_label:'📅 생일:',
-      login_btn:'로그인', register_btn:'회원가입', no_acc:'계정 없음?', has_acc:'계정 있음?', tab_friends:'👥 친구', tab_tasks:'📋 과제',
-      tab_ach:'🏅 성과', tab_profile:'👤 프로필', no_friends:'친구 없음', add_friend:'➕ 추가', confirm:'✅ 확인', cancel:'취소',
-      tasks_title:'📋 과제', quarrel:'💢 다툼 -18', edit:'✏️ 편집', logout:'🚪 로그아웃', save:'💾 저장', not_found:'❌ 찾을 수 없음',
-      self_add:'❌ 자신 추가 불가', already:'❌ 이미 친구', email_err:'이메일 입력', code_err:'8자', nick_err:'닉네임 입력',
-      bad_nick:'금지', email_used:'이메일 사용 중', email_not_found:'찾을 수 없음', wrong_code:'잘못된 코드', claimed:'✅ 획득',
-      get:'🎁 획득', locked:'🔒 잠김', card_label:'🃏 카드:', avatar_label:'🖼️ 아바타:', your_code:'친구 코드:', copy:'📋 복사',
-      copied:'✅ 복사됨!', add_by_code:'친구 코드 입력', found_friend:'이것은 당신의 친구입니다!', years:'세'
-    }
+    ru: { app_title:'✨ Узы Света', welcome:'🌟 Добро пожаловать', email_ph:'Электронная почта', code_ph:'Код доступа (8 символов)', nick_ph:'Придумайте никнейм', date_label:'📅 Дата рождения:', login_btn:'ВОЙТИ', register_btn:'ЗАРЕГИСТРИРОВАТЬСЯ', no_acc:'Нет аккаунта?', has_acc:'Уже есть аккаунт?', tab_friends:'👥 Друзья', tab_tasks:'📋 Задания', tab_ach:'🏅 Достижения', tab_profile:'👤 Профиль', no_friends:'Пока нет друзей', add_friend:'➕ Добавить друга', confirm:'✅ Подтвердить', cancel:'Отмена', tasks_title:'📋 Задания', quarrel:'💢 Поссориться -18', edit:'✏️ Редактировать', logout:'🚪 Выйти', save:'💾 Сохранить', not_found:'❌ Аккаунт не найден', self_add:'❌ Нельзя добавить себя', already:'❌ Уже в друзьях', email_err:'Введите почту', code_err:'Код 8 символов', nick_err:'Введите ник', bad_nick:'Запрещённые слова', email_used:'Почта занята', email_not_found:'Аккаунт не найден', wrong_code:'Неверный код', claimed:'✅ Получено', get:'🎁 Получить', locked:'🔒 Не выполнено', card_label:'🃏 Карточка:', avatar_label:'🖼️ Аватар:', your_code:'Твой код:', copy:'📋 Копировать', copied:'✅ Скопировано!', add_by_code:'Введите код друга', found_friend:'Это твой друг!', years:'лет', loading:'Загрузка...' },
+    en: { app_title:'✨ Bonds of Light', welcome:'🌟 Welcome', email_ph:'Email', code_ph:'Access code (8 chars)', nick_ph:'Nickname', date_label:'📅 Birth date:', login_btn:'LOG IN', register_btn:'SIGN UP', no_acc:'No account?', has_acc:'Already have account?', tab_friends:'👥 Friends', tab_tasks:'📋 Tasks', tab_ach:'🏅 Achievements', tab_profile:'👤 Profile', no_friends:'No friends yet', add_friend:'➕ Add friend', confirm:'✅ Confirm', cancel:'Cancel', tasks_title:'📋 Tasks', quarrel:'💢 Quarrel -18', edit:'✏️ Edit', logout:'🚪 Log out', save:'💾 Save', not_found:'❌ Not found', self_add:'❌ Cannot add yourself', already:'❌ Already friend', email_err:'Enter email', code_err:'Code 8 chars', nick_err:'Enter nick', bad_nick:'Forbidden words', email_used:'Email taken', email_not_found:'Account not found', wrong_code:'Wrong code', claimed:'✅ Claimed', get:'🎁 Claim', locked:'🔒 Locked', card_label:'🃏 Card:', avatar_label:'🖼️ Avatar:', your_code:'Your code:', copy:'📋 Copy', copied:'✅ Copied!', add_by_code:'Enter friend code', found_friend:'This is your friend!', years:'years', loading:'Loading...' },
+    es: { app_title:'✨ Lazos de Luz', welcome:'🌟 Bienvenido', email_ph:'Correo', code_ph:'Código (8 caracteres)', nick_ph:'Apodo', date_label:'📅 Nacimiento:', login_btn:'ENTRAR', register_btn:'REGISTRO', no_acc:'¿Sin cuenta?', has_acc:'¿Ya tienes cuenta?', tab_friends:'👥 Amigos', tab_tasks:'📋 Tareas', tab_ach:'🏅 Logros', tab_profile:'👤 Perfil', no_friends:'Sin amigos', add_friend:'➕ Añadir amigo', confirm:'✅ Confirmar', cancel:'Cancelar', tasks_title:'📋 Tareas', quarrel:'💢 Pelear -18', edit:'✏️ Editar', logout:'🚪 Salir', save:'💾 Guardar', not_found:'❌ No encontrado', self_add:'❌ No puedes', already:'❌ Ya amigo', email_err:'Ingresa correo', code_err:'Código 8', nick_err:'Ingresa apodo', bad_nick:'Prohibido', email_used:'Correo ocupado', email_not_found:'No encontrado', wrong_code:'Código incorrecto', claimed:'✅ Reclamado', get:'🎁 Reclamar', locked:'🔒 Bloqueado', card_label:'🃏 Tarjeta:', avatar_label:'🖼️ Avatar:', your_code:'Tu código:', copy:'📋 Copiar', copied:'✅ ¡Copiado!', add_by_code:'Ingresa código', found_friend:'¡Este es tu amigo!', years:'años', loading:'Cargando...' },
+    fr: { app_title:'✨ Liens de Lumière', welcome:'🌟 Bienvenue', email_ph:'Email', code_ph:'Code (8 caractères)', nick_ph:'Pseudo', date_label:'📅 Naissance:', login_btn:'CONNEXION', register_btn:'INSCRIPTION', no_acc:'Pas de compte?', has_acc:'Déjà un compte?', tab_friends:'👥 Amis', tab_tasks:'📋 Tâches', tab_ach:'🏅 Succès', tab_profile:'👤 Profil', no_friends:'Pas encore d\'amis', add_friend:'➕ Ajouter', confirm:'✅ Confirmer', cancel:'Annuler', tasks_title:'📋 Tâches', quarrel:'💢 Dispute -18', edit:'✏️ Modifier', logout:'🚪 Déconnexion', save:'💾 Sauvegarder', not_found:'❌ Non trouvé', self_add:'❌ Impossible', already:'❌ Déjà ami', email_err:'Email valide', code_err:'Code 8', nick_err:'Pseudo', bad_nick:'Mots interdits', email_used:'Email utilisé', email_not_found:'Non trouvé', wrong_code:'Mauvais code', claimed:'✅ Obtenu', get:'🎁 Obtenir', locked:'🔒 Verrouillé', card_label:'🃏 Carte:', avatar_label:'🖼️ Avatar:', your_code:'Votre code:', copy:'📋 Copier', copied:'✅ Copié!', add_by_code:'Code ami', found_friend:'C\'est ton ami!', years:'ans', loading:'Chargement...' },
+    de: { app_title:'✨ Bande des Lichts', welcome:'🌟 Willkommen', email_ph:'Email', code_ph:'Code (8 Zeichen)', nick_ph:'Spitzname', date_label:'📅 Geburtsdatum:', login_btn:'ANMELDEN', register_btn:'REGISTRIEREN', no_acc:'Kein Konto?', has_acc:'Bereits Konto?', tab_friends:'👥 Freunde', tab_tasks:'📋 Aufgaben', tab_ach:'🏅 Erfolge', tab_profile:'👤 Profil', no_friends:'Noch keine Freunde', add_friend:'➕ Hinzufügen', confirm:'✅ Bestätigen', cancel:'Abbrechen', tasks_title:'📋 Aufgaben', quarrel:'💢 Streit -18', edit:'✏️ Bearbeiten', logout:'🚪 Abmelden', save:'💾 Speichern', not_found:'❌ Nicht gefunden', self_add:'❌ Nicht möglich', already:'❌ Bereits Freund', email_err:'Email eingeben', code_err:'Code 8', nick_err:'Spitzname', bad_nick:'Verboten', email_used:'Email vergeben', email_not_found:'Nicht gefunden', wrong_code:'Falscher Code', claimed:'✅ Erhalten', get:'🎁 Erhalten', locked:'🔒 Gesperrt', card_label:'🃏 Karte:', avatar_label:'🖼️ Avatar:', your_code:'Dein Code:', copy:'📋 Kopieren', copied:'✅ Kopiert!', add_by_code:'Freundescode', found_friend:'Das ist dein Freund!', years:'Jahre', loading:'Laden...' },
+    pt: { app_title:'✨ Laços de Luz', welcome:'🌟 Bem-vindo', email_ph:'Email', code_ph:'Código (8 caracteres)', nick_ph:'Apelido', date_label:'📅 Nascimento:', login_btn:'ENTRAR', register_btn:'REGISTRAR', no_acc:'Sem conta?', has_acc:'Já tem conta?', tab_friends:'👥 Amigos', tab_tasks:'📋 Tarefas', tab_ach:'🏅 Conquistas', tab_profile:'👤 Perfil', no_friends:'Sem amigos', add_friend:'➕ Adicionar', confirm:'✅ Confirmar', cancel:'Cancelar', tasks_title:'📋 Tarefas', quarrel:'💢 Briga -18', edit:'✏️ Editar', logout:'🚪 Sair', save:'💾 Salvar', not_found:'❌ Não encontrado', self_add:'❌ Impossível', already:'❌ Já amigo', email_err:'Email válido', code_err:'Código 8', nick_err:'Apelido', bad_nick:'Proibido', email_used:'Email usado', email_not_found:'Não encontrado', wrong_code:'Código errado', claimed:'✅ Obtido', get:'🎁 Obter', locked:'🔒 Bloqueado', card_label:'🃏 Cartão:', avatar_label:'🖼️ Avatar:', your_code:'Seu código:', copy:'📋 Copiar', copied:'✅ Copiado!', add_by_code:'Código amigo', found_friend:'Este é o seu amigo!', years:'anos', loading:'Carregando...' },
+    it: { app_title:'✨ Legami di Luce', welcome:'🌟 Benvenuto', email_ph:'Email', code_ph:'Codice (8 caratteri)', nick_ph:'Nickname', date_label:'📅 Nascita:', login_btn:'ACCEDI', register_btn:'REGISTRATI', no_acc:'Nessun account?', has_acc:'Hai già account?', tab_friends:'👥 Amici', tab_tasks:'📋 Compiti', tab_ach:'🏅 Obiettivi', tab_profile:'👤 Profilo', no_friends:'Nessun amico', add_friend:'➕ Aggiungi', confirm:'✅ Conferma', cancel:'Annulla', tasks_title:'📋 Compiti', quarrel:'💢 Litigio -18', edit:'✏️ Modifica', logout:'🚪 Esci', save:'💾 Salva', not_found:'❌ Non trovato', self_add:'❌ Impossibile', already:'❌ Già amico', email_err:'Email valida', code_err:'Codice 8', nick_err:'Nickname', bad_nick:'Vietato', email_used:'Email usata', email_not_found:'Non trovato', wrong_code:'Codice errato', claimed:'✅ Ottenuto', get:'🎁 Ottieni', locked:'🔒 Bloccato', card_label:'🃏 Carta:', avatar_label:'🖼️ Avatar:', your_code:'Tuo codice:', copy:'📋 Copia', copied:'✅ Copiato!', add_by_code:'Codice amico', found_friend:'Questo è il tuo amico!', years:'anni', loading:'Caricamento...' },
+    zh: { app_title:'✨ 光之纽带', welcome:'🌟 欢迎', email_ph:'邮箱', code_ph:'访问码(8位)', nick_ph:'昵称', date_label:'📅 生日:', login_btn:'登录', register_btn:'注册', no_acc:'没有账号?', has_acc:'已有账号?', tab_friends:'👥 朋友', tab_tasks:'📋 任务', tab_ach:'🏅 成就', tab_profile:'👤 个人', no_friends:'还没有朋友', add_friend:'➕ 添加', confirm:'✅ 确认', cancel:'取消', tasks_title:'📋 任务', quarrel:'💢 吵架 -18', edit:'✏️ 编辑', logout:'🚪 退出', save:'💾 保存', not_found:'❌ 未找到', self_add:'❌ 不能添加自己', already:'❌ 已是朋友', email_err:'输入邮箱', code_err:'8位码', nick_err:'输入昵称', bad_nick:'禁止', email_used:'邮箱已用', email_not_found:'未找到', wrong_code:'错误码', claimed:'✅ 已领取', get:'🎁 领取', locked:'🔒 锁定', card_label:'🃏 卡片:', avatar_label:'🖼️ 头像:', your_code:'你的好友码:', copy:'📋 复制', copied:'✅ 已复制!', add_by_code:'输入好友码', found_friend:'这是你的朋友！', years:'岁', loading:'加载中...' },
+    ja: { app_title:'✨ 光の絆', welcome:'🌟 ようこそ', email_ph:'メール', code_ph:'コード(8文字)', nick_ph:'ニックネーム', date_label:'📅 誕生日:', login_btn:'ログイン', register_btn:'登録', no_acc:'アカウントなし?', has_acc:'アカウントあり?', tab_friends:'👥 友達', tab_tasks:'📋 タスク', tab_ach:'🏅 実績', tab_profile:'👤 プロフ', no_friends:'友達なし', add_friend:'➕ 追加', confirm:'✅ 確認', cancel:'キャンセル', tasks_title:'📋 タスク', quarrel:'💢 喧嘩 -18', edit:'✏️ 編集', logout:'🚪 ログアウト', save:'💾 保存', not_found:'❌ 見つかりません', self_add:'❌ 自分は追加不可', already:'❌ 既に友達', email_err:'メール入力', code_err:'8文字', nick_err:'ニック入力', bad_nick:'禁止', email_used:'メール使用済', email_not_found:'見つかりません', wrong_code:'間違ったコード', claimed:'✅ 取得済', get:'🎁 取得', locked:'🔒 ロック', card_label:'🃏 カード:', avatar_label:'🖼️ アバター:', your_code:'友達コード:', copy:'📋 コピー', copied:'✅ コピー!', add_by_code:'友達コード入力', found_friend:'これがあなたの友達です！', years:'歳', loading:'読み込み中...' },
+    ko: { app_title:'✨ 빛의 끈', welcome:'🌟 환영합니다', email_ph:'이메일', code_ph:'코드(8자)', nick_ph:'닉네임', date_label:'📅 생일:', login_btn:'로그인', register_btn:'회원가입', no_acc:'계정 없음?', has_acc:'계정 있음?', tab_friends:'👥 친구', tab_tasks:'📋 과제', tab_ach:'🏅 성과', tab_profile:'👤 프로필', no_friends:'친구 없음', add_friend:'➕ 추가', confirm:'✅ 확인', cancel:'취소', tasks_title:'📋 과제', quarrel:'💢 다툼 -18', edit:'✏️ 편집', logout:'🚪 로그아웃', save:'💾 저장', not_found:'❌ 찾을 수 없음', self_add:'❌ 자신 추가 불가', already:'❌ 이미 친구', email_err:'이메일 입력', code_err:'8자', nick_err:'닉네임 입력', bad_nick:'금지', email_used:'이메일 사용 중', email_not_found:'찾을 수 없음', wrong_code:'잘못된 코드', claimed:'✅ 획득', get:'🎁 획득', locked:'🔒 잠김', card_label:'🃏 카드:', avatar_label:'🖼️ 아바타:', your_code:'친구 코드:', copy:'📋 복사', copied:'✅ 복사됨!', add_by_code:'친구 코드 입력', found_friend:'이것은 당신의 친구입니다!', years:'세', loading:'로딩 중...' }
   };
 
   let currentLang = 'ru';
   function t(key) { return LANGS[currentLang]?.[key] || LANGS['ru'][key] || key; }
   function getMonths() { return LANGS[currentLang]?.months || MONTHS['ru']; }
-  
   function applyLang() {
-    // обновляем атрибуты
     document.querySelectorAll('[data-key]').forEach(el => { const k = el.dataset.key; if (t(k)) el.textContent = t(k); });
     document.querySelectorAll('[data-placeholder]').forEach(el => { const k = el.dataset.placeholder; if (t(k)) el.placeholder = t(k); });
-    // заголовок приложения
     document.getElementById('appTitle').textContent = t('app_title');
   }
 
-  // ====================== FIREBASE ФУНКЦИИ ======================
+  // ========== FIREBASE ФУНКЦИИ ==========
   let currentUserEmail = null;
-  let allUsersCache = {};
-
-  async function loadAllUsers() {
-    const snapshot = await db.ref('users').once('value');
-    allUsersCache = snapshot.val() || {};
-  }
-
-  async function saveUser(email, userData) {
-    await db.ref('users/' + email.replace('.', '_')).set(userData);
-    allUsersCache[email] = userData;
-  }
-
-  async function getUser(email) {
-    await loadAllUsers();
-    return allUsersCache[email] || null;
-  }
-
-  async function updateUser(email, updates) {
-    await db.ref('users/' + email.replace('.', '_')).update(updates);
-    if (allUsersCache[email]) Object.assign(allUsersCache[email], updates);
-  }
-
+  async function loadAllUsers() { const snap = await db.ref('users').once('value'); return snap.val() || {}; }
+  async function saveUser(email, data) { await db.ref('users/' + email.replace('.', '_')).set(data); }
+  async function getUser(email) { const users = await loadAllUsers(); return users[email] || null; }
+  async function updateUser(email, updates) { await db.ref('users/' + email.replace('.', '_')).update(updates); }
   async function generateFriendCode() {
-    await loadAllUsers();
+    const users = await loadAllUsers();
     let code;
-    do {
-      code = Math.random().toString(36).substring(2, 10).toUpperCase();
-    } while (Object.values(allUsersCache).some(u => u.friendCode === code));
+    do { code = Math.random().toString(36).substring(2,10).toUpperCase(); } while (Object.values(users).some(u => u.friendCode === code));
     return code;
   }
-
-  async function findUserByCode(code) {
-    await loadAllUsers();
-    return Object.values(allUsersCache).find(u => u.friendCode === code.toUpperCase());
-  }
-
+  async function findUserByCode(code) { const users = await loadAllUsers(); return Object.values(users).find(u => u.friendCode === code.toUpperCase()); }
   function bad(txt) { return BAD.some(w => txt.toLowerCase().replace(/[^а-яёa-z]/g,'').includes(w)); }
   function title(cups) { return TITLES.reduce((a,b) => cups >= b.min ? b : a); }
   function cardCls(cups, card) {
@@ -311,8 +174,7 @@
     if (cups >= 200) return 'border-gold';
     return '';
   }
-
-  function checkAchievementCondition(user, achId) {
+  function checkAchievement(user, achId) {
     const f = user.friends || [];
     switch(achId) {
       case 'f1': return f.length >= 1;
@@ -334,58 +196,25 @@
     }
   }
 
-  // ====================== UI ======================
-  function showScreen(screenId) {
-    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-    document.getElementById(screenId).classList.add('active');
-  }
+  // ========== UI ==========
+  function showScreen(id) { document.querySelectorAll('.screen').forEach(s => s.classList.remove('active')); document.getElementById(id).classList.add('active'); }
 
   function buildLangDropdown() {
     const dd = document.getElementById('langDropdown');
     const names = {ru:'🇷🇺 Русский',en:'🇬🇧 English',es:'🇪🇸 Español',fr:'🇫🇷 Français',de:'🇩🇪 Deutsch',pt:'🇵🇹 Português',it:'🇮🇹 Italiano',zh:'🇨🇳 中文',ja:'🇯🇵 日本語',ko:'🇰🇷 한국어'};
     dd.innerHTML = Object.entries(names).map(([c,n]) => `<button class="lang-option" data-lang="${c}">${n}</button>`).join('');
-    dd.querySelectorAll('.lang-option').forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        currentLang = btn.dataset.lang;
-        dd.classList.remove('show');
-        applyLang();
-        // перерисовать текущую вкладку
-        if (currentUserEmail) {
-          const activeTab = document.querySelector('.tab.active');
-          if (activeTab) switchTab(activeTab.dataset.tab);
-        } else {
-          renderAuthScreen();
-        }
-      });
-    });
+    dd.querySelectorAll('.lang-option').forEach(b => b.addEventListener('click', (e) => { e.stopPropagation(); currentLang = b.dataset.lang; dd.classList.remove('show'); applyLang(); if (currentUserEmail) { const at = document.querySelector('.tab.active'); if (at) switchTab(at.dataset.tab); } else renderAuthScreen(); }));
   }
+  document.getElementById('langToggle').onclick = (e) => { e.stopPropagation(); document.getElementById('langDropdown').classList.toggle('show'); };
+  document.addEventListener('click', () => document.getElementById('langDropdown').classList.remove('show'));
 
-  document.getElementById('langToggle').addEventListener('click', (e) => {
-    e.stopPropagation();
-    document.getElementById('langDropdown').classList.toggle('show');
-  });
-  document.addEventListener('click', (e) => {
-    const dd = document.getElementById('langDropdown');
-    const btn = document.getElementById('langToggle');
-    if (!btn.contains(e.target) && !dd.contains(e.target)) dd.classList.remove('show');
-  });
+  function logout() { currentUserEmail = null; localStorage.removeItem('uzi_session'); document.getElementById('mainTabs').style.display = 'none'; showScreen('authScreen'); renderAuthScreen(); }
 
-  function logout() {
-    currentUserEmail = null;
-    localStorage.removeItem('uzi_session');
-    document.getElementById('mainTabs').style.display = 'none';
-    showScreen('authScreen');
-    renderAuthScreen();
-  }
-
-  // ====================== АВТОРИЗАЦИЯ ======================
+  // ========== АВТОРИЗАЦИЯ ==========
   function renderAuthScreen() {
-    const authScreen = document.getElementById('authScreen');
-    authScreen.innerHTML = '';
-    const card = document.createElement('div');
-    card.className = 'card';
-    card.style.marginTop = '30px';
+    const auth = document.getElementById('authScreen');
+    auth.innerHTML = '';
+    const card = document.createElement('div'); card.className = 'card'; card.style.marginTop = '30px';
     card.innerHTML = `
       <h2 style="color:#ffd966;text-align:center">${t('welcome')}</h2>
       <input id="authEmail" class="input-field" data-placeholder="email_ph" type="email">
@@ -403,9 +232,8 @@
         </div>
       </div>
       <button class="btn" id="authBtn">${t('login_btn')}</button>
-      <p style="text-align:center;margin-top:10px"><a id="toggleMode" style="color:#ffd966;cursor:pointer">${t('no_acc')}</a></p>
-    `;
-    authScreen.appendChild(card);
+      <p style="text-align:center;margin-top:10px"><a id="toggleMode" style="color:#ffd966;cursor:pointer">${t('no_acc')}</a></p>`;
+    auth.appendChild(card);
     applyLang();
 
     let mode = 'login', rD = 15, rM = 6, rY = 2005;
@@ -424,7 +252,7 @@
     document.getElementById('rYu').onclick = () => { if (rY < 2026) rY++; upd(); };
     document.getElementById('rYd').onclick = () => { if (rY > 1920) rY--; upd(); };
 
-    document.getElementById('authBtn').addEventListener('click', async () => {
+    document.getElementById('authBtn').onclick = async () => {
       const email = document.getElementById('authEmail').value.trim().toLowerCase();
       const code = document.getElementById('authCode').value.trim();
       const emailErr = document.getElementById('emailErr'), codeErr = document.getElementById('codeErr'), nickErr = document.getElementById('nickErr');
@@ -433,55 +261,44 @@
       if (!email.includes('@')) { emailErr.textContent = t('email_err'); emailErr.style.display = 'block'; return; }
       if (code.length !== 8) { codeErr.textContent = t('code_err'); codeErr.style.display = 'block'; return; }
 
-      if (mode === 'register') {
-        const nick = document.getElementById('authNick').value.trim();
-        if (!nick) { nickErr.textContent = t('nick_err'); nickErr.style.display = 'block'; return; }
-        if (bad(nick)) { nickErr.textContent = t('bad_nick'); nickErr.style.display = 'block'; return; }
+      const btn = document.getElementById('authBtn');
+      btn.disabled = true; btn.textContent = '...';
 
-        await loadAllUsers();
-        if (allUsersCache[email]) { emailErr.textContent = t('email_used'); emailErr.style.display = 'block'; return; }
+      try {
+        if (mode === 'register') {
+          const nick = document.getElementById('authNick').value.trim();
+          if (!nick) { nickErr.textContent = t('nick_err'); nickErr.style.display = 'block'; btn.disabled = false; btn.textContent = t('register_btn'); return; }
+          if (bad(nick)) { nickErr.textContent = t('bad_nick'); nickErr.style.display = 'block'; btn.disabled = false; btn.textContent = t('register_btn'); return; }
 
-        const friendCode = await generateFriendCode();
-        const userData = {
-          email, nick, code, friendCode,
-          profile: { avatar: '🙂', day: rD, month: rM, year: rY },
-          friends: [],
-          unlockedAvatars: ['🙂'],
-          unlockedCards: ['default'],
-          selectedCard: 'default',
-          claimedAchievements: [],
-          totalTasks: 0,
-          quarrelCount: 0
-        };
-        await saveUser(email, userData);
-        currentUserEmail = email;
-        localStorage.setItem('uzi_session', email);
-        enterApp();
-      } else {
-        const user = await getUser(email);
-        if (!user) { emailErr.textContent = t('email_not_found'); emailErr.style.display = 'block'; return; }
-        if (user.code !== code) { codeErr.textContent = t('wrong_code'); codeErr.style.display = 'block'; return; }
-        currentUserEmail = email;
-        localStorage.setItem('uzi_session', email);
-        enterApp();
+          const users = await loadAllUsers();
+          if (users[email]) { emailErr.textContent = t('email_used'); emailErr.style.display = 'block'; btn.disabled = false; btn.textContent = t('register_btn'); return; }
+
+          const friendCode = await generateFriendCode();
+          const userData = { email, nick, code, friendCode, profile: { avatar: '🙂', day: rD, month: rM, year: rY }, friends: [], unlockedAvatars: ['🙂'], unlockedCards: ['default'], selectedCard: 'default', claimedAchievements: [], totalTasks: 0, quarrelCount: 0 };
+          await saveUser(email, userData);
+          currentUserEmail = email;
+          localStorage.setItem('uzi_session', email);
+          enterApp();
+        } else {
+          const user = await getUser(email);
+          if (!user) { emailErr.textContent = t('email_not_found'); emailErr.style.display = 'block'; btn.disabled = false; btn.textContent = t('login_btn'); return; }
+          if (user.code !== code) { codeErr.textContent = t('wrong_code'); codeErr.style.display = 'block'; btn.disabled = false; btn.textContent = t('login_btn'); return; }
+          currentUserEmail = email;
+          localStorage.setItem('uzi_session', email);
+          enterApp();
+        }
+      } catch(e) {
+        alert('Ошибка сети. Попробуйте позже.');
+        btn.disabled = false;
+        btn.textContent = mode === 'login' ? t('login_btn') : t('register_btn');
       }
-    });
+    };
   }
 
-  function enterApp() {
-    showScreen('friendsScreen');
-    document.getElementById('mainTabs').style.display = 'flex';
-    switchTab('friends');
-  }
+  function enterApp() { showScreen('friendsScreen'); document.getElementById('mainTabs').style.display = 'flex'; switchTab('friends'); }
 
-  // ====================== ВКЛАДКИ ======================
   const tabs = document.querySelectorAll('#mainTabs .tab');
-  const screens = {
-    friends: document.getElementById('friendsScreen'),
-    tasks: document.getElementById('tasksScreen'),
-    achievements: document.getElementById('achievementsScreen'),
-    profile: document.getElementById('profileScreen')
-  };
+  const screens = { friends: document.getElementById('friendsScreen'), tasks: document.getElementById('tasksScreen'), achievements: document.getElementById('achievementsScreen'), profile: document.getElementById('profileScreen') };
   function switchTab(tabName) {
     tabs.forEach(b => b.classList.remove('active'));
     const active = document.querySelector(`#mainTabs .tab[data-tab="${tabName}"]`);
@@ -495,269 +312,144 @@
   }
   tabs.forEach(t => t.addEventListener('click', () => switchTab(t.dataset.tab)));
 
-  // ====================== ДРУЗЬЯ ======================
+  // ========== ДРУЗЬЯ ==========
   async function renderFriendsScreen() {
-    const container = screens.friends;
-    container.innerHTML = '';
+    const container = screens.friends; container.innerHTML = `<p class="loading-text">${t('loading')}</p>`;
     if (!currentUserEmail) return;
     const user = await getUser(currentUserEmail);
     if (!user) return;
-
-    if (!user.friends || user.friends.length === 0) {
-      container.innerHTML = `<p style="text-align:center;color:#aaa;margin-top:40px">${t('no_friends')}</p>`;
-    } else {
+    container.innerHTML = '';
+    if (!user.friends || user.friends.length === 0) { container.innerHTML = `<p style="text-align:center;color:#aaa;margin-top:40px">${t('no_friends')}</p>`; }
+    else {
+      const all = await loadAllUsers();
       for (const f of user.friends) {
-        const fu = allUsersCache[f.email];
+        const fu = all[f.email];
         const ti = title(f.cups);
         const cls = cardCls(f.cups, fu?.selectedCard);
-        const card = document.createElement('div');
-        card.className = `card ${cls}`;
-        card.innerHTML = `
-          <div style="display:flex;align-items:center;gap:10px">
-            <span class="friend-avatar">${fu?.profile?.avatar || '🙂'}</span>
-            <div style="flex:1"><strong>${fu?.nick || f.email}</strong><br><span style="color:#f9c74f">${ti.n}</span></div>
-            <div>🏆${f.cups} <span class="streak-badge">🔥${f.streak||0}д</span></div>
-          </div>`;
+        const card = document.createElement('div'); card.className = `card ${cls}`;
+        card.innerHTML = `<div style="display:flex;align-items:center;gap:10px"><span class="friend-avatar">${fu?.profile?.avatar||'🙂'}</span><div style="flex:1"><strong>${fu?.nick||f.email}</strong><br><span style="color:#f9c74f">${ti.n}</span></div><div>🏆${f.cups} <span class="streak-badge">🔥${f.streak||0}д</span></div></div>`;
         container.appendChild(card);
       }
     }
-    const addBtn = document.createElement('button');
-    addBtn.className = 'btn';
-    addBtn.textContent = t('add_friend');
-    addBtn.onclick = () => showAddFriendModal();
-    container.appendChild(addBtn);
+    const addBtn = document.createElement('button'); addBtn.className = 'btn'; addBtn.textContent = t('add_friend'); addBtn.onclick = () => showAddFriendModal(); container.appendChild(addBtn);
   }
 
   function showAddFriendModal() {
-    const modal = document.createElement('div');
-    modal.className = 'modal active';
-    modal.innerHTML = `
-      <div class="modal-content">
-        <h3 style="color:#ffd966">${t('add_friend')}</h3>
-        <p style="color:#aaa;font-size:0.8rem">${t('add_by_code')}</p>
-        <input id="addCode" class="input-field" placeholder="ABC12345">
-        <span class="error-text" id="addErr"></span>
-        <div id="addPreview" style="margin:10px 0;min-height:50px"></div>
-        <button class="btn" id="confBtn" disabled>${t('confirm')}</button>
-        <button class="btn" id="cancBtn" style="background:#555">${t('cancel')}</button>
-      </div>`;
+    const modal = document.createElement('div'); modal.className = 'modal active';
+    modal.innerHTML = `<div class="modal-content"><h3 style="color:#ffd966">${t('add_friend')}</h3><p style="color:#aaa;font-size:0.8rem">${t('add_by_code')}</p><input id="addCode" class="input-field" placeholder="ABC12345"><span class="error-text" id="addErr"></span><div id="addPreview" style="margin:10px 0;min-height:50px"></div><button class="btn" id="confBtn" disabled>${t('confirm')}</button><button class="btn" id="cancBtn" style="background:#555">${t('cancel')}</button></div>`;
     document.body.appendChild(modal);
     const inp = modal.querySelector('#addCode'), err = modal.querySelector('#addErr'), prev = modal.querySelector('#addPreview'), conf = modal.querySelector('#confBtn');
-    let foundUser = null;
-
+    let found = null;
     async function update() {
-      const code = inp.value.trim();
-      err.style.display = 'none'; prev.innerHTML = ''; conf.disabled = true; foundUser = null;
+      const code = inp.value.trim(); err.style.display = 'none'; prev.innerHTML = ''; conf.disabled = true; found = null;
       if (!code) return;
-      foundUser = await findUserByCode(code);
+      found = await findUserByCode(code);
       const me = await getUser(currentUserEmail);
-      if (!foundUser) { err.textContent = t('not_found'); err.style.display = 'block'; return; }
-      if (foundUser.email === currentUserEmail) { err.textContent = t('self_add'); err.style.display = 'block'; return; }
-      if (me.friends?.some(f => f.email === foundUser.email)) { err.textContent = t('already'); err.style.display = 'block'; return; }
-      prev.innerHTML = `<div class="card"><span style="font-size:2rem">${foundUser.profile.avatar}</span> <strong>${foundUser.nick}</strong><br><small>${foundUser.friendCode}</small><br><span style="color:#6fcf97">${t('found_friend')}</span></div>`;
+      if (!found) { err.textContent = t('not_found'); err.style.display = 'block'; return; }
+      if (found.email === currentUserEmail) { err.textContent = t('self_add'); err.style.display = 'block'; return; }
+      if (me.friends?.some(f => f.email === found.email)) { err.textContent = t('already'); err.style.display = 'block'; return; }
+      prev.innerHTML = `<div class="card"><span style="font-size:2rem">${found.profile.avatar}</span> <strong>${found.nick}</strong><br><small>${found.friendCode}</small><br><span style="color:#6fcf97">${t('found_friend')}</span></div>`;
       conf.disabled = false;
     }
-
     inp.addEventListener('input', update);
-    conf.addEventListener('click', async () => {
-      if (!foundUser) return;
+    conf.onclick = async () => {
+      if (!found) return;
       const me = await getUser(currentUserEmail);
-      me.friends = me.friends || [];
-      me.friends.push({ email: foundUser.email, cups: 0, streak: 0 });
+      me.friends = me.friends || []; me.friends.push({ email: found.email, cups: 0, streak: 0 });
       await updateUser(currentUserEmail, { friends: me.friends });
-
-      const they = await getUser(foundUser.email);
+      const they = await getUser(found.email);
       they.friends = they.friends || [];
-      if (!they.friends.some(f => f.email === currentUserEmail)) {
-        they.friends.push({ email: currentUserEmail, cups: 0, streak: 0 });
-        await updateUser(foundUser.email, { friends: they.friends });
-      }
-      modal.remove();
-      renderFriendsScreen();
-    });
+      if (!they.friends.some(f => f.email === currentUserEmail)) { they.friends.push({ email: currentUserEmail, cups: 0, streak: 0 }); await updateUser(found.email, { friends: they.friends }); }
+      modal.remove(); renderFriendsScreen();
+    };
     modal.querySelector('#cancBtn').onclick = () => modal.remove();
   }
 
-  // ====================== ЗАДАНИЯ ======================
+  // ========== ЗАДАНИЯ ==========
   async function renderTasksScreen() {
-    const container = screens.tasks;
-    container.innerHTML = `<h3 style="color:#ffd966">${t('tasks_title')}</h3>`;
+    const container = screens.tasks; container.innerHTML = `<p class="loading-text">${t('loading')}</p>`;
     const user = await getUser(currentUserEmail);
-    if (!user || !user.friends?.length) {
-      container.innerHTML += '<p style="color:#aaa">Добавьте друга</p>';
-      return;
-    }
+    if (!user) return;
+    container.innerHTML = `<h3 style="color:#ffd966">${t('tasks_title')}</h3>`;
+    if (!user.friends || user.friends.length === 0) { container.innerHTML += '<p style="color:#aaa">Добавьте друга</p>'; return; }
+    const all = await loadAllUsers();
     for (const f of user.friends) {
-      const fu = allUsersCache[f.email];
-      const card = document.createElement('div');
-      card.className = 'card';
-      card.innerHTML = `<strong>${fu?.nick || f.email}</strong>`;
-      const tasks = [
-        { l: '🚶 Прогулка +20', v: 20 },
-        { l: '🏠 В гости +25', v: 25 },
-        { l: '🎮 Игра +22', v: 22 },
-        { l: '🆘 Помощь +15', v: 15 },
-        { l: '🎁 Сюрприз +30', v: 30 }
-      ];
-      tasks.forEach(tk => {
-        const btn = document.createElement('button');
-        btn.className = 'btn';
-        btn.textContent = tk.l;
-        btn.addEventListener('click', async () => {
-          f.cups += tk.v;
-          f.streak = (f.streak || 0) + 1;
-          user.totalTasks = (user.totalTasks || 0) + 1;
-          if (fu) {
-            const rev = fu.friends?.find(r => r.email === currentUserEmail);
-            if (rev) rev.cups += tk.v;
-            await updateUser(f.email, { friends: fu.friends });
-          }
-          await updateUser(currentUserEmail, { friends: user.friends, totalTasks: user.totalTasks });
-          renderTasksScreen();
-          renderFriendsScreen();
-        });
+      const fu = all[f.email];
+      const card = document.createElement('div'); card.className = 'card'; card.innerHTML = `<strong>${fu?.nick||f.email}</strong>`;
+      [{l:'🚶 Прогулка +20',v:20},{l:'🏠 В гости +25',v:25},{l:'🎮 Игра +22',v:22},{l:'🆘 Помощь +15',v:15},{l:'🎁 Сюрприз +30',v:30}].forEach(tk => {
+        const btn = document.createElement('button'); btn.className = 'btn'; btn.textContent = tk.l;
+        btn.onclick = async () => { f.cups += tk.v; f.streak = (f.streak||0)+1; user.totalTasks = (user.totalTasks||0)+1; if (fu) { const rev = fu.friends?.find(r => r.email === currentUserEmail); if (rev) rev.cups += tk.v; await updateUser(f.email, { friends: fu.friends }); } await updateUser(currentUserEmail, { friends: user.friends, totalTasks: user.totalTasks }); renderTasksScreen(); renderFriendsScreen(); };
         card.appendChild(btn);
       });
-      const qBtn = document.createElement('button');
-      qBtn.className = 'btn danger';
-      qBtn.textContent = t('quarrel');
-      qBtn.addEventListener('click', async () => {
-        f.cups = Math.max(0, f.cups - 18);
-        f.streak = 0;
-        user.quarrelCount = (user.quarrelCount || 0) + 1;
-        await updateUser(currentUserEmail, { friends: user.friends, quarrelCount: user.quarrelCount });
-        renderTasksScreen();
-        renderFriendsScreen();
-      });
-      card.appendChild(qBtn);
-      container.appendChild(card);
+      const q = document.createElement('button'); q.className = 'btn danger'; q.textContent = t('quarrel');
+      q.onclick = async () => { f.cups = Math.max(0, f.cups-18); f.streak = 0; user.quarrelCount = (user.quarrelCount||0)+1; await updateUser(currentUserEmail, { friends: user.friends, quarrelCount: user.quarrelCount }); renderTasksScreen(); renderFriendsScreen(); };
+      card.appendChild(q); container.appendChild(card);
     }
   }
 
-  // ====================== ДОСТИЖЕНИЯ ======================
+  // ========== ДОСТИЖЕНИЯ ==========
   async function renderAchievementsScreen() {
-    const container = screens.achievements;
-    container.innerHTML = `<h3 style="color:#ffd966">${t('tab_ach')}</h3>`;
+    const container = screens.achievements; container.innerHTML = `<p class="loading-text">${t('loading')}</p>`;
     const user = await getUser(currentUserEmail);
     if (!user) return;
+    container.innerHTML = `<h3 style="color:#ffd966">${t('tab_ach')}</h3>`;
     ACH.forEach(ach => {
       const done = user.claimedAchievements?.includes(ach.id);
-      const can = checkAchievementCondition(user, ach.id) && !done;
-      const card = document.createElement('div');
-      card.className = 'achievement-card' + (can ? ' glow-ach' : '');
+      const can = checkAchievement(user, ach.id) && !done;
+      const card = document.createElement('div'); card.className = 'achievement-card' + (can ? ' glow-ach' : '');
       card.innerHTML = `<strong>${ach.name}</strong><br><small>${ach.desc}</small><br><small style="color:#f9c74f">${ach.reward}</small>`;
       if (done) card.innerHTML += `<p style="color:#6fcf97">${t('claimed')}</p>`;
       else if (can) {
-        const btn = document.createElement('button');
-        btn.className = 'btn';
-        btn.textContent = t('get');
-        btn.addEventListener('click', async () => {
-          user.claimedAchievements = user.claimedAchievements || [];
-          user.claimedAchievements.push(ach.id);
+        const btn = document.createElement('button'); btn.className = 'btn'; btn.textContent = t('get');
+        btn.onclick = async () => {
+          user.claimedAchievements = user.claimedAchievements || []; user.claimedAchievements.push(ach.id);
           const [tp, val] = ach.reward.split(':');
           if (tp === 'avatar' && !user.unlockedAvatars.includes(val)) user.unlockedAvatars.push(val);
           if (tp === 'card' && !user.unlockedCards.includes(val)) user.unlockedCards.push(val);
-          await updateUser(currentUserEmail, {
-            claimedAchievements: user.claimedAchievements,
-            unlockedAvatars: user.unlockedAvatars,
-            unlockedCards: user.unlockedCards
-          });
-          renderAchievementsScreen();
-          renderProfileScreen();
-        });
+          await updateUser(currentUserEmail, { claimedAchievements: user.claimedAchievements, unlockedAvatars: user.unlockedAvatars, unlockedCards: user.unlockedCards });
+          renderAchievementsScreen(); renderProfileScreen();
+        };
         card.appendChild(btn);
       } else card.innerHTML += `<p style="color:#ff6b6b">${t('locked')}</p>`;
       container.appendChild(card);
     });
   }
 
-  // ====================== ПРОФИЛЬ ======================
+  // ========== ПРОФИЛЬ ==========
   async function renderProfileScreen() {
-    const container = screens.profile;
-    container.innerHTML = '';
+    const container = screens.profile; container.innerHTML = `<p class="loading-text">${t('loading')}</p>`;
     const user = await getUser(currentUserEmail);
     if (!user) return;
     const age = new Date().getFullYear() - user.profile.year;
     const cls = cardCls(0, user.selectedCard);
-    container.innerHTML = `
-      <div class="card ${cls}">
-        <div style="text-align:center">
-          <span style="font-size:3.5rem">${user.profile.avatar}</span>
-          <h2>${user.nick}</h2>
-          <p>📧 ${user.email}</p>
-          <p>${age} ${t('years')} · ${user.profile.day} ${getMonths()[user.profile.month-1]} ${user.profile.year}</p>
-          <p>${t('card_label')} ${user.selectedCard}</p>
-          <div class="code-display">
-            <span>${t('your_code')} <strong>${user.friendCode}</strong></span>
-            <button class="btn copy" id="copyCode">${t('copy')}</button>
-          </div>
-        </div>
-        <button class="btn" id="editBtn">${t('edit')}</button>
-        <button class="btn logout" id="logoutBtn">${t('logout')}</button>
-      </div>`;
-    document.getElementById('copyCode').onclick = () => {
-      navigator.clipboard.writeText(user.friendCode).then(() => {
-        const b = document.getElementById('copyCode');
-        b.textContent = t('copied');
-        setTimeout(() => b.textContent = t('copy'), 2000);
-      });
-    };
-    document.getElementById('editBtn').onclick = () => showEditProfileModal(user);
+    container.innerHTML = `<div class="card ${cls}"><div style="text-align:center"><span style="font-size:3.5rem">${user.profile.avatar}</span><h2>${user.nick}</h2><p>📧 ${user.email}</p><p>${age} ${t('years')} · ${user.profile.day} ${getMonths()[user.profile.month-1]} ${user.profile.year}</p><p>${t('card_label')} ${user.selectedCard}</p><div class="code-display"><span>${t('your_code')} <strong>${user.friendCode}</strong></span><button class="btn copy" id="copyCode">${t('copy')}</button></div></div><button class="btn" id="editBtn">${t('edit')}</button><button class="btn logout" id="logoutBtn">${t('logout')}</button></div>`;
+    document.getElementById('copyCode').onclick = () => { navigator.clipboard.writeText(user.friendCode).then(() => { const b = document.getElementById('copyCode'); b.textContent = t('copied'); setTimeout(() => b.textContent = t('copy'), 2000); }); };
+    document.getElementById('editBtn').onclick = () => showEditModal(user);
     document.getElementById('logoutBtn').onclick = () => logout();
   }
 
-  function showEditProfileModal(user) {
-    const modal = document.createElement('div');
-    modal.className = 'modal active';
+  function showEditModal(user) {
+    const modal = document.createElement('div'); modal.className = 'modal active';
     let eD = user.profile.day, eM = user.profile.month, eY = user.profile.year;
-    modal.innerHTML = `
-      <div class="modal-content">
-        <h3 style="color:#ffd966">${t('edit')}</h3>
-        <div class="wheel-container">
-          <div class="wheel-col"><button class="wheel-btn" id="eDu">▲</button><span class="wheel-value" id="eDv">${eD}</span><button class="wheel-btn" id="eDd">▼</button></div>
-          <div class="wheel-col"><button class="wheel-btn" id="eMu">▲</button><span class="wheel-value" id="eMv">${getMonths()[eM-1]}</span><button class="wheel-btn" id="eMd">▼</button></div>
-          <div class="wheel-col"><button class="wheel-btn" id="eYu">▲</button><span class="wheel-value" id="eYv">${eY}</span><button class="wheel-btn" id="eYd">▼</button></div>
-        </div>
-        <label>${t('avatar_label')}</label>
-        <div id="avGrid" style="display:flex;flex-wrap:wrap;gap:5px">${user.unlockedAvatars.map(a => `<span style="font-size:1.8rem;cursor:pointer" data-a="${a}">${a}</span>`).join('')}</div>
-        <label>${t('card_label')}</label>
-        <select id="cardSel" style="width:100%;padding:10px;border-radius:18px;background:#2a2340;color:white">${user.unlockedCards.map(c => `<option ${user.selectedCard===c?'selected':''}>${c}</option>`).join('')}</select>
-        <button class="btn" id="saveEdit">${t('save')}</button>
-      </div>`;
+    modal.innerHTML = `<div class="modal-content"><h3 style="color:#ffd966">${t('edit')}</h3><div class="wheel-container"><div class="wheel-col"><button class="wheel-btn" id="eDu">▲</button><span class="wheel-value" id="eDv">${eD}</span><button class="wheel-btn" id="eDd">▼</button></div><div class="wheel-col"><button class="wheel-btn" id="eMu">▲</button><span class="wheel-value" id="eMv">${getMonths()[eM-1]}</span><button class="wheel-btn" id="eMd">▼</button></div><div class="wheel-col"><button class="wheel-btn" id="eYu">▲</button><span class="wheel-value" id="eYv">${eY}</span><button class="wheel-btn" id="eYd">▼</button></div></div><label>${t('avatar_label')}</label><div id="avGrid" style="display:flex;flex-wrap:wrap;gap:5px">${user.unlockedAvatars.map(a => `<span style="font-size:1.8rem;cursor:pointer" data-a="${a}">${a}</span>`).join('')}</div><label>${t('card_label')}</label><select id="cardSel" style="width:100%;padding:10px;border-radius:18px;background:#2a2340;color:white">${user.unlockedCards.map(c => `<option ${user.selectedCard===c?'selected':''}>${c}</option>`).join('')}</select><button class="btn" id="saveEdit">${t('save')}</button></div>`;
     document.body.appendChild(modal);
-    function upd() {
-      modal.querySelector('#eDv').textContent = eD;
-      modal.querySelector('#eMv').textContent = getMonths()[eM-1];
-      modal.querySelector('#eYv').textContent = eY;
-    }
-    modal.querySelector('#eDu').onclick = () => { eD = eD % 31 + 1; upd(); };
-    modal.querySelector('#eDd').onclick = () => { eD = eD - 1 || 31; upd(); };
-    modal.querySelector('#eMu').onclick = () => { eM = eM % 12 + 1; upd(); };
-    modal.querySelector('#eMd').onclick = () => { eM = eM - 1 || 12; upd(); };
-    modal.querySelector('#eYu').onclick = () => { if (eY < 2026) eY++; upd(); };
-    modal.querySelector('#eYd').onclick = () => { if (eY > 1920) eY--; upd(); };
-    modal.querySelectorAll('#avGrid span').forEach(s => s.addEventListener('click', async function() {
-      user.profile.avatar = this.dataset.a;
-      await updateUser(currentUserEmail, { profile: user.profile });
-      modal.remove();
-      renderProfileScreen();
-    }));
-    modal.querySelector('#saveEdit').addEventListener('click', async () => {
-      user.profile.day = eD; user.profile.month = eM; user.profile.year = eY;
-      user.selectedCard = modal.querySelector('#cardSel').value;
-      await updateUser(currentUserEmail, { profile: user.profile, selectedCard: user.selectedCard });
-      modal.remove();
-      renderProfileScreen();
-    });
+    function upd() { modal.querySelector('#eDv').textContent = eD; modal.querySelector('#eMv').textContent = getMonths()[eM-1]; modal.querySelector('#eYv').textContent = eY; }
+    modal.querySelector('#eDu').onclick = () => { eD = eD % 31 + 1; upd(); }; modal.querySelector('#eDd').onclick = () => { eD = eD - 1 || 31; upd(); };
+    modal.querySelector('#eMu').onclick = () => { eM = eM % 12 + 1; upd(); }; modal.querySelector('#eMd').onclick = () => { eM = eM - 1 || 12; upd(); };
+    modal.querySelector('#eYu').onclick = () => { if (eY < 2026) eY++; upd(); }; modal.querySelector('#eYd').onclick = () => { if (eY > 1920) eY--; upd(); };
+    modal.querySelectorAll('#avGrid span').forEach(s => s.onclick = async function() { user.profile.avatar = this.dataset.a; await updateUser(currentUserEmail, { profile: user.profile }); modal.remove(); renderProfileScreen(); });
+    modal.querySelector('#saveEdit').onclick = async () => { user.profile.day = eD; user.profile.month = eM; user.profile.year = eY; user.selectedCard = modal.querySelector('#cardSel').value; await updateUser(currentUserEmail, { profile: user.profile, selectedCard: user.selectedCard }); modal.remove(); renderProfileScreen(); };
   }
 
-  // ====================== СТАРТ ======================
+  // ========== СТАРТ ==========
   async function init() {
     buildLangDropdown();
-    const savedEmail = localStorage.getItem('uzi_session');
-    if (savedEmail) {
-      const user = await getUser(savedEmail);
-      if (user) { currentUserEmail = savedEmail; enterApp(); return; }
+    const saved = localStorage.getItem('uzi_session');
+    if (saved) {
+      try {
+        const user = await getUser(saved);
+        if (user) { currentUserEmail = saved; enterApp(); return; }
+      } catch(e) {}
     }
     showScreen('authScreen');
     renderAuthScreen();
