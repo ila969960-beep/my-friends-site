@@ -66,8 +66,9 @@
   <div id="profileScreen" class="screen"></div>
 </div>
 
-<script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
+<!-- Firebase SDK через jsdelivr (работает в РФ) -->
+<script src="https://cdn.jsdelivr.net/npm/firebase@9.6.10/firebase-app-compat.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/firebase@9.6.10/firebase-database-compat.js"></script>
 
 <script>
   // ==================== FIREBASE ====================
@@ -80,8 +81,15 @@
     messagingSenderId: "489957947610",
     appId: "1:489957947610:web:833bed6e55fbede597cde3"
   };
-  firebase.initializeApp(firebaseConfig);
-  const db = firebase.database();
+  
+  let dbReady = false;
+  try {
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+    dbReady = true;
+  } catch(e) {
+    document.getElementById('appContainer').innerHTML = '<p style="color:#ff6b6b;text-align:center;margin-top:40vh;">Ошибка загрузки базы данных. Попробуйте позже.</p>';
+  }
 
   // ==================== ПЕРЕВОДЫ ====================
   const MONTHS = {
@@ -97,8 +105,8 @@
     ko: ['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월']
   };
   const BAD = ['мат','бля','хуй','пизд','еба','сука','нах','гандон','пидор','чмо','лох','гавно','жопа','член','хер','мудак','урод','дура','идиот','тупой','дебил','даун','педик','аутист'];
-  const AVATARS = ['🙂','😎','🤩','🦊','🐼','⭐','💎','👑','🔥','🌈','🌟','💜','🎭','🐉','🍀','🤝','💔','🎃','🎅','👻','🐱','🐶','🦄','🐲','🎉','💖']; // 25
-  const CARDS = ['default','golden','sheriff','night','diamond','royal','master','ocean','forest','sunset','galaxy','phoenix','unicorn','dragon','crystal','shadow','sparkle','thunder','angel','demon','rainbow','meteor','comet','nebula','aurora']; // 25
+  const AVATARS = ['🙂','😎','🤩','🦊','🐼','⭐','💎','👑','🔥','🌈','🌟','💜','🎭','🐉','🍀','🤝','💔','🎃','🎅','👻','🐱','🐶','🦄','🐲','🎉','💖'];
+  const CARDS = ['default','golden','sheriff','night','diamond','royal','master','ocean','forest','sunset','galaxy','phoenix','unicorn','dragon','crystal','shadow','sparkle','thunder','angel','demon','rainbow','meteor','comet','nebula','aurora'];
   const TITLES = [{n:'Знакомый',m:0},{n:'Товарищ',m:50},{n:'Приятель',m:150},{n:'Хороший друг',m:300},{n:'Лучший друг',m:600},{n:'Родной',m:1000},{n:'🌟 Родственная душа',m:2000},{n:'🔥 Брат навек',m:3500}];
 
   const ACHIEVEMENTS = [
@@ -126,4 +134,4 @@
 
   const LANGS = {
     ru:{app_title:'✨ Узы Света',welcome:'🌟 Добро пожаловать',email_ph:'Электронная почта',code_ph:'Код доступа (8 символов)',nick_ph:'Придумайте никнейм',date_label:'📅 Дата рождения:',login_btn:'ВОЙТИ',register_btn:'РЕГИСТРАЦИЯ',no_acc:'Нет аккаунта?',has_acc:'Уже есть аккаунт?',tab_friends:'👥 Друзья',tab_tasks:'📋 Задания',tab_ach:'🏅 Достижения',tab_profile:'👤 Профиль',no_friends:'Пока нет друзей',add_friend:'➕ Добавить друга',confirm:'✅ Подтвердить',cancel:'Отмена',tasks_title:'📋 Задания',quarrel:'💢 Поссориться -18',edit:'✏️ Редактировать',logout:'🚪 Выйти',save:'💾 Сохранить',not_found:'❌ Аккаунт не найден',self_add:'❌ Нельзя добавить себя',already:'❌ Уже в друзьях',email_err:'Введите почту',code_err:'Код 8 символов',nick_err:'Введите ник',bad_nick:'Запрещённые слова',email_used:'Почта занята',email_not_found:'Аккаунт не найден',wrong_code:'Неверный код',claimed:'✅ Получено',get:'🎁 Получить',locked:'🔒 Не выполнено',card_label:'🃏 Карточка:',avatar_label:'🖼️ Аватар:',your_code:'Твой код:',copy:'📋 Копировать',copied:'✅ Скопировано!',add_by_code:'Введите код друга',found_friend:'Это твой друг!',years:'лет'},
-    en:{app_title:'✨ Bonds of Light',welcome:'🌟 Welcome',email_ph:'Email',code_ph:'Access code (8 chars)',nick_ph:'Nickname',date_label:'📅 Birth date:',login_btn:'LOG IN',register_btn:'SIGN UP',no_acc:'No account?',has_acc:'Already have account?',tab_friends:'👥 Friends',tab_tasks:'📋 Tasks',tab_ach:'🏅 Achievements',tab_profile:'👤 Profile',no_friends:'No friends yet',add_friend:'➕ Add friend',confirm:'✅ Confirm',cancel:'Cancel',tasks_title:'📋 Tasks',quarrel:'💢 Quarrel -18',edit:'✏️ Edit',logout:'
+    en:{app_title:'✨ Bonds of Light',welcome:'🌟 Welcome',email_ph:'Email',code_ph:'Access code (8 chars)',nick_ph:'Nickname',date_label:'📅 Birth date:',login_btn:'LOG IN',register_btn:'SIGN UP',no_acc:'No accoun
