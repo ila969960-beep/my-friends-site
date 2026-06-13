@@ -66,7 +66,6 @@
   <div id="profileScreen" class="screen"></div>
 </div>
 
-<!-- Firebase SDK через jsdelivr (работает в РФ) -->
 <script src="https://cdn.jsdelivr.net/npm/firebase@9.6.10/firebase-app-compat.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/firebase@9.6.10/firebase-database-compat.js"></script>
 
@@ -81,13 +80,15 @@
     messagingSenderId: "489957947610",
     appId: "1:489957947610:web:833bed6e55fbede597cde3"
   };
-  
+
   let dbReady = false;
+  let db;
+
   try {
     firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
+    db = firebase.database();
     dbReady = true;
-  } catch(e) {
+  } catch (e) {
     document.getElementById('appContainer').innerHTML = '<p style="color:#ff6b6b;text-align:center;margin-top:40vh;">Ошибка загрузки базы данных. Попробуйте позже.</p>';
   }
 
@@ -137,7 +138,10 @@
     en:{app_title:'✨ Bonds of Light',welcome:'🌟 Welcome',email_ph:'Email',code_ph:'Access code (8 chars)',nick_ph:'Nickname',date_label:'📅 Birth date:',login_btn:'LOG IN',register_btn:'SIGN UP',no_acc:'No account?',has_acc:'Already have account?',tab_friends:'👥 Friends',tab_tasks:'📋 Tasks',tab_ach:'🏅 Achievements',tab_profile:'👤 Profile',no_friends:'No friends yet',add_friend:'➕ Add friend',confirm:'✅ Confirm',cancel:'Cancel',tasks_title:'📋 Tasks',quarrel:'💢 Quarrel -18',edit:'✏️ Edit',logout:'🚪 Log out',save:'💾 Save',not_found:'❌ Not found',self_add:'❌ Cannot add yourself',already:'❌ Already friend',email_err:'Enter email',code_err:'Code 8 chars',nick_err:'Enter nick',bad_nick:'Forbidden words',email_used:'Email taken',email_not_found:'Account not found',wrong_code:'Wrong code',claimed:'✅ Claimed',get:'🎁 Claim',locked:'🔒 Locked',card_label:'🃏 Card:',avatar_label:'🖼️ Avatar:',your_code:'Your code:',copy:'📋 Copy',copied:'✅ Copied!',add_by_code:'Enter friend code',found_friend:'This is your friend!',years:'years'}
   };
 
-  if (!dbReady) throw new Error('DB not ready');
+  if (!dbReady) {
+    // База не загрузилась – остановимся, сообщение уже на экране
+    throw new Error('Database not ready');
+  }
 
   let currentLang = 'ru';
   function t(key) { return LANGS[currentLang]?.[key] || LANGS['ru'][key] || key; }
@@ -200,7 +204,7 @@
     }
   }
 
-  // ==================== UI (сокращён для экономии места, но полностью рабочий) ====================
+  // ==================== UI ====================
   function showScreen(id) { document.querySelectorAll('.screen').forEach(s => s.classList.remove('active')); document.getElementById(id).classList.add('active'); }
   function buildLangDropdown() {
     const dd = document.getElementById('langDropdown');
