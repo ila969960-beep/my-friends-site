@@ -3,6 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
+  <!-- Разрешаем eval и подключение к Firebase -->
+  <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-eval' https://www.gstatic.com; connect-src 'self' https://*.firebaseio.com wss://*.firebaseio.com https://*.firebase.com; style-src 'self' 'unsafe-inline';">
   <title>🌟 Узы Света</title>
   <link rel="manifest" href="data:application/manifest+json,%7B%22name%22%3A%22%D0%A3%D0%B7%D1%8B%20%D0%A1%D0%B2%D0%B5%D1%82%D0%B0%22%2C%22short_name%22%3A%22%D0%A3%D0%B7%D1%8B%22%2C%22start_url%22%3A%22.%2F%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%231a1025%22%2C%22theme_color%22%3A%22%23ffd966%22%7D">
   <meta name="theme-color" content="#1a1025">
@@ -66,8 +68,8 @@
   <div id="profileScreen" class="screen"></div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/firebase@9.6.10/firebase-app-compat.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/firebase@9.6.10/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
 
 <script>
   // ==================== FIREBASE ====================
@@ -81,15 +83,12 @@
     appId: "1:489957947610:web:833bed6e55fbede597cde3"
   };
 
-  let dbReady = false;
-  let db;
-
   try {
     firebase.initializeApp(firebaseConfig);
-    db = firebase.database();
-    dbReady = true;
-  } catch (e) {
+    window.db = firebase.database();
+  } catch(e) {
     document.getElementById('appContainer').innerHTML = '<p style="color:#ff6b6b;text-align:center;margin-top:40vh;">Ошибка загрузки базы данных. Попробуйте позже.</p>';
+    throw e;
   }
 
   // ==================== ПЕРЕВОДЫ ====================
@@ -137,11 +136,6 @@
     ru:{app_title:'✨ Узы Света',welcome:'🌟 Добро пожаловать',email_ph:'Электронная почта',code_ph:'Код доступа (8 символов)',nick_ph:'Придумайте никнейм',date_label:'📅 Дата рождения:',login_btn:'ВОЙТИ',register_btn:'РЕГИСТРАЦИЯ',no_acc:'Нет аккаунта?',has_acc:'Уже есть аккаунт?',tab_friends:'👥 Друзья',tab_tasks:'📋 Задания',tab_ach:'🏅 Достижения',tab_profile:'👤 Профиль',no_friends:'Пока нет друзей',add_friend:'➕ Добавить друга',confirm:'✅ Подтвердить',cancel:'Отмена',tasks_title:'📋 Задания',quarrel:'💢 Поссориться -18',edit:'✏️ Редактировать',logout:'🚪 Выйти',save:'💾 Сохранить',not_found:'❌ Аккаунт не найден',self_add:'❌ Нельзя добавить себя',already:'❌ Уже в друзьях',email_err:'Введите почту',code_err:'Код 8 символов',nick_err:'Введите ник',bad_nick:'Запрещённые слова',email_used:'Почта занята',email_not_found:'Аккаунт не найден',wrong_code:'Неверный код',claimed:'✅ Получено',get:'🎁 Получить',locked:'🔒 Не выполнено',card_label:'🃏 Карточка:',avatar_label:'🖼️ Аватар:',your_code:'Твой код:',copy:'📋 Копировать',copied:'✅ Скопировано!',add_by_code:'Введите код друга',found_friend:'Это твой друг!',years:'лет'},
     en:{app_title:'✨ Bonds of Light',welcome:'🌟 Welcome',email_ph:'Email',code_ph:'Access code (8 chars)',nick_ph:'Nickname',date_label:'📅 Birth date:',login_btn:'LOG IN',register_btn:'SIGN UP',no_acc:'No account?',has_acc:'Already have account?',tab_friends:'👥 Friends',tab_tasks:'📋 Tasks',tab_ach:'🏅 Achievements',tab_profile:'👤 Profile',no_friends:'No friends yet',add_friend:'➕ Add friend',confirm:'✅ Confirm',cancel:'Cancel',tasks_title:'📋 Tasks',quarrel:'💢 Quarrel -18',edit:'✏️ Edit',logout:'🚪 Log out',save:'💾 Save',not_found:'❌ Not found',self_add:'❌ Cannot add yourself',already:'❌ Already friend',email_err:'Enter email',code_err:'Code 8 chars',nick_err:'Enter nick',bad_nick:'Forbidden words',email_used:'Email taken',email_not_found:'Account not found',wrong_code:'Wrong code',claimed:'✅ Claimed',get:'🎁 Claim',locked:'🔒 Locked',card_label:'🃏 Card:',avatar_label:'🖼️ Avatar:',your_code:'Your code:',copy:'📋 Copy',copied:'✅ Copied!',add_by_code:'Enter friend code',found_friend:'This is your friend!',years:'years'}
   };
-
-  if (!dbReady) {
-    // База не загрузилась – остановимся, сообщение уже на экране
-    throw new Error('Database not ready');
-  }
 
   let currentLang = 'ru';
   function t(key) { return LANGS[currentLang]?.[key] || LANGS['ru'][key] || key; }
